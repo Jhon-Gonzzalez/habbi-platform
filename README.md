@@ -99,8 +99,6 @@ Las contribuciones son bienvenidas. Para contribuir:
 2. Crea una rama nueva.
 3. Envía tu pull request.
 
-## 📄 Licencia
-Proyecto académico – Uso libre para fines educativos.
 
 ---
 Creado por **Jhon González** ✨
