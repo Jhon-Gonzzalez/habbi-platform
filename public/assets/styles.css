@@ -1,0 +1,946 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
+
+
+/* ===== UniAlojamiento Listings Styles ===== */
+:root{
+  --bg:#0b0d12;
+  --panel:#121620;
+  --muted:#8b93a7;
+  --text:#e7ecf3;
+  --brand:#6EE7F9;
+  --brand-2:#7c5cff;
+  --surface:#0e131b;
+  --ok:#16a34a;
+  --warn:#f59e0b;
+  --danger:#ef4444;
+  --card:#0f1420;
+  --border: #1f2533;
+  --shadow: 0 10px 30px rgba(0,0,0,.4);
+}
+
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0;
+  background: radial-gradient(1200px 600px at 10% -20%, rgba(108,74,255,.12), transparent 60%),
+              radial-gradient(1000px 600px at 120% 0%, rgba(110,231,249,.12), transparent 60%),
+              var(--bg);
+  color:var(--text);
+  font: 16px/1.4 ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, 'Helvetica Neue', Arial, 'Noto Sans', 'Apple Color Emoji','Segoe UI Emoji';
+}
+
+.container{width:min(1200px, 94%); margin-inline:auto}
+
+.site-header{
+  position: sticky; top:0; z-index:50;
+  backdrop-filter:saturate(140%) blur(6px);
+  background: color-mix(in oklab, var(--bg) 84%, transparent);
+  border-bottom:1px solid var(--border);
+}
+.header-inner{display:flex; align-items:center; gap:16px; padding:14px 0}
+.brand{display:flex; align-items:center; gap:10px; text-decoration:none; color:var(--text); font-weight:700; letter-spacing:.2px}
+.brand-icon{fill:var(--brand)}
+.main-nav{margin-left:auto; display:flex; gap:16px}
+.main-nav a{color:var(--muted); text-decoration:none; padding:8px 10px; border-radius:10px}
+.main-nav a.active, .main-nav a:hover{color:var(--text); background:var(--panel); border:1px solid var(--border)}
+
+.menu-toggle{display:none; flex-direction:column; gap:4px; background:transparent; border:0}
+.menu-toggle span{width:22px; height:2px; background:var(--text); display:block}
+
+.layout{display:grid; grid-template-columns: 290px 1fr; gap:20px; padding:22px 0}
+@media (max-width: 900px){
+  .layout{grid-template-columns: 1fr}
+  .filters{position: sticky; top:64px}
+  .menu-toggle{display:flex}
+  .main-nav{display:none}
+}
+
+.filters{
+  background:var(--panel);
+  border:1px solid var(--border);
+  border-radius:16px;
+  padding:16px;
+  box-shadow: var(--shadow);
+}
+.filters__header{display:flex; justify-content:space-between; align-items:center; margin-bottom:8px}
+.filters h2{margin:0; font-size:18px}
+.field{display:flex; flex-direction:column; gap:8px; margin:14px 0}
+.field input[type="search"],
+.field input[type="number"],
+.field select{
+  appearance:none;
+  border:1px solid var(--border);
+  background:var(--surface);
+  color:var(--text);
+  padding:10px 12px;
+  border-radius:12px;
+  outline:0;
+}
+.field input[type="range"]{width:100%}
+.two-cols{display:grid; grid-template-columns:1fr 1fr; gap:12px}
+.label{color:var(--muted); font-size:13px}
+/* Fix inputs Precio mÃ­n / mÃ¡x */
+.two-cols label {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.two-cols input {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.check{display:flex; align-items:center; gap:8px; font-size:14px; color:var(--text)}
+
+.chipset{display:flex; flex-wrap:wrap; gap:8px}
+.chip{padding:8px 10px; background:var(--surface); border:1px solid var(--border); border-radius:999px; cursor:pointer; font-size:14px; color:var(--text)}
+.chip.active{background:linear-gradient(135deg, var(--brand) 0%, var(--brand-2) 100%); color:#0a0c12; font-weight:700; border-color:transparent}
+
+.btn{display:inline-flex; align-items:center; justify-content:center; gap:8px; border-radius:12px; padding:10px 14px; cursor:pointer; border:1px solid var(--border); background:var(--surface); color:var(--text)}
+.btn:hover{transform:translateY(-1px)}
+.btn-primary{background:linear-gradient(135deg, var(--brand) 0%, var(--brand-2) 100%); color:#0a0c12; border-color:transparent; font-weight:800}
+.btn-text{background:transparent; color:var(--muted); border-color:transparent; padding:6px 8px}
+
+.results{
+  background:linear-gradient(180deg, color-mix(in oklab, var(--panel) 94%, transparent) 0%, var(--panel) 100%);
+  border:1px solid var(--border);
+  border-radius:16px;
+  padding:16px;
+  box-shadow: var(--shadow);
+}
+.results__topbar{display:flex; align-items:center; justify-content:space-between; gap:12px}
+.summary{color:var(--muted)}
+.controls{display:flex; align-items:center; gap:10px}
+.compact select{min-width:210px}
+.icon-btn{display:inline-flex; align-items:center; justify-content:center; width:40px; height:40px; border-radius:12px; border:1px solid var(--border); background:var(--surface); cursor:pointer}
+.icon-btn.active{outline:2px solid color-mix(in oklab, var(--brand) 60%, var(--brand-2) 40%)}
+
+.cards{margin-top:14px}
+.cards.grid{display:grid; grid-template-columns: repeat(3, 1fr); gap:16px}
+@media (max-width: 1100px){
+  .cards.grid{grid-template-columns: repeat(2, 1fr)}
+}
+@media (max-width: 640px){
+  .cards.grid{grid-template-columns: 1fr}
+}
+
+.card{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:16px;
+  overflow:hidden;
+  display:grid;
+  grid-template-rows: 170px auto;
+  transition:transform .2s ease, box-shadow .2s ease;
+}
+.card:hover{transform:translateY(-2px); box-shadow: 0 12px 40px rgba(0,0,0,.5)}
+.card__media{
+  position:relative;
+  background:linear-gradient(135deg, rgba(110,231,249,.15), rgba(124,92,255,.15));
+}
+.card__img{
+  width:100%; height:100%; object-fit:cover; display:block;
+}
+.badge{
+  position:absolute; inset:auto 12px 12px auto;
+  background:#0a0c12d0; color:var(--text);
+  border:1px solid var(--border);
+  border-radius:8px; padding:6px 8px; font-size:12px
+}
+.card__body{padding:14px; display:flex; flex-direction:column; gap:10px}
+.card__title{display:flex; align-items:center; justify-content:space-between; gap:8px}
+.card__title h3{margin:0; font-size:18px}
+.price{font-weight:800; background:linear-gradient(135deg, var(--brand), var(--brand-2)); -webkit-background-clip:text; background-clip:text; color:transparent}
+.meta{display:flex; flex-wrap:wrap; gap:10px; color:var(--muted); font-size:13px}
+.amenities{display:flex; flex-wrap:wrap; gap:8px}
+.amenity{border:1px dashed var(--border); border-radius:8px; padding:6px 8px; font-size:12px; color:#c6d1e6}
+
+.actions{display:flex; align-items:center; justify-content:space-between; gap:8px; margin-top:6px}
+.actions .btn{flex:1}
+
+.rating{display:inline-flex; align-items:center; gap:6px}
+.rating .stars{display:inline-flex; gap:2px}
+.star{width:16px; height:16px; fill:gold}
+.distance{font-size:12px; color:var(--muted)}
+
+.cards.list .card{grid-template-columns: 200px 1fr; grid-template-rows: auto; min-height:200px}
+.cards.list .card__media{height:100%}
+.cards.list .card__body{gap:8px}
+
+.skeleton{
+  background: linear-gradient(100deg, rgba(255,255,255,.06) 20%, rgba(255,255,255,.12) 40%, rgba(255,255,255,.06) 60%);
+  background-size:200% 100%;
+  animation: shimmer 1.2s infinite;
+  border-radius:12px;
+}
+@keyframes shimmer{to{background-position-x:-200%}}
+
+.pagination{display:flex; justify-content:center; gap:8px; margin-top:18px}
+.page-btn{min-width:38px; height:38px; border-radius:10px; border:1px solid var(--border); background:var(--surface); color:var(--text); cursor:pointer}
+.page-btn.active, .page-btn:hover{outline:2px solid color-mix(in oklab, var(--brand) 60%, var(--brand-2) 40%)}
+
+.site-footer{padding:30px 0; color:var(--muted); text-align:center}
+
+.modal{border:0; padding:0; background:#0000}
+.modal::backdrop{background:rgba(0,0,0,.6); backdrop-filter: blur(2px)}
+.modal__content{background:var(--panel); border:1px solid var(--border); border-radius:16px; width:min(960px, 92vw); margin:auto; padding:0; overflow:hidden}
+.modal__close{position:absolute; margin:10px; right:0; background:#0000; border:0; font-size:28px; color:var(--muted); cursor:pointer}
+.modal__grid{display:grid; grid-template-columns: 1.3fr 1fr; gap:0}
+@media (max-width: 800px){ .modal__grid{grid-template-columns:1fr} }
+.modal__media{max-height:420px; overflow:hidden}
+.modal__media img{width:100%; height:100%; object-fit:cover}
+.modal__body{padding:16px; display:flex; flex-direction:column; gap:10px}
+.modal__body h3{margin:0 0 4px 0}
+.modal__amenities{display:flex; flex-wrap:wrap; gap:8px}
+
+.badge--new{border-color:var(--brand); color:var(--brand)}
+.badge--deal{border-color:var(--warn); color:var(--warn)}
+
+/* ===== Overrides tema claro para Listings (pegar al FINAL del CSS) ===== */
+
+/* Fuente como la pÃ¡gina principal */
+body{ font-family:'Poppins', sans-serif; }
+
+/* Paleta clara + acentos de tu sitio */
+:root{
+  --bg:#ffffff;
+  --panel:#ffffff;
+  --surface:#f9fafb;
+  --card:#ffffff;
+  --border:#e5e7eb;
+
+  --text:#1f2937;           /* texto oscuro */
+  --muted:#6b7280;          /* texto secundario */
+
+  --brand:#2091F9;          /* azul CTA de tu home */
+  --brand-2:#5454D4;        /* violeta de tu home */
+}
+
+/* Fondo blanco (quitamos los gradientes oscuros) */
+body{
+  background:#fff !important;
+  color:var(--text);
+}
+
+/* Header claro */
+.site-header{
+  background:#fff !important;
+  border-bottom:1px solid var(--border);
+  box-shadow: 0 4px 12px rgba(0,0,0,.06);
+}
+
+/* Controles / inputs con look claro */
+.field input[type="search"],
+.field input[type="number"],
+.field select{
+  background:#fff;
+  border:1px solid var(--border);
+  color:var(--text);
+}
+
+/* Tarjetas claras */
+.card{
+  background:#fff;
+  border:1px solid var(--border);
+  box-shadow: 0 6px 16px rgba(0,0,0,.06);
+}
+.card__media{ background:#f3f4f6; }
+
+/* Badges legibles en fondo claro */
+.badge{
+  background:rgba(255,255,255,.9);
+  color:var(--text);
+  border:1px solid var(--border);
+}
+
+/* Botones y acentos */
+.btn{ background:#fff; border:1px solid var(--border); color:var(--text); }
+.btn-primary{
+  background:linear-gradient(135deg, var(--brand), var(--brand-2));
+  color:#fff; border-color:transparent;
+}
+
+/* Vista / icon buttons */
+.icon-btn{ background:#fff; border:1px solid var(--border); }
+.icon-btn.active{ outline:2px solid var(--brand); }
+
+/* Panel de resultados */
+.results{
+  background:#fff;
+  border:1px solid var(--border);
+}
+
+/* Modal claro */
+.modal__content{ background:#fff; border:1px solid var(--border); }
+.modal::backdrop{ background:rgba(0,0,0,.5); }
+
+/* Precio con tu azul principal */
+.price{ color:var(--brand); -webkit-background-clip:initial; background-clip:initial; }
+
+/* Footer claro */
+.site-footer{ color:var(--muted); background:#fff; border-top:1px solid var(--border); }
+/* Quitar el fondo azul del precio en las tarjetas */
+.card .price{
+  background: none !important;
+  -webkit-background-clip: initial !important;
+  background-clip: initial !important;
+  color: var(--text) !important;   /* o var(--brand) si quieres el texto azul */
+}
+
+/* Opcional: hacer el “/mes” más suave */
+.card .price small{
+  color: var(--muted);
+  font-weight: 600;
+}
+
+
+/* === Mini-mapa en filtros === */
+.map-cta{
+  background:#fff;
+  border:1px solid var(--border);
+  border-radius:16px;
+  overflow:hidden;
+  box-shadow: var(--shadow);
+  margin-bottom:16px;
+}
+#mapMini{ height:160px; width:100%; }
+.map-btn{
+  width:calc(100% - 20px);
+  margin:10px;
+  border-radius:12px;
+}
+
+/* ===== Publicar Alojamiento (HABBI) ===== */
+.publish-wrap{ padding: 24px 0 40px; }
+.form-card{
+  background:#fff; border:1px solid #e5e7eb; border-radius:20px;
+  box-shadow:0 16px 40px rgba(0,0,0,.06);
+  overflow:hidden;
+}
+.form-head{
+  display:flex; justify-content:space-between; align-items:flex-start;
+  gap:14px; padding:18px 18px 0 18px;
+}
+.form-head h1{ margin:6px 0 0 0; font-size:24px; color:#1f2937 }
+.muted{ color:#6b7280; font-size:14px }
+
+.publish-form{ padding: 12px 18px 18px 18px; }
+.form-section{ border:1px solid #e5e7eb; border-radius:16px; padding:14px; margin:12px 0; background:#fafafa }
+.form-section h2{ margin:0 0 10px 0; font-size:18px; color:#1f2937 }
+
+.form-grid{ display:grid; grid-template-columns: 1fr 1fr; gap:12px }
+@media (max-width: 800px){ .form-grid{ grid-template-columns: 1fr } }
+
+.field{ display:flex; flex-direction:column; gap:8px }
+.field input[type="text"],
+.field input[type="number"],
+.field select,
+.field textarea{
+  appearance:none; border:1px solid #e5e7eb; background:#fff; color:#1f2937;
+  padding:12px; border-radius:12px; outline:0; width:100%;
+}
+.field textarea{ resize: vertical }
+
+.chipset{ display:flex; flex-wrap:wrap; gap:8px }
+.chip{
+  display:inline-flex; align-items:center; gap:6px;
+  padding:8px 10px; background:#fff; border:1px solid #e5e7eb; border-radius:999px; cursor:pointer; color:#1f2937;
+}
+.chip input{ accent-color:#2091F9 }
+
+.uploader{
+  border:2px dashed #e5e7eb; background:#fff; padding:14px; border-radius:12px;
+  display:grid; gap:6px
+}
+
+.form-actions{ display:flex; gap:10px; justify-content:flex-end; margin-top:10px }
+
+
+/* ======== HABBI – Auth 2 columnas con panel lateral, tabs e iconos ======== */
+:root{
+  --auth-brand:#2091F9; --auth-brand-2:#5454D4;
+  --auth-text:#1f2937; --auth-muted:#6b7280;
+  --auth-border:#e5e7eb; --auth-surface:#ffffff;
+  --auth-bg:#f6f8fb; --auth-shadow:0 20px 60px rgba(0,0,0,.10);
+}
+
+.auth-wrap{
+  min-height:100vh; display:grid; place-items:center; padding:40px 16px;
+  background:
+    radial-gradient(900px 400px at 0% -20%, rgba(32,145,249,.12), transparent 60%),
+    radial-gradient(900px 400px at 120% 0%, rgba(84,84,212,.12), transparent 60%),
+    var(--auth-bg);
+  font-family:'Poppins', system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+}
+.auth-card{
+  width:min(960px, 100%);
+  background:var(--auth-surface);
+  border:1px solid var(--auth-border);
+  border-radius:22px; overflow:hidden;
+  display:grid; grid-template-columns:1.08fr 1fr;
+  box-shadow:var(--auth-shadow);
+  animation:authFade .45s ease;
+}
+@keyframes authFade{ from{opacity:.0; transform: translateY(10px)} to{opacity:1; transform:none} }
+@media (max-width:900px){ .auth-card{ grid-template-columns:1fr } }
+
+/* — Lado ilustración / marca — */
+.auth-side{
+  background:linear-gradient(135deg, var(--auth-brand), var(--auth-brand-2));
+  color:#fff; padding:38px; display:grid; align-content:center; gap:18px; position:relative;
+  isolation:isolate;
+}
+.auth-side::after{
+  content:""; position:absolute; inset:auto -60px -60px auto; width:240px; height:240px; border-radius:50%;
+  background:radial-gradient(circle at 30% 30%, rgba(255,255,255,.35), rgba(255,255,255,0));
+  filter:blur(10px); z-index:-1;
+}
+.auth-brand{display:flex; align-items:center; gap:12px; text-decoration:none; color:#fff; font-weight:800; letter-spacing:.3px}
+.auth-brand svg{width:28px; height:28px}
+.auth-side h2{margin:6px 0 0; font-size:28px; line-height:1.15}
+.auth-side p{margin:0; opacity:.95}
+
+/* — Lado formularios — */
+.auth-main{ padding:28px 24px; display:grid; align-content:start }
+.auth-tabs{
+  display:flex; gap:8px; background:#f3f4f6; border-radius:14px; padding:6px; width:max-content
+}
+.auth-tab-btn{
+  border:0; background:#0000; padding:10px 16px; border-radius:10px; cursor:pointer;
+  color:var(--auth-muted); font-weight:700; letter-spacing:.2px;
+}
+.auth-tab-btn.active{ background:#fff; color:var(--auth-text); box-shadow:0 2px 10px rgba(0,0,0,.06) }
+
+.auth-alert{
+  margin-top:12px; padding:10px 12px; border-radius:12px; border:1px solid #fee2e2;
+  color:#991b1b; background:#fff; display:block;
+}
+.auth-alert[hidden]{ display:none }
+
+.auth-form{ display:none; margin-top:18px }
+.auth-form.active{ display:block }
+
+.auth-field{ display:grid; gap:8px; margin:12px 0 }
+.auth-label{ font-size:13px; color:var(--auth-muted) }
+
+.auth-control{
+  display:flex; align-items:center; gap:10px;
+  border:1px solid var(--auth-border); background:#fff;
+  border-radius:12px; padding:12px 12px; transition:border-color .2s, box-shadow .2s;
+}
+.auth-control:focus-within{ border-color:var(--auth-brand); box-shadow:0 0 0 3px rgba(32,145,249,.16) }
+.auth-control input{
+  border:0; outline:0; width:100%; font:inherit; background:#0000; color:var(--auth-text);
+}
+.auth-control svg{ width:20px; height:20px; color:#9ca3af; flex:0 0 auto }
+.auth-eye{ cursor:pointer; border:0; background:#0000; font-size:16px; line-height:1 }
+
+.auth-row{ display:flex; justify-content:flex-end; align-items:center; gap:12px; margin:6px 0 2px }
+.auth-row a{ font-size:13px; color:var(--auth-brand); text-decoration:none }
+.auth-row a:hover{ text-decoration:underline }
+
+.auth-btn{
+  width:100%; border:0; cursor:pointer; border-radius:12px; padding:12px 16px; font-weight:800;
+  background:linear-gradient(135deg, var(--auth-brand), var(--auth-brand-2));
+  color:#fff; box-shadow:0 10px 24px rgba(32,145,249,.22);
+  transition: transform .12s ease, box-shadow .12s ease;
+}
+.auth-btn:hover{ transform: translateY(-1px); box-shadow:0 14px 30px rgba(32,145,249,.28) }
+
+.auth-note{ margin-top:10px; font-size:13px; color:var(--auth-muted) }
+.auth-note a{ color:var(--auth-brand-2); text-decoration:none; font-weight:700 }
+.auth-note a:hover{ text-decoration:underline }
+
+/* Ajustes responsive del panel lateral */
+@media (max-width:900px){ .auth-side{ display:none } }
+
+/* Micro ajustes visuales para formularios en PHP existentes */
+.auth__wrap{ width:min(920px,92%); margin:auto }
+.auth__card{ max-width:none; } /* permitimos ancho del layout nuevo */
+
+/* nav bar */
+/* === Dropdown de usuario (usa el mismo esquema oscuro de tu header) === */
+.user-menu { position: relative; }
+
+.user-btn {
+  background: none;
+  border: 0;
+  font: inherit;
+  color: #0d0d0d;
+  display: inline-flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.user-dropdown{
+  position: absolute;
+  top: 110%;
+  right: 0;
+  min-width: 200px;
+  background: #ffffff; /* oscuro */
+  border: 1px solid rgba(255,255,255,.08);
+  border-radius: 10px;
+  box-shadow: 0 12px 30px rgba(0,0,0,.35);
+  padding: 6px 0;
+  display: none;
+  z-index: 200;
+}
+
+.user-dropdown .user-item{
+  display: block;
+  width: 100%;
+  padding: 10px 14px;
+  color: #0c0c0c;
+  text-decoration: none;
+  text-align: left;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  font: inherit;
+}
+
+.user-dropdown .user-item:hover{
+  background: rgba(255,255,255,.08);
+}
+
+.user-dropdown .user-logout{
+  width: 100%;
+  text-align: left;
+}
+
+/* en móviles el menú ocupa toda la pantalla; pegamos el dropdown debajo del botón */
+@media (max-width:800px){
+  .user-dropdown{
+    position: static;
+    width: 100%;
+    border: 0;
+    border-top: 1px solid rgba(255,255,255,.15);
+    border-radius: 0;
+    box-shadow: none;
+    background: transparent;
+    display: none; /* se controla por JS igualmente */
+  }
+  .user-dropdown .user-item:hover{
+    background: rgba(255,255,255,.12);
+  }
+}
+
+/* Permitir que el dropdown “se salga” del header sin recortarse */
+.nav.container,
+.hero .container,
+.header-inner{
+  overflow: visible !important;
+  position: relative;           /* crea contexto para z-index */
+  z-index: 30;
+}
+
+/* Asegura que el dropdown quede por encima de todo */
+.user-dropdown{
+  z-index: 9999 !important;
+}
+
+/* Por si algún contenedor padre también recortaba */
+.nav,
+.nav__link,
+.nav__link--menu,
+.user-menu{
+  overflow: visible !important;
+}
+
+/* Mostrar detalles de alojamientos */
+  /* ====== Layout tipo Amazon ====== */
+    .detail-wrap{ --gap:24px; width:90%; max-width:1200px; margin:40px auto 60px; display:grid; grid-template-columns: 1.1fr 1.2fr 0.8fr; gap: var(--gap) }
+    .detail-gallery{ display:grid; grid-template-columns: 90px 1fr; gap:14px; align-content:start }
+    .thumbs{ display:flex; flex-direction:column; gap:10px; max-height:520px; overflow:auto }
+    .thumb{ border:1px solid #e5e7eb; border-radius:10px; overflow:hidden; background:#fff; cursor:pointer }
+    .thumb img{ width:100%; height:80px; object-fit:cover; display:block }
+    .thumb.active{ outline:2px solid #2091F9 }
+    .main-photo{ border:1px solid #e5e7eb; border-radius:12px; background:#fff; aspect-ratio:4/3; display:grid; place-items:center; overflow:hidden }
+    .main-photo img{ width:100%; height:100%; object-fit:cover }
+
+    .detail-info{ display:grid; align-content:start; gap:10px }
+    .detail-title{ font-size:1.6rem; color:#1f2937; margin:0 }
+    .detail-meta{ color:#6b7280; font-size:.95rem }
+    .amenities{ display:flex; flex-wrap:wrap; gap:8px; margin-top:6px }
+    .amenity{ border:1px dashed #e5e7eb; border-radius:999px; padding:6px 10px; font-size:.85rem; color:#374151; background:#fff }
+
+    .detail-aside{ position:sticky; top:16px; align-self:start }
+    .action-card{ border:1px solid #e5e7eb; border-radius:14px; background:#fff; padding:14px; box-shadow:0 10px 30px rgba(0,0,0,.06) }
+    .price{ font-size:1.4rem; font-weight:800; color:#646464 }
+    .muted{ color:#6b7280; font-size:.9rem }
+    .btn{ display:inline-flex; align-items:center; justify-content:center; gap:8px; border-radius:12px; padding:12px 14px; cursor:pointer; border:1px solid #e5e7eb; background:#fff; color:#1f2937; width:100% }
+    .btn-primary{ background:linear-gradient(135deg, #2091F9, #5454D4); color:#fff; border-color:transparent; font-weight:800 }
+    .btn + .btn{ margin-top:10px }
+
+    /* Normaliza la paginación Tailwind sin Tailwind */
+.pagination nav { display:flex; justify-content:center; margin-top:18px; }
+
+/* La vista envuelve así: nav > div > (a|span) > span */
+.pagination nav > div { display:flex; gap:8px; }
+
+.pagination nav > div > a,
+.pagination nav > div > span {
+  display:inline-flex; align-items:center; justify-content:center;
+  min-width:36px; height:36px; padding:0 .6rem;
+  border:1px solid var(--border); border-radius:10px;
+  background:#fff; color:var(--text); line-height:1;
+}
+
+/* Quita estilos de los spans internos que causan los “fantasmas” */
+.pagination nav a > span,
+.pagination nav span > span {
+  all: unset;
+}
+
+/* Cheurones pequeños */
+.pagination nav svg { width:18px; height:18px; }
+
+/* Opcional: ocultar “Showing X to Y…” */
+.pagination nav p { display:none; }
+/* Oculta los números del paginador (solo deja Anterior y Siguiente) */
+.pagination nav > div > a:not(:first-child):not(:last-child),
+.pagination nav > div > span:not(:first-child):not(:last-child) {
+  display: none !important;
+}
+/* Keep only « Anterior / Siguiente » from Laravel Tailwind paginator */
+.pagination nav .flex-1.sm\:hidden {        /* mobile block */
+  display: flex !important;
+}
+
+/* Hide the desktop block that shows numbers + chevrons */
+.pagination nav .hidden.sm\:flex-1.sm\:flex,
+.pagination nav .relative.z-0.inline-flex {
+  display: none !important;
+}
+
+/* Optional: hide the “Showing X to Y” text if present */
+.pagination nav p { display: none !important; }
+/* ==== Quitar cualquier fondo azul del precio, en todos lados ==== */
+.price,
+.price * {
+  background: none !important;
+  background-image: none !important;
+  -webkit-background-clip: initial !important;
+  background-clip: initial !important;
+  color: var(--text) !important; /* o var(--brand) si lo quieres azul de texto */
+}
+
+/* Si algún pseudo-elemento hacía la franja */
+.price::before,
+.price::after {
+  content: none !important;
+  background: none !important;
+}
+
+/* Por si el fondo está en un contenedor con nombre tipo “price-…” */
+[class*="price"],
+[class*="price"] * {
+  background: none !important;
+  background-image: none !important;
+}
+
+/* Y los pseudo-elementos de esos contenedores */
+[class*="price"]::before,
+[class*="price"]::after {
+  content: none !important;
+  background: none !important;
+}
+
+/* Quitar cualquier fondo/degradado del precio en cards y detalle */
+.price,
+.price * {
+  background: none !important;
+  background-image: none !important;
+  -webkit-background-clip: initial !important;
+  background-clip: initial !important;
+  color: var(--text) !important; /* o var(--brand) si lo quieres en azul texto */
+}
+.price::before,
+.price::after { content: none !important; background: none !important; }
+
+/* Alert simple para mensajes flash */
+.alert-success{
+  margin:12px 0; padding:10px 12px; border-radius:10px;
+  background:#ecfdf5; color:#065f46; border:1px solid #a7f3d0;
+}
+/* =========================================
+   VER ALOJAMIENTO (DETALLE PROFESIONAL)
+   ========================================= */
+.detail-wrap{
+  --gap:28px;
+  width:min(1200px, 94%);
+  margin:34px auto 60px;
+  display:grid;
+  grid-template-columns: 1.15fr 1.25fr 0.85fr;
+  gap:var(--gap);
+}
+
+@media (max-width: 1100px){
+  .detail-wrap{
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Galería */
+.detail-gallery{
+  display:grid;
+  grid-template-columns: 92px 1fr;
+  gap:14px;
+  align-content:start;
+}
+
+@media (max-width: 640px){
+  .detail-gallery{
+    grid-template-columns: 1fr;
+  }
+}
+
+.thumbs{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+  max-height:520px;
+  overflow:auto;
+  padding-right:4px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
+}
+.thumbs::-webkit-scrollbar { width: 8px; }
+.thumbs::-webkit-scrollbar-thumb { background: var(--border); border-radius: 8px; }
+
+.thumb{
+  border:1px solid var(--border);
+  border-radius:12px;
+  overflow:hidden;
+  background:#fff;
+  cursor:pointer;
+  transition:transform .12s ease, box-shadow .12s ease, border-color .12s ease;
+}
+.thumb:hover{
+  transform: translateY(-2px);
+  box-shadow: 0 10px 22px rgba(0,0,0,.06);
+  border-color: color-mix(in oklab, var(--brand) 40%, var(--border) 60%);
+}
+.thumb img{
+  width:100%; height:82px; object-fit:cover; display:block;
+}
+.thumb.active{ outline:2px solid var(--brand); }
+
+/* Foto principal */
+.main-photo{
+  position:relative;
+  border:1px solid var(--border);
+  border-radius:16px;
+  background:#fff;
+  aspect-ratio:4/3;
+  display:grid; place-items:center; overflow:hidden;
+  box-shadow: 0 14px 36px rgba(0,0,0,.06);
+}
+.main-photo img{ width:100%; height:100%; object-fit:cover; display:block; }
+.main-photo::after{
+  content:"";
+  position:absolute; inset:auto 10px 10px auto;
+  background: rgba(255,255,255,.92);
+  border:1px solid var(--border);
+  padding:6px 10px; font-size:12px; border-radius:10px;
+  color: var(--muted);
+}
+
+/* Info */
+.detail-info{
+  display:grid; align-content:start; gap:14px;
+}
+.detail-title{
+  font-size:1.8rem; color:var(--text); margin:0;
+  letter-spacing:.2px;
+}
+.detail-meta{
+  color:var(--muted); font-size:.98rem; display:flex; flex-wrap:wrap; gap:10px;
+}
+.detail-meta .dot::before{
+  content:"·"; margin:0 6px; color: var(--border);
+}
+
+/* Chips de amenidades */
+.amenities{ display:flex; flex-wrap:wrap; gap:8px; margin-top:2px; }
+.amenity{
+  display:inline-flex; align-items:center; gap:6px;
+  border:1px dashed var(--border);
+  border-radius:999px; padding:7px 10px; font-size:.88rem;
+  color:#374151; background:#fff;
+}
+.amenity::before{
+  content:""; width:6px; height:6px; border-radius:50%;
+  background: color-mix(in oklab, var(--brand) 70%, #fff 30%);
+  display:inline-block;
+}
+
+/* Aside de acciones (sticky) */
+.detail-aside{ position:sticky; top:18px; align-self:start; height:max-content; }
+.action-card{
+  border:1px solid var(--border); border-radius:16px; background:#fff;
+  padding:16px; box-shadow: 0 14px 40px rgba(0,0,0,.06);
+}
+.action-card .price{
+  font-size:1.6rem; font-weight:800; color:#1f2937;
+  margin-bottom:6px;
+}
+.action-card .muted{ color:var(--muted); }
+.action-card .btn{
+  width:100%;
+  border-radius:12px; padding:12px 14px; margin-top:8px;
+  border:1px solid var(--border); background:#fff; color:#1f2937;
+  transition: transform .12s ease, box-shadow .12s ease;
+}
+.action-card .btn:hover{
+  transform: translateY(-1px);
+  box-shadow: 0 12px 24px rgba(0,0,0,.06);
+}
+.action-card .btn-primary{
+  background:linear-gradient(135deg, var(--brand), var(--brand-2));
+  color:#fff; border-color:transparent; font-weight:800;
+  box-shadow: 0 12px 28px color-mix(in oklab, var(--brand) 30%, black 70%, 20%);
+}
+
+/* Bloques de sección */
+.detail-section{
+  border:1px solid var(--border); border-radius:14px; background:#fff;
+  padding:14px; box-shadow: 0 8px 22px rgba(0,0,0,.04);
+}
+.detail-section h3{ margin:0 0 6px 0; font-size:1.1rem; color:#111827; }
+
+/* Enlaces en info */
+.detail-info a{
+  color: var(--brand);
+  text-decoration: none;
+  border-bottom: 1px dotted color-mix(in oklab, var(--brand) 60%, transparent);
+}
+.detail-info a:hover{ text-decoration: underline; }
+
+/* Precio sin degradado (por si acaso) */
+.detail-aside .price,
+.detail-aside .price *{
+  background:none !important; background-image:none !important;
+  -webkit-background-clip: initial !important;
+  background-clip: initial !important;
+  color:#111827 !important;
+}
+
+/* =========================================
+   EDITAR ALOJAMIENTO (FORM ESTÉTICO)
+   ========================================= */
+.publish-wrap{ padding: 28px 0 46px; }
+.form-card{
+  background:#fff; border:1px solid var(--border); border-radius:22px;
+  box-shadow: 0 18px 50px rgba(0,0,0,.06);
+  overflow:hidden;
+}
+.form-head{
+  display:flex; justify-content:space-between; align-items:flex-start;
+  gap:14px; padding:20px 20px 0 20px;
+}
+.form-head h1{
+  margin:6px 0 0 0; font-size:26px; color:#111827; letter-spacing:.2px;
+}
+.form-head .muted{ color:var(--muted); font-size:14px }
+
+/* Bloques del formulario */
+.publish-form{ padding: 14px 20px 20px 20px; }
+.form-section{
+  border:1px solid var(--border); border-radius:16px; padding:14px; margin:12px 0; background:#fafafa;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.7);
+}
+.form-section h2{ margin:0 0 10px 0; font-size:18px; color:#1f2937 }
+
+/* Grid y campos */
+.form-grid{ display:grid; grid-template-columns: 1fr 1fr; gap:14px }
+@media (max-width: 900px){ .form-grid{ grid-template-columns: 1fr } }
+
+.field{ display:flex; flex-direction:column; gap:8px }
+.field .label{ color:#6b7280; font-size:13px; font-weight:600; letter-spacing:.2px; }
+.field input[type="text"],
+.field input[type="number"],
+.field input[type="file"],
+.field select,
+.field textarea{
+  appearance:none;
+  border:1px solid var(--border);
+  background:#fff;
+  color:#111827;
+  padding:12px 12px;
+  border-radius:12px;
+  outline:0;
+  width:100%;
+  transition: border-color .15s ease, box-shadow .15s ease, transform .06s ease;
+}
+.field textarea{ resize: vertical }
+.field input:focus,
+.field select:focus,
+.field textarea:focus{
+  border-color: color-mix(in oklab, var(--brand) 60%, var(--border) 40%);
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--brand) 18%, transparent);
+  transform: translateY(-1px);
+}
+
+/* Chips de amenities */
+.chipset{ display:flex; flex-wrap:wrap; gap:8px }
+.chip{
+  display:inline-flex; align-items:center; gap:6px;
+  padding:8px 10px; background:#fff; border:1px solid var(--border);
+  border-radius:999px; cursor:pointer; color:#1f2937;
+  transition: transform .12s ease, box-shadow .12s ease, border-color .12s ease;
+}
+.chip:hover{
+  transform: translateY(-1px);
+  box-shadow: 0 10px 20px rgba(0,0,0,.06);
+  border-color: color-mix(in oklab, var(--brand) 40%, var(--border) 60%);
+}
+.chip input{ accent-color: var(--brand); }
+
+/* Mini-galería dentro del edit */
+.thumbs.inline{
+  display:flex; flex-wrap:wrap; gap:10px; max-height:none; padding:4px 0;
+}
+.thumbs.inline .thumb{
+  width:120px; border-radius:12px; background:#fff; border:1px solid var(--border);
+}
+.thumbs.inline .thumb img{ height:84px; object-fit:cover; width:100%; display:block; }
+.thumbs.inline .thumb small{
+  display:block; text-align:center; padding:6px 0 8px; color:#6b7280;
+}
+
+/* Acciones */
+.form-actions{
+  display:flex; gap:10px; justify-content:flex-end; margin-top:12px;
+}
+.form-actions .btn{
+  border:1px solid var(--border); background:#fff; color:#111827;
+  border-radius:12px; padding:12px 14px; cursor:pointer;
+  transition: transform .12s ease, box-shadow .12s ease;
+}
+.form-actions .btn:hover{
+  transform: translateY(-1px);
+  box-shadow: 0 12px 24px rgba(0,0,0,.06);
+}
+.form-actions .btn-primary{
+  background:linear-gradient(135deg, var(--brand), var(--brand-2));
+  color:#fff; border-color:transparent; font-weight:800;
+  box-shadow: 0 12px 28px color-mix(in oklab, var(--brand) 30%, black 70%, 20%);
+}
+
+/* Mensajes */
+.alert-success{
+  margin:12px 0; padding:10px 12px; border-radius:10px;
+  background:#ecfdf5; color:#065f46; border:1px solid #a7f3d0;
+}
+
+/* Precio sin degradado (global por si se cuela) */
+.price,
+.price *{
+  background:none !important; background-image:none !important;
+  -webkit-background-clip: initial !important; background-clip: initial !important;
+  color: var(--text) !important;
+}
+.price small{ color: var(--muted); font-weight:600; }
+
