@@ -1,3 +1,5 @@
+# HABBI – Plataforma de Alojamiento Estudiantil
+
 <p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
 
 <p align="center">
@@ -7,60 +9,96 @@
 <a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
 </p>
 
-## About Laravel
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+HABBI es una plataforma desarrollada para facilitar la búsqueda, gestión y publicación de alojamientos estudiantiles. Permite que estudiantes encuentren opciones de vivienda cercanas a sus universidades, mientras que arrendadores pueden administrar sus propiedades de manera sencilla.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## 🚀 Tecnologías Utilizadas
+- **PHP 8+**
+- **Laravel** (Framework principal)
+- **MySQL / MariaDB**
+- **Blade Templates**
+- **Composer**
+- **JavaScript / Node.js**
+- **CSS / Tailwind o Bootstrap** (dependiendo del proyecto)
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+## 📂 Estructura del Proyecto
+- **app/** – Lógica principal del backend, controladores, modelos.
+- **bootstrap/** – Inicialización del framework.
+- **config/** – Configuraciones generales.
+- **database/** – Migraciones, seeders y factories.
+- **public/** – Archivos públicos (CSS, JS, imágenes).
+- **resources/** – Vistas Blade, assets.
+- **routes/** – Rutas web y API.
+- **storage/** – Archivos generados, logs, caché.
+- **vendor/** – Dependencias instaladas vía Composer.
 
-## Learning Laravel
+## 🛠 Instalación
+Sigue los pasos para instalar el proyecto localmente.
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+### 1. Clonar el repositorio
+```bash
+git clone https://github.com/Jhon-Gonzzalez/habbi-platform.git
+cd habbi-platform
+```
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+### 2. Instalar dependencias
+```bash
+composer install
+npm install
+```
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+### 3. Crear archivo .env
+```bash
+cp .env.example .env
+```
+Configura tu base de datos en el `.env`:
+```
+DB_DATABASE=habbi
+DB_USERNAME=root
+DB_PASSWORD=
+```
 
-## Laravel Sponsors
+### 4. Generar la llave de la app
+```bash
+php artisan key:generate
+```
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+### 5. Migrar base de datos
+```bash
+php artisan migrate --seed
+```
 
-### Premium Partners
+### 6. Iniciar servidor
+```bash
+php artisan serve
+```
+Accede en tu navegador a:
+```
+http://127.0.0.1:8000
+```
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+## 🌟 Funcionalidades Principales
+- Registro y autenticación de estudiantes y arrendadores.
+- Publicación de alojamientos.
+- Buscador de habitaciones y apartamentos.
+- Gestión de propiedades.
+- Sistema de favoritos.
+- Panel administrativo.
 
-## Contributing
+## 🧪 Tests
+```bash
+php artisan test
+```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+## 📌 Estado del Proyecto
+En desarrollo activo.
 
-## Code of Conduct
+## 🤝 Contribuciones
+Las contribuciones son bienvenidas. Para contribuir:
+1. Crea un fork.
+2. Crea una rama nueva.
+3. Envía tu pull request.
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
 
-## Security Vulnerabilities
-
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
-
-## License
-
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+---
+Creado por **Jhon González** ✨
