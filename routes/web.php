@@ -40,3 +40,11 @@ Route::get('/alojamientos', [AlojamientoController::class, 'index'])->name('aloj
 Route::get('/alojamientos/{alojamiento}', [AlojamientoController::class, 'show'])
     ->whereNumber('alojamiento')
     ->name('alojamientos.show');
+
+/* ===== Estrellas de las pensioens ===== */
+ use App\Http\Controllers\RatingController;
+
+Route::post('/ratings/{alojamiento}', [RatingController::class, 'store'])
+    ->name('ratings.store')
+    ->middleware('auth');
+

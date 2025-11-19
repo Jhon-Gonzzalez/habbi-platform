@@ -41,7 +41,18 @@ body{
 .brand{display:flex; align-items:center; gap:10px; text-decoration:none; color:var(--text); font-weight:700; letter-spacing:.2px}
 .brand-icon{fill:var(--brand)}
 .main-nav{margin-left:auto; display:flex; gap:16px}
-.main-nav a{color:var(--muted); text-decoration:none; padding:8px 10px; border-radius:10px}
+.main-nav a{
+  color:var(--muted);
+  text-decoration:none;
+  padding:10px 14px;
+  border-radius:10px;
+  font-size:15px;
+  font-weight:500;
+  line-height:1;
+  display:flex;
+  align-items:center;
+}
+
 .main-nav a.active, .main-nav a:hover{color:var(--text); background:var(--panel); border:1px solid var(--border)}
 
 .menu-toggle{display:none; flex-direction:column; gap:4px; background:transparent; border:0}
@@ -295,21 +306,57 @@ body{
 }
 
 
-/* === Mini-mapa en filtros === */
-.map-cta{
-  background:#fff;
-  border:1px solid var(--border);
-  border-radius:16px;
-  overflow:hidden;
-  box-shadow: var(--shadow);
-  margin-bottom:16px;
+/* ==== FIX DEFINITIVO PARA QUE EL MINI-MAPA NO CORTÉ EL HEADER ==== */
+.filters .mini-map-wrapper {
+    margin-top: 0 !important;      /* evita que suba hacia el header */
+    margin-bottom: 16px;           /* separa del resto de filtros */
+    
+    width: 100%;
+    height: 170px;
+    border-radius: 14px;
+    overflow: hidden;
+    background: #fff;
+    border: 1px solid var(--border);
+    box-shadow: 0 6px 20px rgba(0,0,0,.08);
 }
-#mapMini{ height:160px; width:100%; }
-.map-btn{
-  width:calc(100% - 20px);
-  margin:10px;
-  border-radius:12px;
+
+/* Asegurar que el mapa SIEMPRE tenga altura */
+#mapMini {
+    width: 100%;
+    height: 100%;
+    display: block;
 }
+
+/* (Muy importante) Los filtros NO deben cortar nada */
+.filters {
+    overflow: visible !important;
+    position: relative;
+    z-index: 1;
+}
+
+/* ==== FIX PARA LA LÍNEA VACÍA DEL MINI MAPA ==== */
+.mini-map-wrapper {
+    display: block;
+    padding: 0;
+    margin: 0 0 16px 0;
+    line-height: 0 !important;   /* elimina la línea fantasma */
+    height: 180px !important;    /* altura firme */
+    border-radius: 14px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    background: #fff;
+    box-shadow: 0 6px 20px rgba(0,0,0,.08);
+}
+
+#mapMini {
+    width: 100%;
+    height: 100% !important;     /* ocupa todo el contenedor */
+    display: block !important;   /* elimina espacio extra */
+    line-height: 0 !important;
+}
+
+
+
 
 /* ===== Publicar Alojamiento (HABBI) ===== */
 .publish-wrap{ padding: 24px 0 40px; }
@@ -464,14 +511,19 @@ body{
 .user-menu { position: relative; }
 
 .user-btn {
-  background: none;
-  border: 0;
-  font: inherit;
-  color: #0d0d0d;
+  color: var(--muted);
+  text-decoration: none;
+  padding: 8px 10px;
+  border-radius: 10px;
   display: inline-flex;
   align-items: center;
+  gap: 6px;
+  background: transparent;
+  border: 0;
   cursor: pointer;
 }
+
+
 
 .user-dropdown{
   position: absolute;
@@ -944,3 +996,144 @@ body{
 }
 .price small{ color: var(--muted); font-weight:600; }
 
+
+
+/* ============================
+   HABBI NAVBAR REESTILIZADO 
+   Similar al navbar del héroe
+============================ */
+
+.habbi-header {
+    background: #fff;
+    border-bottom: 1px solid #e5e7eb;
+    padding: 6px 0;
+}
+
+.habbi-nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 50px;
+}
+
+/* Logo */
+.brand-logo-nav {
+    height: 95px;
+    width: auto;
+}
+
+/* UL + enlaces */
+.nav-links {
+    list-style: none;
+    display: flex;
+    align-items: center;
+    gap: 2.2rem;
+    margin: 0;
+    padding: 0;
+}
+
+.nav-links li {
+    list-style: none; /* QUITA LOS PUNTOS FEOS */
+}
+
+.nav-links a {
+    text-decoration: none;
+    color: #1f2937;
+    font-size: 0.95rem;
+    font-weight: 500;
+    padding: 8px 4px;
+    border-radius: 6px;
+    transition: 0.25s;
+}
+
+/* Hover */
+.nav-links a:hover {
+    color: #2091F9;
+}
+
+/* ACTIVO igual que tu ejemplo */
+.nav-links a.active {
+    color: #2091F9;
+    font-weight: 700;
+    position: relative;
+}
+
+.nav-links a.active::after {
+    content: "";
+    position: absolute;
+    bottom: -4px;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    border-radius: 2px;
+    background: #2091F9;
+}
+
+/* USUARIO */
+.user-btn-nav {
+    background: none;
+    border: none;
+    color: #1f2937;
+    display: flex;
+    align-items: center;
+    font-size: 1.0rem;
+    cursor: pointer;
+}
+
+/* Dropdown */
+.user-dropdown {
+    position: absolute;
+    top: 110%;
+    right: 0;
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    box-shadow: 0 12px 30px rgba(0,0,0,.15);
+    display: none;
+    padding: 6px 0;
+    z-index: 9999;
+}
+
+.user-dropdown li a,
+.user-dropdown .user-item {
+    display: block;
+    padding: 10px 16px;
+    color: #1f2937;
+    text-decoration: none;
+}
+
+.user-dropdown li a:hover,
+.user-dropdown .user-item:hover {
+    background: #f3f4f6;
+}
+
+/* Toggle móvil */
+.nav-toggle {
+    display: none;
+    cursor: pointer;
+}
+
+@media (max-width: 900px) {
+    .nav-toggle {
+        display: block;
+    }
+
+    .nav-links {
+        position: fixed;
+        top: 0;
+        right: 0;
+        height: 100vh;
+        width: 70%;
+        background: #fff;
+        flex-direction: column;
+        gap: 2.5rem;
+        padding-top: 80px;
+        transform: translateX(100%);
+        transition: .4s;
+        box-shadow: -6px 0 20px rgba(0,0,0,.12);
+    }
+
+    .nav-links.show {
+        transform: translateX(0);
+    }
+}

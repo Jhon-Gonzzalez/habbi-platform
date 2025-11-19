@@ -7,9 +7,7 @@
   <link rel="shortcut icon" href="{{ asset('assets/img/images/Icono.png') }}" type="image/x-icon">
   <link rel="stylesheet" href="{{ asset('assets/styles.css') }}">
   <style>
-  
 
-    /* Responsive */
     @media (max-width: 1000px){
       .detail-wrap{ grid-template-columns: 1fr; }
       .detail-aside{ position:static }
@@ -17,6 +15,9 @@
   </style>
 </head>
 <body>
+
+
+
 <header class="site-header">
     <div class="container header-inner">
       <a class="brand" href="{{ route('home') }}" aria-label="Ir a página principal">
@@ -31,8 +32,7 @@
         <a class="active" href="{{ route('alojamiento.index') }}">Alojamientos</a>
         <a href="#ayuda">Ayuda</a>
 
-        {{-- === Usuario === --}}
-  @auth
+        @auth
     <a class="nav__items user-menu">
       <button class="nav__links user-btn" id="userMenuBtn" type="button">
          {{ Auth::user()->name }}
@@ -51,22 +51,21 @@
           </form>
         </li>
       </ul>
-    </li>
+    </a>
   @else
-    <li>
-      <a href="{{ route('login') }}" class="nav__links">Iniciar sesión</a>
-    </li>
+    <a href="{{ route('login') }}" class="nav__links">Iniciar sesión</a>
   @endauth
-</a>
       </nav>
 
       <button class="menu-toggle" aria-label="Abrir menú" id="menuToggle">
         <span></span><span></span><span></span>
       </button>
     </div>
-  </header>
-  <main class="detail-wrap">
-    {{-- Columna 1: Galería --}}
+</header>
+
+<main class="detail-wrap">
+
+    {{-- Galería --}}
     <section class="detail-gallery">
       <div class="thumbs" id="thumbs">
         @foreach($photoUrls as $i => $url)
@@ -77,17 +76,26 @@
       </div>
 
       <div class="main-photo" id="mainPhoto">
-        @if(count($photoUrls))
-          <img src="{{ $photoUrls[0] }}" alt="Portada de {{ $a->title }}">
-        @else
-          <img src="{{ asset('assets/img/images/no-image.png') }}" alt="Sin imagen">
-        @endif
+        <img src="{{ $photoUrls[0] ?? asset('assets/img/images/no-image.png') }}" alt="Foto principal">
       </div>
     </section>
 
-    {{-- Columna 2: Información --}}
+    {{-- Información --}}
     <section class="detail-info">
+
       <h1 class="detail-title">{{ $a->title }}</h1>
+
+      {{-- ⭐⭐⭐⭐⭐ ESTRELLAS (PASO 7) --}}
+      <div style="display:flex; align-items:center; gap:8px; margin:10px 0;">
+          {!! renderStars($a->averageRating()) !!}
+          <span style="font-weight:600; color:#333;">
+              {{ number_format($a->averageRating(), 1) }}
+          </span>
+          <span style="color:#777; font-size:14px;">
+              {{ $a->ratingCount() }} reseñas
+          </span>
+      </div>
+
       <div class="detail-meta">
         {{ $a->city }} @if($a->neighborhood) • {{ $a->neighborhood }} @endif
         • Capacidad: {{ $a->guests }} huésped(es)
@@ -100,6 +108,87 @@
       </div>
 
       @if(is_array($a->amenities) && count($a->amenities))
+      {{-- =====================================================
+       ⭐ FORMULARIO DE RESEÑA (PASO 8)
+====================================================== --}}
+<div style="margin-top:25px; padding:18px; border-radius:12px; border:1px solid #e5e7eb;">
+    <h3 class="subtitle" style="margin-bottom:10px;">Dejar una reseña</h3>
+
+    @guest
+        <p style="color:#555;">Debes iniciar sesión para calificar este alojamiento.</p>
+        <a href="{{ route('login') }}" class="btn btn-primary" style="margin-top:10px;">Iniciar sesión</a>
+    @endguest
+
+    @auth
+        @php
+            $yaCalifico = $a->ratings()->where('user_id', auth()->id())->first();
+        @endphp
+
+        @if($yaCalifico)
+            <p style="color:#4b5563; font-size:15px;">
+                Ya calificaste este alojamiento con 
+                <strong>{{ $yaCalifico->rating }} ⭐</strong>.
+            </p>
+        @else
+           <form action="{{ route('ratings.store', $a->id) }}" method="POST" style="margin-top:10px;">
+
+                @csrf
+
+                <input type="hidden" name="alojamiento_id" value="{{ $a->id }}">
+
+                {{-- Estrellas seleccionables --}}
+                <div id="ratingStars" style="display:flex; gap:6px; cursor:pointer; margin-bottom:10px;">
+                    @for($i=1; $i<=5; $i++)
+                        <svg data-value="{{ $i }}" width="32" height="32" fill="#ccc" viewBox="0 0 24 24" class="star-option">
+                            <path d="M12 .587l3.668 7.568L24 9.748l-6 5.848L19.335 24 
+                            12 19.897 4.665 24 6 15.596l-6-5.848 8.332-1.593z"/>
+                        </svg>
+                    @endfor
+                </div>
+
+                <input type="hidden" id="ratingValue" name="rating" value="0">
+
+                {{-- Comentario opcional --}}
+                <textarea name="comment" rows="3" placeholder="Escribe un comentario (opcional)" 
+                          style="width:100%; padding:10px; border-radius:8px; border:1px solid #ccc;"></textarea>
+
+                <button type="submit" class="btn btn-primary" style="margin-top:10px;">
+                    Enviar reseña
+                </button>
+            </form>
+
+            {{-- Script de estrellas interactivas --}}
+            <script>
+                document.addEventListener("DOMContentLoaded", () => {
+                    const stars = document.querySelectorAll(".star-option");
+                    const input = document.getElementById("ratingValue");
+
+                    stars.forEach(star => {
+                        star.addEventListener("mouseenter", () => {
+                            const val = star.dataset.value;
+                            stars.forEach(s => s.setAttribute("fill", 
+                                s.dataset.value <= val ? "#FF9900" : "#ccc"
+                            ));
+                        });
+
+                        star.addEventListener("click", () => {
+                            const val = star.dataset.value;
+                            input.value = val;
+                        });
+
+                        document.getElementById("ratingStars").addEventListener("mouseleave", () => {
+                            const val = input.value;
+                            stars.forEach(s => s.setAttribute("fill", 
+                                s.dataset.value <= val ? "#FF9900" : "#ccc"
+                            ));
+                        });
+                    });
+                });
+            </script>
+        @endif
+    @endauth
+</div>
+
         <div>
           <h3 class="subtitle" style="margin:10px 0 8px 0;">Comodidades</h3>
           <div class="amenities">
@@ -111,19 +200,22 @@
       @endif
     </section>
 
-    {{-- Columna 3: Acciones --}}
+    {{-- Aside --}}
     <aside class="detail-aside">
       <div class="action-card">
         <div class="price">
-          ${{ number_format($a->price, 0, ',', '.') }} <span class="muted">/{{ $a->price_period }}</span>
+          ${{ number_format($a->price, 0, ',', '.') }} 
+          <span class="muted">/{{ $a->price_period }}</span>
         </div>
+
         <div class="muted" style="margin-top:6px">
           Publicado por: <strong>{{ $a->user->name ?? 'Anfitrión' }}</strong>
         </div>
-          <a class="btn btn-primary" id="btnDirections">Cómo llegar (Google Maps)</a>
+
+        <a class="btn btn-primary" id="btnDirections">Cómo llegar (Google Maps)</a>
 
         @if($a->phone)
-          <a class="btn btn-primary" href="https://wa.me/{{ preg_replace('/\D/','',$a->phone) }}?text={{ urlencode('Hola, vi tu alojamiento "'.$a->title.'" en HABBI y me interesa.') }}" target="_blank" rel="noopener">Contactar por WhatsApp</a>
+          <a class="btn btn-primary" href="https://wa.me/{{ preg_replace('/\D/','',$a->phone) }}?text={{ urlencode('Hola, vi tu alojamiento "'.$a->title.'" en HABBI y me interesa.') }}" target="_blank">Contactar por WhatsApp</a>
           <a class="btn" href="tel:{{ preg_replace('/\D/','',$a->phone) }}">Llamar</a>
         @else
           <button class="btn btn-primary" disabled>Sin teléfono disponible</button>
@@ -132,94 +224,21 @@
         <a class="btn" href="{{ route('alojamiento.index') }}">Volver a los resultados</a>
       </div>
     </aside>
-  </main>
 
-  
+</main>
 
-  <script>
-    // Thumbs -> cambia la imagen principal
-    const thumbs = document.querySelectorAll('#thumbs .thumb');
-    const mainPhoto = document.querySelector('#mainPhoto img');
-    thumbs.forEach(btn=>{
-      btn.addEventListener('click', ()=>{
-        thumbs.forEach(b=>b.classList.remove('active'));
-        btn.classList.add('active');
-        const src = btn.getAttribute('data-src');
-        mainPhoto.setAttribute('src', src);
-      });
-    });
+{{-- Scripts --}}
+<script>
+const thumbs = document.querySelectorAll('#thumbs .thumb');
+const main = document.querySelector('#mainPhoto img');
 
-    // Dropdown del usuario (usa tus clases existentes)
-    document.querySelectorAll('.user-toggle').forEach(btn=>{
-      btn.addEventListener('click', ()=>{
-        btn.parentElement.classList.toggle('open');
-      });
-    });
-    document.addEventListener('click', (e)=>{
-      document.querySelectorAll('.user-menu.open').forEach(m=>{
-        if (!m.contains(e.target)) m.classList.remove('open');
-      });
-    });
-  </script>
-
-  <style>
-    /* Mini estilos para el dropdown usando tu nav */
-    .user-menu{ position:relative }
-    .user-toggle{ background:transparent; border:0; color:#fff; font:inherit; cursor:pointer }
-    .user-dropdown{
-      position:absolute; right:0; top:calc(100% + 8px);
-      background:#000; border:1px solid rgba(255,255,255,.15);
-      border-radius:10px; min-width:200px; padding:8px;
-      display:none; z-index:99;
-    }
-    .user-menu.open .user-dropdown{ display:block }
-    .user-dropdown a, .logout-btn{
-      display:block; width:100%; text-align:left; padding:10px 12px; color:#fff; text-decoration:none; background:transparent; border:0; cursor:pointer; border-radius:8px;
-    }
-    .user-dropdown a:hover, .logout-btn:hover{ background:#111 }
-    .logout-btn{ font:inherit }
-  </style>
-
-  <script>
-(function () {
-  const btn = document.getElementById('btnDirections');
-  if (!btn) return;
-
-  const destLat = {{ $a->lat ?? 'null' }};
-  const destLng = {{ $a->lng ?? 'null' }};
-  const destAddress = @json(trim(($a->address ? $a->address . ', ' : '') . ($a->city ?? '')));
-
-  function buildDest() {
-    if (destLat !== null && destLng !== null) return `${destLat},${destLng}`;
-    return encodeURIComponent(destAddress || 'Colombia');
-  }
-
-  function openDirections(origin) {
-    const destination = buildDest();
-    const url =
-      `https://www.google.com/maps/dir/?api=1&destination=${destination}` +
-      (origin ? `&origin=${origin}` : '') +
-      `&travelmode=driving`;
-    window.open(url, '_blank', 'noopener');
-  }
-
-  btn.addEventListener('click', (e) => {
-    e.preventDefault();
-
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (pos) => {
-          const origin = encodeURIComponent(`${pos.coords.latitude},${pos.coords.longitude}`);
-          openDirections(origin);
-        },
-        () => openDirections(null),
-        { enableHighAccuracy: true, timeout: 8000, maximumAge: 0 }
-      );
-    } else {
-      openDirections(null);
-    }
-  });
-})();
+thumbs.forEach(btn=>{
+  btn.onclick = () => {
+    thumbs.forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    main.src = btn.dataset.src;
+  };
+});
 </script>
 
 </body>
