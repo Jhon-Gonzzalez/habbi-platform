@@ -151,7 +151,7 @@
       <h3 class="price__price">$300.000/mes — Pensión Campus Norte</h3>
 
       <div class="price__items">
-        <p class="price__features">Habitación con baño · Amoblada</p>
+        <p class="price__features">Habitación con baño · Amobladada</p>
         <p class="price__features">Lavadora, parqueadero, seguridad 24 h</p>
         <p class="price__features">A 500 m del campus</p>
       </div>
