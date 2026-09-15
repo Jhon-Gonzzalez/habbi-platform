@@ -21,21 +21,59 @@ paso() { printf '\n%s▸ %s%s\n' "$AZUL" "$1" "$FIN"; }
 ok()   { printf '  %s✓%s %s\n' "$VERDE" "$FIN" "$1"; }
 
 # ---------- PHP ----------
-PHP="$(command -v php || true)"
-if [ -z "$PHP" ] || ! "$PHP" -r 'exit(PHP_VERSION_ID >= 80100 ? 0 : 1);' 2>/dev/null; then
-    printf '\n%s✗ Necesitas PHP 8.1 o superior.%s\n\n' "$ROJO" "$FIN" >&2
-    printf '  En Mac, lo más fácil es instalar Laravel Herd (gratis):\n'
-    printf '      https://herd.laravel.com\n\n'
-    printf '  O con Homebrew:  brew install php\n\n'
+# En un Mac puede haber varios PHP a la vez (Herd, Homebrew, el del sistema).
+# Buscamos uno que cumpla las dos condiciones: 8.1+ y con pdo_sqlite.
+candidatos=()
+[ -n "${PHP_BIN:-}" ] && candidatos+=("$PHP_BIN")
+candidatos+=("$(command -v php || true)")
+
+for patron in "$HOME/Library/Application Support/Herd/bin/php" \
+              "$HOME/Library/Application Support/Herd/config/php/8*/bin/php" \
+              '/opt/homebrew/opt/php@8.[1-9]/bin/php' \
+              '/opt/homebrew/bin/php' \
+              '/usr/local/opt/php@8.[1-9]/bin/php' \
+              '/usr/local/bin/php' \
+              '/opt/alt/php8[0-9]/usr/bin/php'
+do
+    while IFS= read -r ruta; do
+        [ -n "$ruta" ] && candidatos+=("$ruta")
+    done < <(compgen -G "$patron" 2>/dev/null | sort -rV)
+done
+
+PHP=""
+SIN_SQLITE=""
+for candidato in "${candidatos[@]}"; do
+    [ -n "$candidato" ] && [ -x "$candidato" ] || continue
+
+    version="$("$candidato" -r 'echo PHP_VERSION;' 2>/dev/null | head -1)"
+    [[ "$version" =~ ^[0-9]+\.[0-9]+\.[0-9]+ ]] || continue
+    "$candidato" -r 'exit(PHP_VERSION_ID >= 80100 ? 0 : 1);' 2>/dev/null || continue
+
+    if "$candidato" -m 2>/dev/null | grep -qi '^pdo_sqlite$'; then
+        PHP="$candidato"
+        ok "PHP $version → $PHP"
+        ok "Extensión sqlite disponible"
+        break
+    fi
+    SIN_SQLITE="$SIN_SQLITE\n      · $candidato (PHP $version)"
+done
+
+if [ -z "$PHP" ]; then
+    printf '\n%s✗ No encontré un PHP 8.1+ con la extensión pdo_sqlite.%s\n\n' "$ROJO" "$FIN" >&2
+
+    if [ -n "$SIN_SQLITE" ]; then
+        printf '  Estos PHP tienen la versión correcta pero les falta pdo_sqlite:'
+        printf "$SIN_SQLITE\n\n"
+    fi
+
+    printf '  La forma más simple de resolverlo en Mac es instalar Laravel Herd,\n'
+    printf '  que ya trae PHP con todas las extensiones:\n\n'
+    printf '      %shttps://herd.laravel.com%s\n\n' "$AZUL" "$FIN"
+    printf '  Si prefieres Homebrew:  brew install php\n\n'
+    printf '  ¿Ya tienes un PHP que sirve pero no lo encuentro? Indícalo así:\n'
+    printf '      PHP_BIN=/ruta/a/php bash deploy/probar-local.sh\n\n'
     exit 1
 fi
-ok "PHP $("$PHP" -r 'echo PHP_VERSION;')"
-
-"$PHP" -m | grep -qi '^pdo_sqlite$' || {
-    printf '\n%s✗ Falta la extensión pdo_sqlite de PHP.%s\n\n' "$ROJO" "$FIN" >&2
-    exit 1
-}
-ok "Extensión sqlite disponible"
 
 # ---------- Dependencias ----------
 paso "Instalando dependencias"
