@@ -1,115 +1,79 @@
 @extends('layouts.admin')
-@section('content')
-@se
-<div class ="row">
-    <h1>Listado de usuarios</h1>
-</div>
-<hr> 
 
-<div class ="row">
-<div class="col-md-10">
-            <div class="card card-outline card-primary">
-              <div class="card-header">
-                <h3 class="card-title">Usuarios registrados</h3>
+@section('titulo', 'Usuarios')
+@section('subtitulo', $usuarios->total() . ' ' . \App\Support\Texto::plural('usuario', $usuarios->total()) . ' registrados')
 
-                <div class="card-tools">
-                  <a href="{{url('admin/usuarios/create')}}" class="btn btn-primary">
-                    registrar Nuevo
-                    </a>
-                </div>
-                <!-- /.card-tools -->
-              </div>
-              <!-- /.card-header -->
-              <div class="card-body" style="display: block;">
-
-                <table class="table" id="example1">
-  <thead class="table-dark">
-    <tr>
-        <td>Nro</td>
-        <td>Nombre</td>
-        <td>Email</td>
-        <td>Acciones</td>
-    </tr>
-  </thead>
-  <tbody>
-    <?php $contador = 1; ?>
-    @foreach($usuarios as $usuario)
-    <tr> 
-        <td>{{ $contador ++ }}</td>   
-        <td>{{ $usuario->name }}</td>
-        <td>{{ $usuario->email }}</td>
-        <td style="text-align: center"><div class="btn-group" role="group" aria-label="Basic example">
-            <a href="{{url('/admin/usuarios/'.$usuario->id)}}" type="button" class="btn btn-info btn-sm"><i class="bi bi-eye-fill"></i></a>
-            <a href="{{url('/admin/usuarios/'.$usuario->id.'/edit')}}" type="button" class="btn btn-success btn-sm"><i class="bi bi-pencil-square"></i></a>
-            <a href="{{url('/admin/usuarios/'.$usuario->id.'/confirm-delete')}}" type="button" class="btn btn-danger btn-sm"><i class="bi bi-trash3-fill"></i></a>
-        </div></td>
-     </tr>
-    @endforeach
-  </tbody>
-</table>
-
-<script>
-                        $(function () {
-                            $("#example1").DataTable({
-                                "pageLength": 10,
-                                "language": {
-                                    "emptyTable": "No hay información",
-                                    "info": "Mostrando START a END de TOTAL Usuarios",
-                                    "infoEmpty": "Mostrando 0 a 0 de 0 Usuarios",
-                                    "infoFiltered": "(Filtrado de MAX total Usuarios)",
-                                    "infoPostFix": "",
-                                    "thousands": ",",
-                                    "lengthMenu": "Mostrar MENU Usuarios",
-                                    "loadingRecords": "Cargando...",
-                                    "processing": "Procesando...",
-                                    "search": "Buscador:",
-                                    "zeroRecords": "Sin resultados encontrados",
-                                    "paginate": {
-                                        "first": "Primero",
-                                        "last": "Ultimo",
-                                        "next": "Siguiente",
-                                        "previous": "Anterior"
-                                    }
-                                },
-                                "responsive": true, "lengthChange": true, "autoWidth": false,
-                                buttons: [{
-                                    extend: 'collection',
-                                    text: 'Reportes',
-                                    orientation: 'landscape',
-                                    buttons: [{
-                                        text: 'Copiar',
-                                        extend: 'copy',
-                                    }, {
-                                        extend: 'pdf'
-                                    },{
-                                        extend: 'csv'
-                                    },{
-                                        extend: 'excel'
-                                    },{
-                                        text: 'Imprimir',
-                                        extend: 'print'
-                                    }
-                                    ]
-                                },
-                                    {
-                                        extend: 'colvis',
-                                        text: 'Visor de columnas',
-                                        collectionLayout: 'fixed three-column'
-                                    }
-                                ],
-                            }).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
-                        });
-                    </script>
-
-              </div>
-              <!-- /.card-body -->
-            </div>
-            <!-- /.card -->
-          </div>
-
-
-</div>
-
+@section('acciones')
+    <a class="hb-btn hb-btn--primary" href="{{ route('admin.usuarios.create') }}">Nuevo usuario</a>
 @endsection
 
+@section('contenido')
+<div class="hb-card">
+    <div class="hb-card__header">
+        <form method="GET" action="{{ route('admin.usuarios.index') }}" class="hb-row">
+            <label class="hb-sr-only" for="q">Buscar usuario</label>
+            <input class="hb-input" type="search" id="q" name="q" value="{{ request('q') }}"
+                   placeholder="Buscar por nombre o correo" style="min-width:260px">
+            <button class="hb-btn hb-btn--ghost hb-btn--sm" type="submit">Buscar</button>
+            @if (request('q'))
+                <a class="hb-btn hb-btn--link" href="{{ route('admin.usuarios.index') }}">Limpiar</a>
+            @endif
+        </form>
+    </div>
 
+    <div class="hb-table-wrap">
+        <table class="hb-table">
+            <thead>
+                <tr>
+                    <th>Usuario</th>
+                    <th>Rol</th>
+                    <th>Publicaciones</th>
+                    <th>Reseñas</th>
+                    <th>Registro</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @forelse ($usuarios as $usuario)
+                    <tr>
+                        <td>
+                            <div class="hb-table__user">
+                                <span class="hb-table__avatar">{{ $usuario->initials() }}</span>
+                                <div>
+                                    <a href="{{ route('admin.usuarios.show', $usuario) }}">{{ $usuario->name }}</a>
+                                    <div class="hb-muted hb-small">{{ $usuario->email }}</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <span class="hb-badge {{ $usuario->isAdmin() ? 'hb-badge--primary' : 'hb-badge--muted' }}">
+                                {{ $usuario->isAdmin() ? 'Admin' : 'Usuario' }}
+                            </span>
+                        </td>
+                        <td>{{ $usuario->alojamientos_count }}</td>
+                        <td>{{ $usuario->ratings_count }}</td>
+                        <td class="hb-muted hb-small">{{ $usuario->created_at->format('d/m/Y') }}</td>
+                        <td>
+                            <div class="hb-table__actions">
+                                <a class="hb-btn hb-btn--ghost hb-btn--sm" href="{{ route('admin.usuarios.edit', $usuario) }}">Editar</a>
+
+                                @unless ($usuario->is(auth()->user()))
+                                    <form method="POST" action="{{ route('admin.usuarios.destroy', $usuario) }}"
+                                          data-confirmar="¿Eliminar a {{ $usuario->name }}? Se borrarán también sus publicaciones y reseñas.">
+                                        @csrf @method('DELETE')
+                                        <button class="hb-btn hb-btn--danger hb-btn--sm" type="submit">Eliminar</button>
+                                    </form>
+                                @endunless
+                            </div>
+                        </td>
+                    </tr>
+                @empty
+                    <tr><td colspan="6" class="hb-muted hb-center" style="padding:2.5rem">No se encontraron usuarios.</td></tr>
+                @endforelse
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="hb-pagination">{{ $usuarios->links() }}</div>
+@endsection

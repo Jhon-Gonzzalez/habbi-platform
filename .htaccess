@@ -1,0 +1,26 @@
+# ==========================================================
+#  Redirección para hosting compartido (Namecheap / cPanel)
+# ==========================================================
+# Úsalo SOLO si tuviste que subir todo el proyecto dentro de
+# public_html y no pudiste cambiar el "Document Root" a /public.
+#
+# Con este archivo, una visita a https://tudominio.com/ se
+# reescribe internamente hacia /public/ sin que se vea en la URL.
+#
+# La opción recomendada sigue siendo apuntar el Document Root
+# a la carpeta /public (ver DEPLOY.md, opción A).
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # No reescribir si ya estamos dentro de /public
+    RewriteCond %{REQUEST_URI} !^/public/
+
+    # Enviar todas las peticiones a la carpeta public
+    RewriteRule ^(.*)$ public/$1 [L]
+</IfModule>
+
+# Bloquear el acceso directo a archivos sensibles
+<FilesMatch "^(\.env|\.env\..*|composer\.(json|lock)|artisan|phpunit\.xml)$">
+    Require all denied
+</FilesMatch>

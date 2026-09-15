@@ -1,66 +1,117 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
-
 <p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
+  <img src="public/assets/img/images/logo.png" alt="HABBI" width="220">
 </p>
 
-## About Laravel
+<h1 align="center">HABBI · Plataforma de vivienda estudiantil</h1>
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+<p align="center">
+  Buscar, publicar y calificar alojamiento cerca de la universidad.<br>
+  <strong>Laravel 10 · PHP 8.1+ · MySQL · Blade</strong>
+</p>
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+---
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+## Qué hace
 
-## Learning Laravel
+HABBI conecta a estudiantes que buscan dónde vivir con arrendadores que tienen
+habitaciones, apartaestudios o apartamentos disponibles.
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+| Módulo | Qué incluye |
+|---|---|
+| **Buscador público** | Filtros por texto, precio, tipo, capacidad y comodidades. Orden por precio, fecha o calificación. Paginación con filtros persistentes. |
+| **Publicaciones** | Alta con hasta 8 fotos, edición con gestión de galería (añadir, quitar, elegir portada), pausar/reactivar y borrado con limpieza de archivos. |
+| **Reseñas** | Una calificación de 1 a 5 estrellas por usuario y alojamiento, con comentario opcional. Nadie puede reseñar su propia publicación. |
+| **Cuentas** | Registro, login, recuperación de contraseña y panel personal con el resumen de publicaciones y reseñas. |
+| **Panel de administración** | Métricas generales, CRUD de usuarios con roles y moderación de publicaciones. |
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+## Decisiones técnicas
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+- **Sin paso de compilación en el frontend.** El CSS y el JS son archivos planos
+  en `public/assets/`. No hace falta Node ni `npm run build` para desplegar,
+  algo que en hosting compartido evita la mayoría de los problemas.
+- **Autorización con policies.** `AlojamientoPolicy` y `RatingPolicy` deciden
+  quién edita y quién borra; el middleware `admin` protege el panel.
+- **Consultas sin N+1.** El scope `conResenas()` usa `withAvg` + `withCount`,
+  así el listado de 12 tarjetas hace una consulta en lugar de veinticinco.
+- **Las fotos viven fuera del repositorio,** en `storage/app/public`, expuestas
+  mediante el enlace simbólico `public/storage`.
 
-## Laravel Sponsors
+## Estructura
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+```
+app/
+├── Http/
+│   ├── Controllers/
+│   │   ├── Admin/              Panel de administración
+│   │   ├── AlojamientoController.php
+│   │   ├── DashboardController.php
+│   │   ├── HomeController.php
+│   │   └── RatingController.php
+│   ├── Middleware/
+│   │   └── EnsureUserIsAdmin.php
+│   └── Requests/               Validación (AlojamientoRequest, RatingRequest, UsuarioRequest)
+├── Models/                     Alojamiento, Rating, User
+├── Policies/                   AlojamientoPolicy, RatingPolicy
+└── Services/
+    └── AlojamientoPhotoService.php   Subida, borrado y orden de las fotos
 
-### Premium Partners
+resources/views/
+├── layouts/        app · auth · admin
+├── partials/       navbar · footer · flash · listing-card
+├── components/     estrellas (componente Blade)
+├── alojamientos/   index · show · create · edit · mine · _campos
+├── admin/          index · usuarios/* · alojamientos/*
+└── auth/           login · register · passwords/*
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+public/assets/
+├── css/habbi.css   Sistema de diseño completo (tokens + componentes)
+├── js/habbi.js     Navbar, menús, galería, estrellas, subida de fotos
+└── img/            Logos e imágenes
+```
 
-## Contributing
+## Instalación local
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+```bash
+git clone https://github.com/jhon-gonzzalez/habbi-platform.git
+cd habbi-platform
 
-## Code of Conduct
+composer install
+cp .env.example .env
+php artisan key:generate
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+# Configura DB_DATABASE, DB_USERNAME y DB_PASSWORD en .env, luego:
+php artisan migrate --seed
+php artisan storage:link
 
-## Security Vulnerabilities
+php artisan serve
+```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+Abre <http://localhost:8000>.
 
-## License
+El seeder crea un administrador con las credenciales de `ADMIN_EMAIL` y
+`ADMIN_PASSWORD` del `.env`, más datos de ejemplo (usuarios, alojamientos y
+reseñas) que **no** se generan cuando `APP_ENV=production`.
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+## Tests
+
+```bash
+php artisan test
+```
+
+39 pruebas funcionales que cubren publicación, permisos de edición, gestión de
+fotos, reglas de las reseñas, acceso al panel de administración y el renderizado
+de todas las vistas.
+
+## Despliegue
+
+Guía paso a paso para Namecheap (cPanel) en **[DEPLOY.md](DEPLOY.md)**.
+
+## Comandos útiles
+
+| Comando | Para qué |
+|---|---|
+| `php artisan migrate --seed` | Crear tablas y datos iniciales |
+| `php artisan db:seed --class=AdminSeeder` | Solo el administrador (producción) |
+| `php artisan storage:link` | Enlace para que se vean las fotos |
+| `php artisan optimize` | Cachear configuración, rutas y vistas |
+| `php artisan optimize:clear` | Limpiar todas las cachés |

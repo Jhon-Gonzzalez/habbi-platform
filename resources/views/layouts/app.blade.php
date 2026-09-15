@@ -1,26 +1,44 @@
-<!doctype html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+<!DOCTYPE html>
+<html lang="es">
 <head>
-    <meta charset="utf-8">
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-
-    <!-- CSRF Token -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
+    <meta name="theme-color" content="#2091F9">
+    <meta name="description" content="@yield('descripcion', 'HABBI: encuentra y publica alojamiento estudiantil verificado, con reseñas reales y contacto directo.')">
 
-    <title>{{ config('app.name', 'Laravel') }}</title>
+    <title>@yield('titulo', 'Inicio') · HABBI</title>
 
-    <!-- Fonts -->
-    <link rel="dns-prefetch" href="//fonts.bunny.net">
-    <link href="https://fonts.bunny.net/css?family=Nunito" rel="stylesheet">
-
-    <!-- Scripts -->
-    @vite(['resources/sass/app.scss', 'resources/js/app.js'])
+    <link rel="icon" href="{{ asset('assets/img/images/Icono.png') }}" type="image/png">
+    <link rel="stylesheet" href="{{ asset('assets/css/habbi.css') }}">
+    @stack('estilos')
 </head>
 <body>
-    <div id="app">
-        <main class="py-4">
-            @yield('content')
-        </main>
-    </div>
+
+    @include('partials.navbar', ['transparente' => $navTransparente ?? false])
+
+    <main id="contenido">
+        @hasSection('cabecera')
+            <div class="hb-pagehead">
+                <div class="hb-container hb-pagehead__inner">
+                    @yield('cabecera')
+                </div>
+            </div>
+        @endif
+
+        @hasSection('contenido')
+            <div class="hb-container hb-page">
+                @include('partials.flash')
+                @yield('contenido')
+            </div>
+        @else
+            @yield('contenido_completo')
+        @endif
+    </main>
+
+    @include('partials.footer')
+
+    <script src="{{ asset('assets/js/habbi.js') }}" defer></script>
+    @stack('scripts')
 </body>
 </html>

@@ -1,50 +1,104 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\HomeController;
+use App\Http\Controllers\Admin;
 use App\Http\Controllers\AlojamientoController;
+use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\HomeController;
+use App\Http\Controllers\RatingController;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Route;
 
-/* ===== Páginas públicas ===== */
-Route::get('/', fn () => view('index'))->name('index');
+/*
+|--------------------------------------------------------------------------
+| Rutas públicas
+|--------------------------------------------------------------------------
+*/
 
-Auth::routes();
-Route::get('/home', [HomeController::class, 'index'])->name('home');
+Route::get('/', [HomeController::class, 'index'])->name('index');
 
-/* ===== Solo autenticados (rutas estáticas ANTES de la dinámica) ===== */
-Route::middleware('auth')->group(function () {
-    // Publicar (DEBE ir antes de la dinámica)
-    Route::get('/alojamientos/publicar', [AlojamientoController::class, 'create'])->name('publicar');
-    Route::post('/alojamientos', [AlojamientoController::class, 'store'])->name('alojamientos.store');
+Auth::routes(['verify' => false]);
 
-    // Mis alojamientos + edición
-    Route::get('/mis-alojamientos', [AlojamientoController::class, 'mine'])->name('alojamiento.mine');
+/*
+|--------------------------------------------------------------------------
+| Alojamientos
+|--------------------------------------------------------------------------
+| El orden importa: las rutas estáticas van antes que la dinámica {alojamiento}
+| para que /alojamientos/publicar no se interprete como un id.
+*/
 
-    Route::get('/alojamientos/{alojamiento}/editar', [AlojamientoController::class, 'edit'])
-        ->name('alojamiento.edit')
-        ->middleware('can:update,alojamiento');
+Route::prefix('alojamientos')->name('alojamientos.')->group(function () {
+    // Público
+    Route::get('/', [AlojamientoController::class, 'index'])->name('index');
 
-    Route::put('/alojamientos/{alojamiento}', [AlojamientoController::class, 'update'])
-        ->name('alojamiento.update')
-        ->middleware('can:update,alojamiento');
+    // Privado
+    Route::middleware('auth')->group(function () {
+        Route::get('/publicar', [AlojamientoController::class, 'create'])->name('create');
+        Route::post('/', [AlojamientoController::class, 'store'])->name('store');
+        Route::get('/mis-publicaciones', [AlojamientoController::class, 'mine'])->name('mine');
 
-    Route::delete('/alojamientos/{alojamiento}', [AlojamientoController::class, 'destroy'])
-        ->name('alojamiento.destroy')
-        ->middleware('can:delete,alojamiento');
+        Route::get('/{alojamiento}/editar', [AlojamientoController::class, 'edit'])
+            ->whereNumber('alojamiento')
+            ->name('edit');
+
+        Route::put('/{alojamiento}', [AlojamientoController::class, 'update'])
+            ->whereNumber('alojamiento')
+            ->name('update');
+
+        Route::patch('/{alojamiento}/estado', [AlojamientoController::class, 'toggle'])
+            ->whereNumber('alojamiento')
+            ->name('toggle');
+
+        Route::delete('/{alojamiento}', [AlojamientoController::class, 'destroy'])
+            ->whereNumber('alojamiento')
+            ->name('destroy');
+    });
+
+    // Detalle público — al final para no capturar las rutas estáticas de arriba.
+    Route::get('/{alojamiento}', [AlojamientoController::class, 'show'])
+        ->whereNumber('alojamiento')
+        ->name('show');
 });
 
-/* ===== Listado público ===== */
-Route::get('/alojamientos', [AlojamientoController::class, 'index'])->name('alojamiento.index');
+/*
+|--------------------------------------------------------------------------
+| Reseñas
+|--------------------------------------------------------------------------
+*/
 
-/* ===== Detalle dinámico (AL FINAL y restringido) ===== */
-Route::get('/alojamientos/{alojamiento}', [AlojamientoController::class, 'show'])
-    ->whereNumber('alojamiento')
-    ->name('alojamientos.show');
+Route::middleware('auth')->group(function () {
+    Route::post('/alojamientos/{alojamiento}/resenas', [RatingController::class, 'store'])
+        ->whereNumber('alojamiento')
+        ->name('ratings.store');
 
-/* ===== Estrellas de las pensioens ===== */
- use App\Http\Controllers\RatingController;
+    Route::delete('/resenas/{rating}', [RatingController::class, 'destroy'])
+        ->whereNumber('rating')
+        ->name('ratings.destroy');
 
-Route::post('/ratings/{alojamiento}', [RatingController::class, 'store'])
-    ->name('ratings.store')
-    ->middleware('auth');
+    Route::get('/mi-cuenta', [DashboardController::class, 'index'])->name('home');
+});
 
+/*
+|--------------------------------------------------------------------------
+| Panel de administración
+|--------------------------------------------------------------------------
+*/
+
+Route::middleware(['auth', 'admin'])
+    ->prefix('admin')
+    ->name('admin.')
+    ->group(function () {
+        Route::get('/', [Admin\DashboardController::class, 'index'])->name('index');
+
+        Route::resource('usuarios', Admin\UsuarioController::class)
+            ->parameters(['usuarios' => 'usuario']);
+
+        Route::get('/alojamientos', [Admin\AlojamientoController::class, 'index'])->name('alojamientos.index');
+
+        Route::patch('/alojamientos/{alojamiento}/estado', [Admin\AlojamientoController::class, 'toggle'])
+            ->whereNumber('alojamiento')
+            ->name('alojamientos.toggle');
+
+        Route::delete('/alojamientos/{alojamiento}', [Admin\AlojamientoController::class, 'destroy'])
+            ->whereNumber('alojamiento')
+            ->name('alojamientos.destroy');
+    });

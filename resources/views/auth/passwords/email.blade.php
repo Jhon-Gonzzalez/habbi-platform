@@ -1,47 +1,32 @@
-@extends('layouts.app')
+@extends('layouts.auth')
 
-@section('content')
-<div class="container">
-    <div class="row justify-content-center">
-        <div class="col-md-8">
-            <div class="card">
-                <div class="card-header">{{ __('Reset Password') }}</div>
+@section('titulo', 'Recuperar contraseña')
 
-                <div class="card-body">
-                    @if (session('status'))
-                        <div class="alert alert-success" role="alert">
-                            {{ session('status') }}
-                        </div>
-                    @endif
+@section('formulario')
+    <h1>Recuperar contraseña</h1>
+    <p class="hb-muted">Te enviaremos un enlace para crear una nueva.</p>
 
-                    <form method="POST" action="{{ route('password.email') }}">
-                        @csrf
-
-                        <div class="row mb-3">
-                            <label for="email" class="col-md-4 col-form-label text-md-end">{{ __('Email Address') }}</label>
-
-                            <div class="col-md-6">
-                                <input id="email" type="email" class="form-control @error('email') is-invalid @enderror" name="email" value="{{ old('email') }}" required autocomplete="email" autofocus>
-
-                                @error('email')
-                                    <span class="invalid-feedback" role="alert">
-                                        <strong>{{ $message }}</strong>
-                                    </span>
-                                @enderror
-                            </div>
-                        </div>
-
-                        <div class="row mb-0">
-                            <div class="col-md-6 offset-md-4">
-                                <button type="submit" class="btn btn-primary">
-                                    {{ __('Send Password Reset Link') }}
-                                </button>
-                            </div>
-                        </div>
-                    </form>
-                </div>
-            </div>
+    @if (session('status'))
+        <div class="hb-alert hb-alert--success" role="status">
+            <span class="hb-alert__icon">✓</span>
+            <div>{{ session('status') }}</div>
         </div>
-    </div>
-</div>
+    @endif
+
+    <form method="POST" action="{{ route('password.email') }}" style="margin-top:2rem">
+        @csrf
+
+        <div class="hb-field">
+            <label class="hb-label" for="email">Correo electrónico</label>
+            <input class="hb-input @error('email') is-invalid @enderror" type="email" id="email" name="email"
+                   value="{{ old('email') }}" required autofocus placeholder="tucorreo@ejemplo.com">
+            @error('email') <span class="hb-error">{{ $message }}</span> @enderror
+        </div>
+
+        <button class="hb-btn hb-btn--primary hb-btn--block" type="submit">Enviar enlace</button>
+    </form>
+
+    <p class="hb-center hb-small" style="margin-top:1.75rem">
+        <a href="{{ route('login') }}">Volver a iniciar sesión</a>
+    </p>
 @endsection

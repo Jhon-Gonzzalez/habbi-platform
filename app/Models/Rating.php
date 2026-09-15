@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Rating extends Model
 {
@@ -13,15 +14,19 @@ class Rating extends Model
         'user_id',
         'alojamiento_id',
         'rating',
-        'comment'
+        'comment',
     ];
 
-    public function user()
+    protected $casts = [
+        'rating' => 'integer',
+    ];
+
+    public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
 
-    public function alojamiento()
+    public function alojamiento(): BelongsTo
     {
         return $this->belongsTo(Alojamiento::class);
     }

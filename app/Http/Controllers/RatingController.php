@@ -2,36 +2,38 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Rating;
+use App\Http\Requests\RatingRequest;
 use App\Models\Alojamiento;
-use Illuminate\Http\Request;
+use App\Models\Rating;
+use Illuminate\Http\RedirectResponse;
 
 class RatingController extends Controller
 {
-    public function store(Request $request)
+    public function __construct()
     {
-        // Validar datos del formulario
-        $data = $request->validate([
-            'alojamiento_id' => 'required|exists:alojamientos,id',
-            'rating'         => 'required|integer|min:1|max:5',
-            'comment'        => 'nullable|string|max:1000',
-        ]);
+        $this->middleware('auth');
+    }
 
-        // Obtener alojamiento
-        $alojamiento = Alojamiento::find($request->alojamiento_id);
+    /** Crea o actualiza la reseña del usuario sobre un alojamiento. */
+    public function store(RatingRequest $request, Alojamiento $alojamiento): RedirectResponse
+    {
+        $this->authorize('rate', $alojamiento);
 
-        // Guardar o actualizar calificación
-        Rating::updateOrCreate(
-            [
-                'user_id'        => auth()->id(),
-                'alojamiento_id' => $alojamiento->id
-            ],
-            [
-                'rating'  => $data['rating'],
-                'comment' => $data['comment'] ?? null,
-            ]
+        $alojamiento->ratings()->updateOrCreate(
+            ['user_id' => $request->user()->id],
+            $request->validated(),
         );
 
-        return back()->with('success', 'Gracias por tu calificación.');
+        return back()->with('success', 'Gracias por compartir tu experiencia.');
+    }
+
+    /** Elimina la reseña propia. */
+    public function destroy(Rating $rating): RedirectResponse
+    {
+        $this->authorize('delete', $rating);
+
+        $rating->delete();
+
+        return back()->with('success', 'Tu reseña fue eliminada.');
     }
 }

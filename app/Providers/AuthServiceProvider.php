@@ -2,24 +2,24 @@
 
 namespace App\Providers;
 
-// use Illuminate\Support\Facades\Gate;
+use App\Models\Alojamiento;
+use App\Models\Rating;
+use App\Policies\AlojamientoPolicy;
+use App\Policies\RatingPolicy;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 
 class AuthServiceProvider extends ServiceProvider
 {
     /**
-     * The model to policy mappings for the application.
+     * Mapeo de modelos a policies.
      *
      * @var array<class-string, class-string>
      */
     protected $policies = [
-    \App\Models\Alojamiento::class => \App\Policies\AlojamientoPolicy::class,
-];
+        Alojamiento::class => AlojamientoPolicy::class,
+        Rating::class      => RatingPolicy::class,
+    ];
 
-
-    /**
-     * Register any authentication / authorization services.
-     */
     public function boot(): void
     {
         //

@@ -2,36 +2,22 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
+use App\Models\Alojamiento;
+use Illuminate\Contracts\View\View;
 
 class HomeController extends Controller
 {
-    /**
-     * Create a new controller instance.
-     *
-     * @return void
-     */
-    public function __construct()
+    /** Landing pública con los alojamientos mejor valorados. */
+    public function index(): View
     {
-        $this->middleware('auth')->except(['index', 'login']);
+        $destacados = Alojamiento::query()
+            ->activos()
+            ->conResenas()
+            ->orderByDesc('ratings_avg_rating')
+            ->orderByDesc('created_at')
+            ->take(6)
+            ->get();
+
+        return view('index', compact('destacados'));
     }
-
-    /**
-     * Show the application dashboard.
-     *
-     * @return \Illuminate\Contracts\Support\Renderable
-     */
-    public function index()
-    {
-        return view('index');
-    }
-
-     public function login(){
-    return view('auth.login');
-}
-
-    
-
-
-
 }

@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers\Auth;
 
+use App\Providers\RouteServiceProvider;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Foundation\Auth\RegistersUsers;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rules\Password;
 
 class RegisterController extends Controller
 {
@@ -28,7 +30,7 @@ class RegisterController extends Controller
      *
      * @var string
      */
-    protected $redirectTo = '/home';
+    protected $redirectTo = RouteServiceProvider::HOME;
 
     /**
      * Create a new controller instance.
@@ -49,9 +51,15 @@ class RegisterController extends Controller
     protected function validator(array $data)
     {
         return Validator::make($data, [
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
-            'password' => ['required', 'string', 'min:8', 'confirmed'],
+            'name'     => ['required', 'string', 'min:3', 'max:120'],
+            'email'    => ['required', 'string', 'email', 'max:180', 'unique:users'],
+            'phone'    => ['nullable', 'string', 'regex:/^[0-9+\s()-]{7,20}$/'],
+            'password' => ['required', 'string', 'confirmed', Password::min(8)->letters()->numbers()],
+        ], [], [
+            'name'     => 'nombre',
+            'email'    => 'correo electrónico',
+            'phone'    => 'teléfono',
+            'password' => 'contraseña',
         ]);
     }
 
@@ -64,8 +72,10 @@ class RegisterController extends Controller
     protected function create(array $data)
     {
         return User::create([
-            'name' => $data['name'],
-            'email' => $data['email'],
+            'name'     => $data['name'],
+            'email'    => $data['email'],
+            'phone'    => $data['phone'] ?? null,
+            'role'     => User::ROLE_USER,
             'password' => Hash::make($data['password']),
         ]);
     }
