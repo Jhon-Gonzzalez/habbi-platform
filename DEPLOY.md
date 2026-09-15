@@ -1,4 +1,4 @@
-# Desplegar HABBI en Namecheap (cPanel) — eliandval.com
+# Desplegar HABBI en Namecheap (cPanel)
 
 Guía completa para el plan **Stellar Plus** con cPanel.
 Tiempo estimado: 30–45 minutos la primera vez.
@@ -12,7 +12,7 @@ usuario de cPanel, busca la versión correcta de PHP, instala dependencias,
 te pregunta los datos de la base de datos y deja el sitio funcionando.
 
 ```bash
-ssh TU_USUARIO@eliandval.com          # o la IP del servidor
+ssh TU_USUARIO@TU_SERVIDOR            # IP o dominio del hosting
 git clone https://github.com/Jhon-Gonzzalez/habbi-platform.git habbi
 cd habbi && bash deploy/instalar.sh
 ```
@@ -40,11 +40,11 @@ que **cPanel añade tu usuario delante del nombre** de cada base de datos y
 cada usuario que creas. No lo eliges tú: aparece ya escrito y bloqueado en
 el formulario.
 
-Si tu usuario de cPanel es `elianXXX` y escribes `habbi` en el campo, la base
+Si tu usuario de cPanel es `usuario` y escribes `habbi` en el campo, la base
 se llamará realmente:
 
 ```
-elianXXX_habbi
+usuario_habbi
       ↑
       este trozo es el prefijo
 ```
@@ -64,41 +64,48 @@ usas la vía rápida no necesitas averiguarlo por tu cuenta.
 
 ---
 
-## ⚠ Tu dominio apunta hoy a otro servicio
+## Elegir dónde se publica
 
-A fecha de este documento, los registros DNS de `eliandval.com` están así:
-
-```
-eliandval.com       A   → 23.227.38.69      (rango de Shopify)
-www.eliandval.com   A   → 23.227.38.74      (rango de Shopify)
-nameservers             → dns1/dns2.namecheaphosting.com
-```
-
-Es decir: **el dominio no apunta al hosting de Namecheap todavía**, apunta a
-Shopify. Los nameservers sí son de Namecheap, así que los registros los
-controlas desde tu cuenta.
-
-**Antes de cambiar nada, comprueba si hay una tienda activa en ese dominio.**
-Si la hay, al mover el registro A la tienda dejará de responder.
-
-Opciones:
+Tienes tres opciones. La correcta depende de si el dominio principal del
+hosting ya se está usando para otra cosa.
 
 | Situación | Qué hacer |
 |---|---|
-| La tienda de Shopify ya no se usa | Cambia el registro A al IP de tu hosting |
-| La tienda sigue viva | Publica HABBI en un subdominio, p. ej. `app.eliandval.com` |
-| No sabes qué hay ahí | Ábrelo en el navegador antes de tocar el DNS |
+| El dominio principal está libre | Publica HABBI ahí directamente |
+| El dominio principal ya tiene otro sitio | Crea un **subdominio**, p. ej. `habbi.tudominio.com` |
+| Quieres un dominio aparte | Añádelo al hosting como **dominio adicional** |
 
-Para cambiar el registro A: cPanel → **Zone Editor** → `eliandval.com` →
-**Manage**, y edita el registro `A` de `eliandval.com` y el de `www` con la
-IP compartida de tu hosting (la encuentras en cPanel, panel derecho, como
-*Shared IP Address*).
+Un subdominio es gratis, se crea en un minuto y **no afecta en nada** a lo
+que ya esté publicado en el dominio principal.
 
-Si prefieres el subdominio: cPanel → **Domains** → **Create A New Domain** →
-`app.eliandval.com`, con Document Root `habbi/public`. Así no tocas nada de
-lo que ya tienes en producción.
+### Crear un subdominio
 
-Los cambios de DNS tardan entre unos minutos y unas horas en propagarse.
+1. cPanel → busca **Domains** en el buscador de arriba.
+2. Pulsa **Create A New Domain**.
+3. En *Domain* escribe el subdominio completo: `habbi.tudominio.com`
+4. **Desmarca** la casilla *«Share document root with…»*.
+5. En *Document Root* escribe: `habbi/public`
+6. **Submit**.
+
+Si los nameservers del dominio ya son los del hosting
+(`dns1/dns2.namecheaphosting.com`), cPanel crea solo el registro DNS del
+subdominio y **no hay que editar nada a mano**. Los registros del dominio
+principal quedan intactos.
+
+Para comprobar a dónde apunta un dominio antes de tocar nada:
+
+```bash
+dig +short A tudominio.com
+dig +short NS tudominio.com
+```
+
+La IP de tu servidor la ves en cPanel, en el panel derecho, como
+*Shared IP Address*.
+
+### Activar HTTPS
+
+cPanel → **SSL/TLS Status** → marca el dominio o subdominio →
+**Run AutoSSL**. Tarda unos minutos.
 
 ---
 
@@ -121,9 +128,9 @@ Comprueba en cPanel:
 
 1. cPanel → **MySQL® Databases**.
 2. En *Create New Database* escribe `habbi` → **Create Database**.
-   cPanel le añadirá tu prefijo, quedando algo como `elianXXX_habbi`.
+   cPanel le añadirá tu prefijo, quedando algo como `usuario_habbi`.
 3. En *MySQL Users → Add New User*:
-   - Username: `habbi`  → quedará `elianXXX_habbi`
+   - Username: `habbi`  → quedará `usuario_habbi`
    - Usa **Password Generator** y **guarda esa contraseña**, la necesitarás en el `.env`.
 4. En *Add User To Database*: selecciona el usuario y la base que acabas de crear → **Add**.
 5. En la pantalla de privilegios marca **ALL PRIVILEGES** → **Make Changes**.
@@ -131,8 +138,8 @@ Comprueba en cPanel:
 Anota estos tres datos:
 
 ```
-DB_DATABASE = elianXXX_habbi
-DB_USERNAME = elianXXX_habbi
+DB_DATABASE = usuario_habbi
+DB_USERNAME = usuario_habbi
 DB_PASSWORD = la-contraseña-generada
 DB_HOST     = localhost
 ```
@@ -148,13 +155,13 @@ cd ~
 git clone https://github.com/jhon-gonzzalez/habbi-platform.git habbi
 ```
 
-El proyecto queda en `/home/elianXXX/habbi`, **fuera** de `public_html`.
+El proyecto queda en `/home/usuario/habbi`, **fuera** de `public_html`.
 Esto es lo más seguro: nadie puede acceder por web a tu `.env` ni a `app/`.
 
 ### Opción B — sin Git
 
 1. Descarga el repositorio como ZIP desde GitHub.
-2. cPanel → **File Manager** → sube el ZIP a `/home/elianXXX/`.
+2. cPanel → **File Manager** → sube el ZIP a `/home/usuario/`.
 3. Clic derecho → **Extract**. Renombra la carpeta a `habbi`.
 
 ---
@@ -162,23 +169,20 @@ Esto es lo más seguro: nadie puede acceder por web a tu `.env` ni a `app/`.
 ## 3. Apuntar el dominio a la carpeta `public`
 
 Laravel **nunca** debe servirse desde la raíz del proyecto: solo la carpeta
-`public` puede ser accesible desde internet.
+`public` puede ser accesible desde internet. Todo lo demás (tu `.env`, el
+código, las dependencias) tiene que quedar fuera del alcance del navegador.
 
-### Opción A — cambiar el Document Root (la correcta)
+Por eso el dominio (o subdominio) se crea con *Document Root* =
+`habbi/public`, como se explica en **«Elegir dónde se publica»** más arriba.
 
-1. cPanel → **Domains**.
-2. Busca `eliandval.com` → **Manage**.
-3. En *Document Root* pon: `habbi/public`
-4. **Save**.
+Si por lo que sea el Document Root te quedó apuntando a `habbi` en lugar de
+`habbi/public`, tienes dos salidas:
 
-### Opción B — si no puedes cambiar el Document Root
-
-Sube todo el proyecto **dentro** de `public_html` y usa el archivo `.htaccess`
-que ya viene en la raíz del repositorio: reescribe las peticiones hacia
-`/public` automáticamente y bloquea el acceso a `.env`, `composer.json` y
-`artisan`.
-
-> La opción A es más segura y más rápida. Usa la B solo si la A no está disponible.
+- **Corregirlo** en cPanel → Domains → tu dominio → *Manage* →
+  Document Root. Es lo recomendable.
+- **Dejarlo así** y confiar en el `.htaccess` de la raíz del repositorio,
+  que reescribe las peticiones hacia `/public` y bloquea el acceso directo
+  a `.env`, `composer.json` y `artisan`.
 
 ---
 
@@ -224,21 +228,21 @@ APP_NAME=HABBI
 APP_ENV=production
 APP_KEY=base64:...        # lo generó key:generate, no lo toques
 APP_DEBUG=false           # IMPORTANTE: false en producción
-APP_URL=https://eliandval.com
+APP_URL=https://tudominio.com
 APP_TIMEZONE=America/Bogota
 
 DB_CONNECTION=mysql
 DB_HOST=localhost
 DB_PORT=3306
-DB_DATABASE=elianXXX_habbi
-DB_USERNAME=elianXXX_habbi
+DB_DATABASE=usuario_habbi
+DB_USERNAME=usuario_habbi
 DB_PASSWORD=la-contraseña-del-paso-1
 
 FILESYSTEM_DISK=public
 LOG_LEVEL=error
 
 ADMIN_NAME="Tu Nombre"
-ADMIN_EMAIL=tucorreo@eliandval.com
+ADMIN_EMAIL=tucorreo@tudominio.com
 ADMIN_PASSWORD=una-contraseña-fuerte-y-única
 ```
 
@@ -295,7 +299,7 @@ Si el sitio responde con error 500 al escribir, prueba `775`.
 
 ## 8. Activar HTTPS
 
-1. cPanel → **SSL/TLS Status** → marca `eliandval.com` → **Run AutoSSL**.
+1. cPanel → **SSL/TLS Status** → marca tu dominio → **Run AutoSSL**.
 2. Espera unos minutos a que el certificado se emita.
 3. El `.htaccess` de `public/` ya fuerza la redirección a HTTPS.
 
@@ -305,11 +309,11 @@ Si el sitio responde con error 500 al escribir, prueba `775`.
 
 | Comprueba | Debe pasar |
 |---|---|
-| `https://eliandval.com` | Carga la página de inicio |
-| `https://eliandval.com/alojamientos` | Carga el buscador |
+| `https://tudominio.com` | Carga la página de inicio |
+| `https://tudominio.com/alojamientos` | Carga el buscador |
 | Registrar una cuenta | Redirige a «Mi cuenta» |
 | Publicar un alojamiento con fotos | **Las fotos se ven** (si no, falta `storage:link`) |
-| `https://eliandval.com/.env` | Debe dar **403 o 404**, nunca mostrar el contenido |
+| `https://tudominio.com/.env` | Debe dar **403 o 404**, nunca mostrar el contenido |
 | Entrar con el admin → `/admin` | Carga el panel |
 
 ---
@@ -337,9 +341,9 @@ php artisan up
 | Error 500 | Revisa `storage/logs/laravel.log` | Casi siempre es la conexión a la base de datos |
 | Las fotos no se ven | Falta el enlace simbólico | `php artisan storage:link` |
 | «No application encryption key» | `APP_KEY` vacía | `php artisan key:generate` |
-| Ves el listado de carpetas | El Document Root no apunta a `public` | Repite el paso 3 |
+| Ves el listado de carpetas | El Document Root no apunta a `habbi/public` | Corrígelo en cPanel → Domains |
 | Los cambios no aparecen | Caché de configuración | `php artisan optimize:clear` |
-| Error de conexión a MySQL | Falta el prefijo del usuario | El nombre real es `elianXXX_habbi`, no `habbi` |
+| Error de conexión a MySQL | Falta el prefijo del usuario | El nombre real es `usuario_habbi`, no `habbi` |
 
 ---
 
@@ -348,7 +352,7 @@ php artisan up
 1. **Crear la base de datos** en cPanel (paso 1) — el nombre real llevará tu prefijo.
 2. **Ejecutar `bash deploy/instalar.sh`** por SSH.
 3. **Apuntar el Document Root** a `habbi/public` (paso 3).
-4. **Decidir qué hacer con el DNS**, que hoy apunta a Shopify (sección de arriba).
+4. **Crear el dominio o subdominio** en cPanel con Document Root `habbi/public`.
 
 Nunca compartas tu `.env` ni tus contraseñas: el script te las pide en el
 servidor y las escribe directamente allí.

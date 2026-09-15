@@ -33,8 +33,10 @@
             <div>
                 <h4>Contacto</h4>
                 <ul>
-                    <li><a href="mailto:hola@eliandval.com">hola@eliandval.com</a></li>
-                    <li>Colombia</li>
+                    @if ($correo = config('habbi.contacto.email'))
+                        <li><a href="mailto:{{ $correo }}">{{ $correo }}</a></li>
+                    @endif
+                    <li>{{ config('habbi.contacto.pais') }}</li>
                 </ul>
             </div>
         </div>

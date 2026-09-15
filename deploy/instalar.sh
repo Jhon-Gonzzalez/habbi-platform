@@ -126,8 +126,17 @@ if [[ "$REHACER" =~ ^[sSyY] ]]; then
     [ -n "$BD_PASS" ] || error "La contraseña de la base de datos no puede estar vacía."
 
     printf '\n  %sDatos del sitio%s\n' "$AZUL" "$FIN"
-    read -rp "  URL del sitio [https://eliandval.com]: " URL
-    URL="${URL:-https://eliandval.com}"
+    nota "El dominio o subdominio donde se verá HABBI, con https://"
+    nota "Ejemplo: https://habbi.tudominio.com"
+    read -rp "  URL del sitio: " URL
+    [ -n "$URL" ] || error "Necesito la URL donde se va a publicar el sitio."
+    case "$URL" in
+        http://*|https://*) ;;
+        *) URL="https://$URL" ;;
+    esac
+    URL="${URL%/}"
+
+    read -rp "  Correo de contacto público (pie de página, opcional): " CONTACTO
 
     read -rp "  Correo del administrador: " ADMIN_MAIL
     [ -n "$ADMIN_MAIL" ] || error "Necesito un correo para la cuenta de administrador."
@@ -150,6 +159,7 @@ if [[ "$REHACER" =~ ^[sSyY] ]]; then
     escribir FILESYSTEM_DISK "public"
     escribir ADMIN_EMAIL     "$ADMIN_MAIL"
     escribir ADMIN_PASSWORD  "$ADMIN_PASS"
+    [ -n "$CONTACTO" ] && escribir HABBI_CONTACT_EMAIL "$CONTACTO"
 
     ok "Configuración guardada en .env"
     ok "APP_DEBUG=false (obligatorio en producción)"
@@ -227,7 +237,12 @@ printf '%s╚══════════════════════�
 printf '  Sitio:  %s\n' "$URL_FINAL"
 printf '  Panel:  %s/admin\n' "$URL_FINAL"
 printf '  Admin:  %s\n\n' "$ADMIN_FINAL"
-printf '  %sQueda un paso manual:%s\n' "$AMBAR" "$FIN"
-printf '  cPanel → Domains → Manage → Document Root debe ser:\n'
-printf '      %s%s/public%s\n\n' "$VERDE" "${RAIZ#"$HOME/"}" "$FIN"
+DOMINIO="${URL_FINAL#https://}"; DOMINIO="${DOMINIO#http://}"
+
+printf '  %sQueda un paso manual en cPanel:%s\n\n' "$AMBAR" "$FIN"
+printf '  Domains → Create A New Domain\n'
+printf '    Domain ............. %s%s%s\n' "$VERDE" "$DOMINIO" "$FIN"
+printf '    Share document root  %sdesmarcado%s\n' "$VERDE" "$FIN"
+printf '    Document Root ...... %s%s/public%s\n\n' "$VERDE" "${RAIZ#"$HOME/"}" "$FIN"
+printf '  Después: SSL/TLS Status → marca %s → Run AutoSSL\n\n' "$DOMINIO"
 printf '  Para actualizar el sitio más adelante:  %sbash deploy/actualizar.sh%s\n\n' "$AZUL" "$FIN"
