@@ -97,15 +97,19 @@ fi
 
 # ---------- Dependencias ----------
 paso "Instalando dependencias"
-if command -v composer >/dev/null 2>&1; then
-    COMPOSER="composer"
+# Composer debe ejecutarse CON el PHP que acabamos de elegir. Si se llama al
+# ejecutable «composer» directamente, éste arranca con el PHP de su shebang
+# (el primero del PATH), que puede ser una versión distinta a la elegida.
+COMPOSER_BIN="$(command -v composer || true)"
+if [ -n "$COMPOSER_BIN" ]; then
+    COMPOSER=("$PHP" "$COMPOSER_BIN")
 elif [ -f composer.phar ]; then
-    COMPOSER="$PHP composer.phar"
+    COMPOSER=("$PHP" composer.phar)
 else
     curl -sS https://getcomposer.org/installer | "$PHP" -- --quiet
-    COMPOSER="$PHP composer.phar"
+    COMPOSER=("$PHP" composer.phar)
 fi
-$COMPOSER install --no-interaction 2>&1 | tail -3
+"${COMPOSER[@]}" install --no-interaction 2>&1 | tail -3
 ok "Dependencias listas"
 
 # ---------- Configuración ----------

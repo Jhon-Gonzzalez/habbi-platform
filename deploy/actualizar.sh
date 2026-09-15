@@ -29,8 +29,12 @@ for c in /opt/cpanel/ea-php83/root/usr/bin/php /opt/cpanel/ea-php82/root/usr/bin
 done
 [ -n "$PHP" ] || { printf '%s✗ No encontré PHP 8.1+%s\n' "$ROJO" "$FIN" >&2; exit 1; }
 
-COMPOSER="composer"
-command -v composer >/dev/null 2>&1 || COMPOSER="$PHP composer.phar"
+COMPOSER_BIN="$(command -v composer || true)"
+if [ -n "$COMPOSER_BIN" ]; then
+    COMPOSER=("$PHP" "$COMPOSER_BIN")
+else
+    COMPOSER=("$PHP" composer.phar)
+fi
 
 # Si algo falla, sacar el sitio del modo mantenimiento igualmente
 restaurar() { "$PHP" artisan up >/dev/null 2>&1 || true; }
@@ -45,7 +49,7 @@ git pull --ff-only origin master
 ok "Código actualizado"
 
 paso "Actualizando dependencias"
-$COMPOSER install --no-dev --optimize-autoloader --no-interaction 2>&1 | tail -3
+"${COMPOSER[@]}" install --no-dev --optimize-autoloader --no-interaction 2>&1 | tail -3
 ok "Dependencias al día"
 
 paso "Aplicando migraciones"
