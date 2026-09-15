@@ -69,24 +69,34 @@ public/assets/
 └── img/            Logos e imágenes
 ```
 
-## Instalación local
+## Probarlo en tu ordenador
 
 ```bash
-git clone https://github.com/jhon-gonzzalez/habbi-platform.git
-cd habbi-platform
+git clone https://github.com/Jhon-Gonzzalez/habbi-platform.git habbi
+cd habbi
+bash deploy/probar-local.sh
+```
 
+Un solo comando: instala dependencias, configura **SQLite** (no hace falta
+instalar MySQL), crea las tablas, genera datos de ejemplo y levanta el
+servidor en <http://localhost:8000>.
+
+Entra como administrador con `admin@habbi.test` / `habbi1234`.
+
+> **¿No tienes PHP?** En Mac lo más cómodo es [Laravel Herd](https://herd.laravel.com)
+> (gratis, instalador normal). En Linux, `sudo apt install php php-sqlite3 php-mbstring php-xml`.
+
+### Instalación manual, con MySQL
+
+```bash
 composer install
 cp .env.example .env
 php artisan key:generate
-
 # Configura DB_DATABASE, DB_USERNAME y DB_PASSWORD en .env, luego:
 php artisan migrate --seed
 php artisan storage:link
-
 php artisan serve
 ```
-
-Abre <http://localhost:8000>.
 
 El seeder crea un administrador con las credenciales de `ADMIN_EMAIL` y
 `ADMIN_PASSWORD` del `.env`, más datos de ejemplo (usuarios, alojamientos y
