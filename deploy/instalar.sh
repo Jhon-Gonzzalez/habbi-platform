@@ -95,16 +95,30 @@ ok "Proyecto en: $RAIZ"
 # ============================================================
 paso "2/9 · Buscando PHP 8.1 o superior"
 # ============================================================
-PHP=""
-for candidato in \
-    /opt/cpanel/ea-php83/root/usr/bin/php \
-    /opt/cpanel/ea-php82/root/usr/bin/php \
-    /opt/cpanel/ea-php81/root/usr/bin/php \
-    /usr/local/bin/ea-php83 /usr/local/bin/ea-php82 /usr/local/bin/ea-php81 \
-    "$(command -v php || true)"
+# Los binarios de PHP están en rutas distintas según el panel:
+#   CloudLinux (Namecheap y la mayoría del hosting compartido) → /opt/alt/phpXX/usr/bin/php
+#   EasyApache (cPanel estándar)                               → /opt/cpanel/ea-phpXX/root/usr/bin/php
+# Se recorren de la versión más alta a la más baja.
+candidatos=()
+for patron in '/opt/alt/php8[0-9]/usr/bin/php' \
+              '/opt/cpanel/ea-php8[0-9]/root/usr/bin/php' \
+              '/usr/local/bin/ea-php8[0-9]'
 do
+    for ruta in $(compgen -G "$patron" 2>/dev/null | sort -rV); do
+        candidatos+=("$ruta")
+    done
+done
+candidatos+=("$(command -v php || true)")
+
+PHP=""
+for candidato in "${candidatos[@]}"; do
     [ -n "$candidato" ] && [ -x "$candidato" ] || continue
-    version="$("$candidato" -r 'echo PHP_VERSION;' 2>/dev/null || echo 0)"
+
+    # php-cgi acepta -r pero imprime su ayuda en vez de ejecutar, así que se
+    # exige que la salida sea exactamente un número de versión.
+    version="$("$candidato" -r 'echo PHP_VERSION;' 2>/dev/null | head -1)"
+    [[ "$version" =~ ^[0-9]+\.[0-9]+\.[0-9]+ ]] || { nota "descartado: $candidato (no es la versión de consola)"; continue; }
+
     if "$candidato" -r 'exit(PHP_VERSION_ID >= 80100 ? 0 : 1);' 2>/dev/null; then
         PHP="$candidato"
         ok "PHP $version → $PHP"
@@ -113,12 +127,18 @@ do
     nota "descartado: $candidato (PHP $version)"
 done
 
-[ -n "$PHP" ] || error "No encontré PHP 8.1+. Ve a cPanel → MultiPHP Manager y selecciona PHP 8.2 para tu dominio."
+if [ -z "$PHP" ]; then
+    printf '\n'
+    aviso "No encontré PHP 8.1 o superior en este servidor."
+    nota "En cPanel, busca «Select PHP Version» (o «MultiPHP Manager»)"
+    nota "y elige PHP 8.2 para tu dominio. Luego vuelve a lanzar la instalación."
+    error "Instalación detenida."
+fi
 
 # ---------- Extensiones ----------
 FALTAN=""
 for ext in pdo_mysql mbstring openssl tokenizer xml ctype json fileinfo; do
-    "$PHP" -m | grep -qi "^${ext}$" || FALTAN="$FALTAN $ext"
+    "$PHP" -m 2>/dev/null | grep -qi "^${ext}$" || FALTAN="$FALTAN $ext"
 done
 if [ -n "$FALTAN" ]; then
     aviso "Faltan extensiones de PHP:$FALTAN"
