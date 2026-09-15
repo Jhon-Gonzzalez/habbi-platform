@@ -5,6 +5,103 @@ Tiempo estimado: 30–45 minutos la primera vez.
 
 ---
 
+## Vía rápida (tienes SSH, así que esta es la tuya)
+
+Con acceso SSH todo el despliegue son tres comandos. El script detecta tu
+usuario de cPanel, busca la versión correcta de PHP, instala dependencias,
+te pregunta los datos de la base de datos y deja el sitio funcionando.
+
+```bash
+ssh TU_USUARIO@eliandval.com          # o la IP del servidor
+git clone https://github.com/Jhon-Gonzzalez/habbi-platform.git habbi
+cd habbi && bash deploy/instalar.sh
+```
+
+El script se puede ejecutar varias veces sin romper nada: si algo falla
+(por ejemplo, que aún no hayas creado la base de datos), te dice qué
+corregir y lo vuelves a lanzar.
+
+**Antes de lanzarlo**, crea la base de datos siguiendo el paso 1.
+**Después**, te quedará un único paso manual: apuntar el Document Root
+(paso 3).
+
+Para actualizar el sitio en el futuro:
+
+```bash
+cd ~/habbi && bash deploy/actualizar.sh
+```
+
+---
+
+## ¿Qué es el «prefijo» de cPanel?
+
+En hosting compartido hay cientos de cuentas en el mismo servidor MySQL, así
+que **cPanel añade tu usuario delante del nombre** de cada base de datos y
+cada usuario que creas. No lo eliges tú: aparece ya escrito y bloqueado en
+el formulario.
+
+Si tu usuario de cPanel es `elianXXX` y escribes `habbi` en el campo, la base
+se llamará realmente:
+
+```
+elianXXX_habbi
+      ↑
+      este trozo es el prefijo
+```
+
+**En el `.env` tienes que poner el nombre completo con prefijo**, no solo
+`habbi`. Ese es el error que más rompe los despliegues en cPanel.
+
+Para ver tu prefijo tienes tres formas:
+
+- Conéctate por SSH y ejecuta `whoami` — eso es exactamente tu prefijo.
+- Entra en cPanel → **MySQL® Databases**: verás el prefijo escrito en gris
+  a la izquierda del campo de texto.
+- Míralo arriba a la derecha en cPanel, junto a «Current User».
+
+El script `deploy/instalar.sh` lo detecta solo y te lo muestra, así que si
+usas la vía rápida no necesitas averiguarlo por tu cuenta.
+
+---
+
+## ⚠ Tu dominio apunta hoy a otro servicio
+
+A fecha de este documento, los registros DNS de `eliandval.com` están así:
+
+```
+eliandval.com       A   → 23.227.38.69      (rango de Shopify)
+www.eliandval.com   A   → 23.227.38.74      (rango de Shopify)
+nameservers             → dns1/dns2.namecheaphosting.com
+```
+
+Es decir: **el dominio no apunta al hosting de Namecheap todavía**, apunta a
+Shopify. Los nameservers sí son de Namecheap, así que los registros los
+controlas desde tu cuenta.
+
+**Antes de cambiar nada, comprueba si hay una tienda activa en ese dominio.**
+Si la hay, al mover el registro A la tienda dejará de responder.
+
+Opciones:
+
+| Situación | Qué hacer |
+|---|---|
+| La tienda de Shopify ya no se usa | Cambia el registro A al IP de tu hosting |
+| La tienda sigue viva | Publica HABBI en un subdominio, p. ej. `app.eliandval.com` |
+| No sabes qué hay ahí | Ábrelo en el navegador antes de tocar el DNS |
+
+Para cambiar el registro A: cPanel → **Zone Editor** → `eliandval.com` →
+**Manage**, y edita el registro `A` de `eliandval.com` y el de `www` con la
+IP compartida de tu hosting (la encuentras en cPanel, panel derecho, como
+*Shared IP Address*).
+
+Si prefieres el subdominio: cPanel → **Domains** → **Create A New Domain** →
+`app.eliandval.com`, con Document Root `habbi/public`. Así no tocas nada de
+lo que ya tienes en producción.
+
+Los cambios de DNS tardan entre unos minutos y unas horas en propagarse.
+
+---
+
 ## 0. Antes de empezar
 
 Comprueba en cPanel:
@@ -246,14 +343,12 @@ php artisan up
 
 ---
 
-## Qué necesito de ti para ayudarte con el resto
+## Resumen de lo que queda en tus manos
 
-Si quieres que deje el despliegue terminado, hazme llegar:
+1. **Crear la base de datos** en cPanel (paso 1) — el nombre real llevará tu prefijo.
+2. **Ejecutar `bash deploy/instalar.sh`** por SSH.
+3. **Apuntar el Document Root** a `habbi/public` (paso 3).
+4. **Decidir qué hacer con el DNS**, que hoy apunta a Shopify (sección de arriba).
 
-1. Si tu cPanel tiene **Terminal / acceso SSH** (sí o no).
-2. La **versión de PHP** que aparece en MultiPHP Manager.
-3. Tu **prefijo de cPanel** (el `elianXXX` de los ejemplos).
-4. Si el dominio `eliandval.com` ya apunta a este hosting o sigue en otro sitio.
-
-**Nunca me envíes contraseñas ni el contenido de tu `.env`.** Esos valores los
-escribes tú directamente en el servidor.
+Nunca compartas tu `.env` ni tus contraseñas: el script te las pide en el
+servidor y las escribe directamente allí.

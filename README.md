@@ -104,7 +104,21 @@ de todas las vistas.
 
 ## Despliegue
 
-Guía paso a paso para Namecheap (cPanel) en **[DEPLOY.md](DEPLOY.md)**.
+Con acceso SSH al hosting, el despliegue son tres comandos:
+
+```bash
+git clone https://github.com/Jhon-Gonzzalez/habbi-platform.git habbi
+cd habbi
+bash deploy/instalar.sh
+```
+
+El script detecta el usuario de cPanel y su prefijo, localiza una versión
+de PHP válida, instala dependencias, pide los datos de la base de datos,
+migra, crea el administrador y enlaza el almacenamiento de fotos.
+
+Para actualizar más adelante: `bash deploy/actualizar.sh`.
+
+Guía completa, incluido el caso sin SSH: **[DEPLOY.md](DEPLOY.md)**.
 
 ## Comandos útiles
 
