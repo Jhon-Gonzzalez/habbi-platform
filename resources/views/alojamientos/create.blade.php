@@ -21,7 +21,8 @@
         <div class="hb-card__header"><h2 style="font-size:1.1rem">Fotos <span class="hb-req">*</span></h2></div>
         <div class="hb-card__body">
 
-            <div class="hb-drop @error('photos') is-invalid @enderror" data-uploader="#previsualizacion">
+            <div class="hb-drop @error('photos') is-invalid @enderror" data-uploader="#previsualizacion"
+                 data-max-bytes="{{ \App\Support\Subidas::maxPost() }}">
                 <div class="hb-drop__icon" aria-hidden="true">🖼</div>
                 <strong>Arrastra tus fotos aquí o haz clic para elegirlas</strong>
                 <span class="hb-hint">Hasta 8 imágenes · JPG, PNG o WEBP · máximo 5 MB cada una</span>

@@ -142,10 +142,17 @@ ok "Almacenamiento de fotos enlazado"
 printf '\n%s╔════════════════════════════════════════════╗%s\n' "$VERDE" "$FIN"
 printf '%s║   HABBI funcionando en tu ordenador        ║%s\n' "$VERDE" "$FIN"
 printf '%s╚════════════════════════════════════════════╝%s\n\n' "$VERDE" "$FIN"
-printf '  Abre en el navegador:  %shttp://localhost:8000%s\n\n' "$AZUL" "$FIN"
+printf '  Abre en el navegador:  %shttp://127.0.0.1:8000%s\n\n' "$AZUL" "$FIN"
 printf '  Entrar como administrador:\n'
 printf '      correo ....... admin@habbi.test\n'
 printf '      contraseña ... habbi1234\n\n'
 printf '  Para parar el servidor: pulsa Ctrl + C\n\n'
 
-exec "$PHP" artisan serve
+# Los valores por defecto de PHP (post_max_size 8M) impiden subir varias
+# fotos a la vez. «artisan serve» lanza un PHP nuevo que NO hereda las
+# opciones -d, pero sí la variable PHP_INI_SCAN_DIR: el colon inicial hace
+# que el directorio se sume al de siempre, en vez de reemplazarlo, para no
+# perder las extensiones del sistema.
+export PHP_INI_SCAN_DIR=":$RAIZ/deploy/php.d"
+
+exec "$PHP" artisan serve --host=127.0.0.1 --port=8000

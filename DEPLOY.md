@@ -339,6 +339,28 @@ php artisan optimize
 
 ---
 
+## 6b. Límites de subida de PHP
+
+El formulario de publicar admite hasta 8 fotos. Con los valores por defecto
+de PHP (`post_max_size 8M`, `upload_max_filesize 2M`) el envío falla en
+cuanto se suben unas pocas imágenes hechas con el móvil.
+
+En cPanel → **Select PHP Version** → pestaña **Options**, sube al menos:
+
+| Opción | Valor recomendado |
+|---|---|
+| `post_max_size` | `64M` |
+| `upload_max_filesize` | `16M` |
+| `max_file_uploads` | `20` |
+| `memory_limit` | `256M` |
+
+No es obligatorio: si los dejas bajos la aplicación no se rompe. Avisa del
+peso total antes de enviar y, si aun así se supera, muestra una página
+explicando el límite en lugar de un error técnico. Pero con estos valores
+la experiencia es la esperada.
+
+---
+
 ## 7. Permisos de carpetas
 
 ```bash

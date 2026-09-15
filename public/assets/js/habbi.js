@@ -119,7 +119,10 @@
       input.addEventListener('change', function () {
         destino.innerHTML = '';
 
+        var pesoTotal = 0;
+
         Array.prototype.slice.call(input.files).forEach(function (file, i) {
+          pesoTotal += file.size;
           if (!file.type.startsWith('image/')) return;
 
           var fig = document.createElement('div');
@@ -140,8 +143,34 @@
 
           destino.appendChild(fig);
         });
+
+        avisarPeso(zona, pesoTotal);
       });
     });
+  }
+
+  /* ---------- Aviso de peso: el límite lo pone PHP, no el navegador ---------- */
+  function avisarPeso(zona, pesoTotal) {
+    var limite = parseInt(zona.dataset.maxBytes || '0', 10);
+    var previo = zona.parentNode.querySelector('[data-aviso-peso]');
+
+    if (previo) previo.remove();
+    if (!limite || pesoTotal <= limite) return;
+
+    var aviso = document.createElement('div');
+    aviso.className = 'hb-alert hb-alert--error';
+    aviso.setAttribute('data-aviso-peso', '');
+    aviso.style.marginTop = '1rem';
+    aviso.innerHTML =
+      '<span class="hb-alert__icon">!</span><div>Las fotos suman <strong>' +
+      mb(pesoTotal) + '</strong> y el servidor solo admite <strong>' + mb(limite) +
+      '</strong>. Quita alguna o súbelas más ligeras, o el envío fallará.</div>';
+
+    zona.parentNode.insertBefore(aviso, zona.nextSibling);
+  }
+
+  function mb(bytes) {
+    return (bytes / 1048576).toFixed(1).replace('.', ',') + ' MB';
   }
 
   /* ---------- Gestión de fotos existentes (edición) ---------- */
