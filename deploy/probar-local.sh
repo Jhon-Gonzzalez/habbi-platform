@@ -21,8 +21,14 @@ paso() { printf '\n%s▸ %s%s\n' "$AZUL" "$1" "$FIN"; }
 ok()   { printf '  %s✓%s %s\n' "$VERDE" "$FIN" "$1"; }
 
 # ---------- PHP ----------
+# Rango admitido por el proyecto. El suelo lo marca Laravel 10 (^8.1) y el
+# techo la dependencia nette/schema, que declara "8.1 - 8.4". Actualiza
+# estos valores si algún día se sube la versión de Laravel.
+PHP_MIN=80100
+PHP_MAX=80500   # exclusivo: 8.5 y superiores quedan fuera
+
 # En un Mac puede haber varios PHP a la vez (Herd, Homebrew, el del sistema).
-# Buscamos uno que cumpla las dos condiciones: 8.1+ y con pdo_sqlite.
+# Buscamos uno que cumpla las tres condiciones: dentro del rango y con pdo_sqlite.
 candidatos=()
 [ -n "${PHP_BIN:-}" ] && candidatos+=("$PHP_BIN")
 candidatos+=("$(command -v php || true)")
@@ -42,12 +48,19 @@ done
 
 PHP=""
 SIN_SQLITE=""
+DEMASIADO_NUEVO=""
 for candidato in "${candidatos[@]}"; do
     [ -n "$candidato" ] && [ -x "$candidato" ] || continue
 
     version="$("$candidato" -r 'echo PHP_VERSION;' 2>/dev/null | head -1)"
     [[ "$version" =~ ^[0-9]+\.[0-9]+\.[0-9]+ ]] || continue
-    "$candidato" -r 'exit(PHP_VERSION_ID >= 80100 ? 0 : 1);' 2>/dev/null || continue
+
+    "$candidato" -r "exit(PHP_VERSION_ID >= $PHP_MIN ? 0 : 1);" 2>/dev/null || continue
+
+    if ! "$candidato" -r "exit(PHP_VERSION_ID < $PHP_MAX ? 0 : 1);" 2>/dev/null; then
+        DEMASIADO_NUEVO="$DEMASIADO_NUEVO\n      · $candidato (PHP $version)"
+        continue
+    fi
 
     if "$candidato" -m 2>/dev/null | grep -qi '^pdo_sqlite$'; then
         PHP="$candidato"
@@ -59,17 +72,24 @@ for candidato in "${candidatos[@]}"; do
 done
 
 if [ -z "$PHP" ]; then
-    printf '\n%s✗ No encontré un PHP 8.1+ con la extensión pdo_sqlite.%s\n\n' "$ROJO" "$FIN" >&2
+    printf '\n%s✗ No encontré un PHP compatible (necesito 8.1, 8.2, 8.3 o 8.4).%s\n\n' "$ROJO" "$FIN" >&2
+
+    if [ -n "$DEMASIADO_NUEVO" ]; then
+        printf '  Estos son DEMASIADO NUEVOS para este proyecto:'
+        printf "$DEMASIADO_NUEVO\n"
+        printf '      (la dependencia nette/schema solo admite hasta PHP 8.4)\n\n'
+    fi
 
     if [ -n "$SIN_SQLITE" ]; then
-        printf '  Estos PHP tienen la versión correcta pero les falta pdo_sqlite:'
+        printf '  Estos tienen una versión válida pero les falta pdo_sqlite:'
         printf "$SIN_SQLITE\n\n"
     fi
 
-    printf '  La forma más simple de resolverlo en Mac es instalar Laravel Herd,\n'
-    printf '  que ya trae PHP con todas las extensiones:\n\n'
+    printf '  Solución más rápida con Homebrew:\n\n'
+    printf '      %sbrew install php@8.3%s\n\n' "$AZUL" "$FIN"
+    printf '  Y vuelve a ejecutar este script: lo encontrará automáticamente.\n\n'
+    printf '  Alternativa: Laravel Herd (gratis, trae su propio PHP):\n'
     printf '      %shttps://herd.laravel.com%s\n\n' "$AZUL" "$FIN"
-    printf '  Si prefieres Homebrew:  brew install php\n\n'
     printf '  ¿Ya tienes un PHP que sirve pero no lo encuentro? Indícalo así:\n'
     printf '      PHP_BIN=/ruta/a/php bash deploy/probar-local.sh\n\n'
     exit 1

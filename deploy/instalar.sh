@@ -93,8 +93,13 @@ nota "${USUARIO_CPANEL}_loquesea — cPanel añade el prefijo solo."
 ok "Proyecto en: $RAIZ"
 
 # ============================================================
-paso "2/9 · Buscando PHP 8.1 o superior"
+paso "2/9 · Buscando PHP compatible (8.1 – 8.4)"
 # ============================================================
+# Rango admitido por el proyecto: lo marca Laravel 10 por abajo (^8.1) y la
+# dependencia nette/schema por arriba ("8.1 - 8.4").
+PHP_MIN=80100
+PHP_MAX=80500   # exclusivo
+
 # Los binarios de PHP están en rutas distintas según el panel:
 #   CloudLinux (Namecheap y la mayoría del hosting compartido) → /opt/alt/phpXX/usr/bin/php
 #   EasyApache (cPanel estándar)                               → /opt/cpanel/ea-phpXX/root/usr/bin/php
@@ -119,19 +124,19 @@ for candidato in "${candidatos[@]}"; do
     version="$("$candidato" -r 'echo PHP_VERSION;' 2>/dev/null | head -1)"
     [[ "$version" =~ ^[0-9]+\.[0-9]+\.[0-9]+ ]] || { nota "descartado: $candidato (no es la versión de consola)"; continue; }
 
-    if "$candidato" -r 'exit(PHP_VERSION_ID >= 80100 ? 0 : 1);' 2>/dev/null; then
+    if "$candidato" -r "exit(PHP_VERSION_ID >= $PHP_MIN && PHP_VERSION_ID < $PHP_MAX ? 0 : 1);" 2>/dev/null; then
         PHP="$candidato"
         ok "PHP $version → $PHP"
         break
     fi
-    nota "descartado: $candidato (PHP $version)"
+    nota "descartado: $candidato (PHP $version, fuera del rango 8.1–8.4)"
 done
 
 if [ -z "$PHP" ]; then
     printf '\n'
-    aviso "No encontré PHP 8.1 o superior en este servidor."
+    aviso "No encontré un PHP compatible (necesito 8.1, 8.2, 8.3 o 8.4)."
     nota "En cPanel, busca «Select PHP Version» (o «MultiPHP Manager»)"
-    nota "y elige PHP 8.2 para tu dominio. Luego vuelve a lanzar la instalación."
+    nota "y elige PHP 8.2 o 8.3. Luego vuelve a lanzar la instalación."
     error "Instalación detenida."
 fi
 
