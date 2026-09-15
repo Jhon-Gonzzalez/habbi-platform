@@ -33,6 +33,62 @@ cd ~/habbi && bash deploy/actualizar.sh
 
 ---
 
+## Si no tienes SSH (instalación desde cPanel)
+
+Namecheap trae el acceso SSH desactivado, y para activarlo hace falta la
+contraseña de cPanel. Si entras a cPanel desde el panel de Namecheap nunca
+llegaste a crear una, y la página *Password & Security* pide la antigua para
+cambiarla.
+
+Dos salidas:
+
+**A. Pedir el reseteo al soporte de Namecheap.** Tienen chat 24/7 y lo hacen
+en minutos. Es lo más rápido y te deja el SSH disponible para siempre.
+
+**B. Instalar sin terminal**, con las herramientas que cPanel ya te da.
+
+### Instalación sin terminal, paso a paso
+
+**1. Traer el código** — cPanel → **Git™ Version Control** → *Create*:
+
+| Campo | Valor |
+|---|---|
+| Clone URL | `https://github.com/Jhon-Gonzzalez/habbi-platform.git` |
+| Repository Path | `habbi` |
+
+**2. Rellenar la configuración** — cPanel → **File Manager** → entra en
+`habbi/deploy`. Copia `config.ejemplo`, renombra la copia a `config.local`,
+y ábrela con *Edit* para poner tus datos:
+
+```ini
+HABBI_DB_NAME=tuusuario_habbi
+HABBI_DB_USER=tuusuario_habbi
+HABBI_DB_PASSWORD=la-contraseña-de-la-base-de-datos
+HABBI_URL=https://habbi.tudominio.com
+HABBI_ADMIN_EMAIL=tucorreo@ejemplo.com
+HABBI_ADMIN_PASSWORD=una-contraseña-de-8-o-más
+```
+
+**3. Lanzar la instalación** — cPanel → **Cron Jobs**. En *Add New Cron Job*
+elige *Once Per Minute* (`* * * * *`) y pega como comando:
+
+```bash
+cd $HOME/habbi && bash deploy/instalar.sh --auto > $HOME/habbi-instalacion.log 2>&1
+```
+
+Espera dos minutos y **borra el cron job** para que no se repita.
+
+**4. Ver el resultado** — File Manager → abre `habbi-instalacion.log` con
+*View*. Ahí está toda la salida del instalador: si algo falló, dice qué.
+Corrige y vuelve a crear el cron una vez más.
+
+**5. Limpiar** — cuando el sitio funcione, borra `habbi/deploy/config.local`
+desde File Manager. Contiene contraseñas.
+
+> El instalador es idempotente: puedes lanzarlo las veces que haga falta.
+
+---
+
 ## ¿Qué es el «prefijo» de cPanel?
 
 En hosting compartido hay cientos de cuentas en el mismo servidor MySQL, así

@@ -1,0 +1,34 @@
+# ==========================================================
+#  HABBI — Configuración para la instalación sin terminal
+# ==========================================================
+#
+#  CÓMO USARLO
+#  1. En cPanel → File Manager, entra en la carpeta habbi/deploy
+#  2. Copia este archivo y renombra la copia a:  config.local
+#  3. Ábrelo con "Edit" y rellena los cuatro valores de abajo
+#  4. Lanza la instalación desde cPanel → Cron Jobs (ver DEPLOY.md)
+#
+#  IMPORTANTE: config.local contiene contraseñas.
+#  Está excluido de git y el instalador lo protege al terminar,
+#  pero bórralo en cuanto el sitio funcione.
+#
+
+# ---------- Base de datos ----------
+# Los nombres COMPLETOS, con el prefijo de tu usuario de cPanel.
+# Si los dejas vacíos se usa  <tuusuario>_habbi  automáticamente.
+HABBI_DB_NAME=
+HABBI_DB_USER=
+HABBI_DB_PASSWORD=
+
+# ---------- Sitio ----------
+# La dirección donde se verá HABBI, con https://
+HABBI_URL=https://habbi.tudominio.com
+
+# ---------- Cuenta de administrador ----------
+# Con estos datos entrarás a /admin
+HABBI_ADMIN_EMAIL=
+HABBI_ADMIN_PASSWORD=
+
+# ---------- Contacto público (opcional) ----------
+# Aparece en el pie de página. Déjalo vacío si no quieres mostrarlo.
+HABBI_CONTACT=

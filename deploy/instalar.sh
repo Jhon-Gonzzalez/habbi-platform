@@ -13,6 +13,32 @@ set -euo pipefail
 RAIZ="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$RAIZ"
 
+# ---------- Modo desatendido ----------
+# Sin SSH se puede lanzar desde un Cron Job de cPanel. En ese caso no hay
+# nadie para responder las preguntas, así que los datos se leen de un
+# archivo de configuración en lugar de pedirse por teclado:
+#
+#   bash deploy/instalar.sh --auto
+#   bash deploy/instalar.sh --config /ruta/a/mi-config
+#
+AUTO=0
+CONFIG="$RAIZ/deploy/config.local"
+
+while [ $# -gt 0 ]; do
+    case "$1" in
+        --auto)    AUTO=1; shift ;;
+        --config)  AUTO=1; CONFIG="$2"; shift 2 ;;
+        --config=*) AUTO=1; CONFIG="${1#*=}"; shift ;;
+        -h|--help)
+            printf 'Uso: bash deploy/instalar.sh [--auto] [--config ARCHIVO]\n\n'
+            printf '  (sin opciones)     modo interactivo, pregunta los datos\n'
+            printf '  --auto             lee los datos de deploy/config.local\n'
+            printf '  --config ARCHIVO   lee los datos del archivo indicado\n\n'
+            exit 0 ;;
+        *) printf 'Opción desconocida: %s\n' "$1" >&2; exit 1 ;;
+    esac
+done
+
 # ---------- Colores ----------
 if [ -t 1 ]; then
     AZUL=$'\033[1;34m'; VERDE=$'\033[1;32m'; ROJO=$'\033[1;31m'
@@ -26,6 +52,32 @@ ok()    { printf '  %s✓%s %s\n' "$VERDE" "$FIN" "$1"; }
 aviso() { printf '  %s!%s %s\n' "$AMBAR" "$FIN" "$1"; }
 error() { printf '\n  %s✗ %s%s\n\n' "$ROJO" "$1" "$FIN" >&2; exit 1; }
 nota()  { printf '    %s%s%s\n' "$GRIS" "$1" "$FIN"; }
+
+# Lee un archivo CLAVE=valor SIN ejecutarlo.
+# Usar «source» sería un fallo grave: una contraseña con $ & | o comillas
+# se interpretaría como código en lugar de como texto.
+leer_config() {
+    local archivo="$1" linea clave valor
+
+    while IFS= read -r linea || [ -n "$linea" ]; do
+        linea="${linea%$'\r'}"                       # saltos de línea de Windows
+        case "$linea" in ''|'#'*) continue ;; esac
+        [ "${linea#*=}" != "$linea" ] || continue     # sin '=' no es una variable
+
+        clave="${linea%%=*}"
+        valor="${linea#*=}"
+        clave="${clave//[[:space:]]/}"
+
+        [[ "$clave" =~ ^HABBI_[A-Z0-9_]+$ ]] || continue
+
+        case "$valor" in
+            \"*\") valor="${valor#\"}"; valor="${valor%\"}" ;;
+            \'*\') valor="${valor#\'}"; valor="${valor%\'}" ;;
+        esac
+
+        printf -v "$clave" '%s' "$valor"
+    done < "$archivo"
+}
 
 printf '\n%s╔════════════════════════════════════════════╗%s\n' "$AZUL" "$FIN"
 printf '%s║   HABBI · Instalación en cPanel            ║%s\n' "$AZUL" "$FIN"
@@ -94,15 +146,40 @@ ok "Dependencias instaladas"
 # ============================================================
 paso "4/9 · Configurando el archivo .env"
 # ============================================================
-if [ -f .env ]; then
+# En modo desatendido los datos vienen del archivo de configuración.
+if [ "$AUTO" = "1" ]; then
+    [ -f "$CONFIG" ] || error "No encontré el archivo de configuración: $CONFIG
+    Copia deploy/config.ejemplo a deploy/config.local y rellénalo."
+
+    leer_config "$CONFIG"
+
+    BD="${HABBI_DB_NAME:-${USUARIO_CPANEL}_habbi}"
+    BD_USER="${HABBI_DB_USER:-${USUARIO_CPANEL}_habbi}"
+    BD_PASS="${HABBI_DB_PASSWORD:-}"
+    URL="${HABBI_URL:-}"
+    CONTACTO="${HABBI_CONTACT:-}"
+    ADMIN_MAIL="${HABBI_ADMIN_EMAIL:-}"
+    ADMIN_PASS="${HABBI_ADMIN_PASSWORD:-}"
+
+    faltan=""
+    [ -n "$BD_PASS" ]    || faltan="$faltan HABBI_DB_PASSWORD"
+    [ -n "$URL" ]        || faltan="$faltan HABBI_URL"
+    [ -n "$ADMIN_MAIL" ] || faltan="$faltan HABBI_ADMIN_EMAIL"
+    [ -n "$ADMIN_PASS" ] || faltan="$faltan HABBI_ADMIN_PASSWORD"
+    [ -z "$faltan" ] || error "Faltan valores en $CONFIG:$faltan"
+    [ ${#ADMIN_PASS} -ge 8 ] || error "HABBI_ADMIN_PASSWORD debe tener al menos 8 caracteres."
+
+    REHACER="s"
+    ok "Datos leídos de $(basename "$CONFIG")"
+elif [ -f .env ]; then
     aviso "Ya existe un archivo .env"
     read -rp "  ¿Quieres reescribir la configuración? [s/N]: " REHACER
     REHACER="${REHACER:-n}"
 else
     REHACER="s"
-    cp .env.example .env
-    ok "Creado .env a partir de .env.example"
 fi
+
+[ -f .env ] || { cp .env.example .env; ok "Creado .env a partir de .env.example"; }
 
 # Escribe una variable en .env. Delega en un helper de PHP porque sed se
 # rompe con contraseñas que contienen / & | # o comillas.
@@ -110,7 +187,7 @@ escribir() {
     "$PHP" deploy/env-set.php "$1" "$2"
 }
 
-if [[ "$REHACER" =~ ^[sSyY] ]]; then
+if [ "$AUTO" != "1" ] && [[ "$REHACER" =~ ^[sSyY] ]]; then
     printf '\n  %sDatos de la base de datos%s\n' "$AZUL" "$FIN"
     nota "Créala antes en cPanel → MySQL® Databases."
     nota "Escribe los nombres COMPLETOS, con el prefijo ${USUARIO_CPANEL}_"
@@ -130,11 +207,6 @@ if [[ "$REHACER" =~ ^[sSyY] ]]; then
     nota "Ejemplo: https://habbi.tudominio.com"
     read -rp "  URL del sitio: " URL
     [ -n "$URL" ] || error "Necesito la URL donde se va a publicar el sitio."
-    case "$URL" in
-        http://*|https://*) ;;
-        *) URL="https://$URL" ;;
-    esac
-    URL="${URL%/}"
 
     read -rp "  Correo de contacto público (pie de página, opcional): " CONTACTO
 
@@ -143,6 +215,14 @@ if [[ "$REHACER" =~ ^[sSyY] ]]; then
 
     read -rsp "  Contraseña del administrador (mín. 8, con letras y números): " ADMIN_PASS; printf '\n'
     [ ${#ADMIN_PASS} -ge 8 ] || error "La contraseña del administrador debe tener al menos 8 caracteres."
+fi
+
+if [[ "$REHACER" =~ ^[sSyY] ]]; then
+    case "$URL" in
+        http://*|https://*) ;;
+        *) URL="https://$URL" ;;
+    esac
+    URL="${URL%/}"
 
     escribir APP_NAME        "HABBI"
     escribir APP_ENV         "production"
@@ -167,6 +247,11 @@ fi
 
 chmod 600 .env
 ok "Permisos del .env restringidos (600)"
+
+if [ "$AUTO" = "1" ] && [ -f "$CONFIG" ]; then
+    chmod 600 "$CONFIG"
+    aviso "Borra $(basename "$CONFIG") cuando el sitio funcione: contiene contraseñas."
+fi
 
 # ============================================================
 paso "5/9 · Clave de cifrado"
