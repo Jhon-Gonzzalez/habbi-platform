@@ -15,6 +15,7 @@ PHP_MAX=${PHP_MAX:-80500}   # exclusivo
 # Rellenadas por buscar_php para que quien llame pueda dar un mensaje útil.
 PHP_DESCARTADOS_VERSION=""
 PHP_DESCARTADOS_EXTENSION=""
+PHP_FORZADO=0
 
 buscar_php() {
     local extension="${1:-}"
@@ -42,9 +43,20 @@ buscar_php() {
     PHP=""
     PHP_DESCARTADOS_VERSION=""
     PHP_DESCARTADOS_EXTENSION=""
+    PHP_FORZADO=0
 
     for candidato in "${candidatos[@]}"; do
         [ -n "$candidato" ] && [ -x "$candidato" ] || continue
+
+        # Un PHP indicado a mano manda sobre cualquier comprobación nuestra:
+        # si el usuario sabe cuál quiere, no se lo discutimos.
+        if [ -n "${PHP_BIN:-}" ] && [ "$candidato" = "$PHP_BIN" ]; then
+            version="$("$candidato" -r 'echo PHP_VERSION;' 2>/dev/null | head -1)"
+            PHP="$candidato"
+            PHP_VERSION_ENCONTRADA="${version:-desconocida}"
+            PHP_FORZADO=1
+            return 0
+        fi
 
         # php-cgi acepta -r pero imprime su ayuda en vez de ejecutar, así que
         # se exige que la salida sea exactamente un número de versión.
@@ -56,7 +68,11 @@ buscar_php() {
             continue
         fi
 
-        if [ -n "$extension" ] && ! "$candidato" -m 2>/dev/null | grep -qi "^${extension}$"; then
+        # Se pregunta a PHP directamente en lugar de rastrear la salida de
+        # «php -m»: esa lista varía de formato entre versiones y sistemas, y
+        # basta un grep que falle para descartar un binario perfectamente
+        # válido. extension_loaded() es la respuesta autorizada.
+        if [ -n "$extension" ] && ! "$candidato" -r "exit(extension_loaded('$extension') ? 0 : 1);" 2>/dev/null; then
             PHP_DESCARTADOS_EXTENSION="$PHP_DESCARTADOS_EXTENSION\n      · $candidato (PHP $version)"
             continue
         fi
