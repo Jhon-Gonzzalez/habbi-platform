@@ -45,4 +45,19 @@
         Úsalo si esta persona perdió el acceso. No te muestra su contraseña.
     </span>
 </form>
+
+@unless ($usuario->hasVerifiedEmail())
+    <form method="POST" action="{{ route('admin.usuarios.verificar-correo', $usuario) }}"
+          style="max-width:760px;margin-top:1.5rem"
+          data-confirmar="Solo haz esto si comprobaste por otro medio que {{ $usuario->email }} es de esta persona. ¿Continuar?">
+        @csrf
+        <button class="hb-btn hb-btn--ghost" type="submit">
+            Marcar el correo como verificado
+        </button>
+        <span class="hb-hint" style="display:block;margin-top:.5rem">
+            Para cuando el correo de verificación no llega. No le da ningún
+            permiso nuevo: solo le deja reseñar, reportar y pedir ser arrendador.
+        </span>
+    </form>
+@endunless
 @endsection

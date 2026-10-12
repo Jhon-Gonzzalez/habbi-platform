@@ -380,6 +380,7 @@ a.hb-avatar:hover { box-shadow: 0 0 0 3px var(--hb-primary-soft); }
 }
 
 .hb-listing {
+  position: relative; /* ancla el corazón de favoritos */
   background: var(--hb-surface);
   border: 1px solid var(--hb-border);
   border-radius: var(--hb-radius);
@@ -443,6 +444,7 @@ a.hb-avatar:hover { box-shadow: 0 0 0 3px var(--hb-primary-soft); }
 .hb-badge--muted   { background: #EEF1F6; color: var(--hb-muted); }
 .hb-badge--danger  { background: var(--hb-danger-soft); color: var(--hb-danger); }
 .hb-badge--primary { background: var(--hb-primary-soft); color: var(--hb-primary-dark); }
+.hb-badge--warning { background: var(--hb-warning-soft); color: var(--hb-warning); }
 
 .hb-stars { display: inline-flex; align-items: center; gap: 1px; vertical-align: middle; }
 .hb-stars svg { width: 16px; height: 16px; flex-shrink: 0; }
@@ -983,3 +985,91 @@ a.hb-avatar:hover { box-shadow: 0 0 0 3px var(--hb-primary-soft); }
 }
 
 .hb-arrendador-mini:hover { background: var(--hb-bg); }
+
+/* ===================================================================
+   Favoritos
+   =================================================================== */
+
+/* Se ancla a .hb-listing, que es position:relative por esto mismo. */
+.hb-fav {
+    position: absolute;
+    top: .7rem;
+    right: .7rem;
+    z-index: 2;
+}
+
+.hb-fav__btn {
+    display: grid;
+    place-items: center;
+    width: 38px;
+    height: 38px;
+    border: 0;
+    border-radius: 50%;
+    cursor: pointer;
+    color: var(--hb-text);
+    background: rgba(255, 255, 255, .92);
+    box-shadow: var(--hb-shadow-sm);
+    transition: transform .12s ease, color .12s ease, background .12s ease;
+}
+
+.hb-fav__btn:hover {
+    transform: scale(1.08);
+    background: #fff;
+}
+
+.hb-fav__btn.is-on {
+    color: var(--hb-danger);
+}
+
+/* Foco visible: el botón se opera con teclado. */
+.hb-fav__btn:focus-visible {
+    outline: 2px solid var(--hb-primary);
+    outline-offset: 2px;
+}
+
+/* Variante dentro del panel lateral del detalle, donde no flota. */
+.hb-fav--inline {
+    position: static;
+}
+
+.hb-fav--inline .hb-fav__btn {
+    width: auto;
+    height: auto;
+    border-radius: var(--hb-radius-sm);
+    padding: .65rem 1rem;
+    gap: .5rem;
+    grid-auto-flow: column;
+    font: inherit;
+    font-weight: 500;
+    background: var(--hb-surface);
+    border: 1px solid var(--hb-border);
+    width: 100%;
+}
+
+.hb-fav--inline .hb-fav__btn:hover { transform: none; background: var(--hb-bg); }
+
+/* Campo compacto, para formularios dentro de una celda de tabla. */
+.hb-input--sm {
+    padding: .4rem .6rem;
+    font-size: .85rem;
+}
+
+/* ===================================================================
+   Aviso de correo sin verificar
+   =================================================================== */
+
+.hb-verificar {
+    background: var(--hb-warning-soft);
+    border-bottom: 1px solid #F3D9B5;
+    color: var(--hb-warning);
+    font-size: .9rem;
+}
+
+.hb-verificar__inner {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: .75rem;
+    padding-block: .7rem;
+}

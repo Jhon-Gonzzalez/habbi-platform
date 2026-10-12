@@ -17,6 +17,8 @@
 
     @include('partials.navbar', ['transparente' => $navTransparente ?? false])
 
+    @include('partials.aviso-verificar')
+
     <main id="contenido">
         @hasSection('cabecera')
             <div class="hb-pagehead">

@@ -102,6 +102,26 @@ class UsuarioController extends Controller
             ->with('enlace_reset', $enlace);
     }
 
+    /**
+     * Marca el correo como verificado a mano.
+     *
+     * Existe porque el envío de correo falla más de lo que uno quisiera
+     * (SMTP mal configurado, el mensaje en spam, un dominio que rebota), y
+     * sin esta salida un usuario legítimo se queda sin poder reseñar ni pedir
+     * ser arrendador. No da ningún permiso por sí sola: solo dice «este
+     * correo lo comprobamos por otro medio».
+     */
+    public function verificarCorreo(Request $request, User $usuario): RedirectResponse
+    {
+        if ($usuario->hasVerifiedEmail()) {
+            return back()->with('success', 'Ese correo ya estaba verificado.');
+        }
+
+        $usuario->markEmailAsVerified();
+
+        return back()->with('success', 'Correo de ' . $usuario->name . ' marcado como verificado.');
+    }
+
     public function destroy(Request $request, User $usuario): RedirectResponse
     {
         if ($usuario->is($request->user())) {

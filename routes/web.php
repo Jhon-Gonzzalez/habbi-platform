@@ -4,10 +4,12 @@ use App\Http\Controllers\Admin;
 use App\Http\Controllers\AlojamientoController;
 use App\Http\Controllers\ArrendadorController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\FavoritoController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\LegalController;
 use App\Http\Controllers\PerfilController;
 use App\Http\Controllers\RatingController;
+use App\Http\Controllers\ReporteController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
@@ -19,7 +21,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', [HomeController::class, 'index'])->name('index');
 
-Auth::routes(['verify' => false]);
+Auth::routes(['verify' => true]);
 
 /* Textos legales: públicos, sin sesión */
 Route::get('/terminos', [LegalController::class, 'terminos'])->name('legal.terminos');
@@ -76,7 +78,12 @@ Route::prefix('alojamientos')->name('alojamientos.')->group(function () {
 */
 
 Route::middleware('auth')->group(function () {
+    // Reseñar exige correo verificado: afecta la reputación de otra persona,
+    // y sin verificar basta un correo inventado para repetirlo cuantas veces
+    // se quiera. Buscar, guardar favoritos y editar el perfil no lo exigen:
+    // castigar la navegación por no haber abierto un correo no protege a nadie.
     Route::post('/alojamientos/{alojamiento}/resenas', [RatingController::class, 'store'])
+        ->middleware('verified')
         ->whereNumber('alojamiento')
         ->name('ratings.store');
 
@@ -90,9 +97,29 @@ Route::middleware('auth')->group(function () {
     Route::get('/mi-perfil', [PerfilController::class, 'edit'])->name('perfil.edit');
     Route::put('/mi-perfil', [PerfilController::class, 'update'])->name('perfil.update');
 
+    /* ----- Favoritos ----- */
+    Route::get('/mis-favoritos', [FavoritoController::class, 'index'])->name('favoritos.index');
+    Route::post('/alojamientos/{alojamiento}/favorito', [FavoritoController::class, 'toggle'])
+        ->whereNumber('alojamiento')
+        ->name('favoritos.toggle');
+
+    /* ----- Reportar una publicación ----- */
+    Route::middleware('verified')->group(function () {
+        Route::get('/alojamientos/{alojamiento}/reportar', [ReporteController::class, 'create'])
+            ->whereNumber('alojamiento')
+            ->name('reportes.create');
+        Route::post('/alojamientos/{alojamiento}/reportar', [ReporteController::class, 'store'])
+            ->whereNumber('alojamiento')
+            ->name('reportes.store');
+    });
+
     /* ----- Verificación como arrendador ----- */
-    Route::get('/quiero-arrendar', [ArrendadorController::class, 'solicitud'])->name('arrendador.solicitud');
-    Route::post('/quiero-arrendar', [ArrendadorController::class, 'enviarSolicitud'])->name('arrendador.solicitud.enviar');
+    // Pedir ser arrendador también lo exige: si no podemos escribirle al
+    // correo, no hay forma de avisarle si se aprueba o se rechaza.
+    Route::get('/quiero-arrendar', [ArrendadorController::class, 'solicitud'])
+        ->middleware('verified')->name('arrendador.solicitud');
+    Route::post('/quiero-arrendar', [ArrendadorController::class, 'enviarSolicitud'])
+        ->middleware('verified')->name('arrendador.solicitud.enviar');
 
     Route::get('/solicitudes/{solicitud}/documento/{tipo}', [ArrendadorController::class, 'documento'])
         ->whereNumber('solicitud')
@@ -124,6 +151,10 @@ Route::middleware(['auth', 'admin'])
             ->whereNumber('usuario')
             ->name('usuarios.enlace-reset');
 
+        Route::post('/usuarios/{usuario}/verificar-correo', [Admin\UsuarioController::class, 'verificarCorreo'])
+            ->whereNumber('usuario')
+            ->name('usuarios.verificar-correo');
+
         Route::get('/solicitudes', [Admin\SolicitudController::class, 'index'])->name('solicitudes.index');
         Route::get('/solicitudes/{solicitud}', [Admin\SolicitudController::class, 'show'])
             ->whereNumber('solicitud')->name('solicitudes.show');
@@ -133,6 +164,10 @@ Route::middleware(['auth', 'admin'])
             ->whereNumber('solicitud')->name('solicitudes.rechazar');
         Route::post('/usuarios/{usuario}/revocar', [Admin\SolicitudController::class, 'revocar'])
             ->whereNumber('usuario')->name('usuarios.revocar');
+
+        Route::get('/reportes', [Admin\ReporteController::class, 'index'])->name('reportes.index');
+        Route::post('/reportes/{reporte}/resolver', [Admin\ReporteController::class, 'resolver'])
+            ->whereNumber('reporte')->name('reportes.resolver');
 
         Route::get('/alojamientos', [Admin\AlojamientoController::class, 'index'])->name('alojamientos.index');
 

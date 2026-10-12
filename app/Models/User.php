@@ -2,7 +2,9 @@
 
 namespace App\Models;
 
+use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -10,7 +12,7 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Storage;
 use Laravel\Sanctum\HasApiTokens;
 
-class User extends Authenticatable
+class User extends Authenticatable implements MustVerifyEmail
 {
     use HasApiTokens, HasFactory, Notifiable;
 
@@ -60,6 +62,33 @@ class User extends Authenticatable
     public function alojamientos(): HasMany
     {
         return $this->hasMany(Alojamiento::class);
+    }
+
+    /** Alojamientos que esta persona guardó para volver a verlos. */
+    public function favoritos(): BelongsToMany
+    {
+        return $this->belongsToMany(Alojamiento::class, 'favoritos')
+            ->withTimestamps()
+            ->orderByPivot('created_at', 'desc');
+    }
+
+    /** ¿Tiene guardado este alojamiento? */
+    public function tieneEnFavoritos(Alojamiento|int $alojamiento): bool
+    {
+        $id = $alojamiento instanceof Alojamiento ? $alojamiento->id : $alojamiento;
+
+        // relationLoaded evita una consulta por tarjeta cuando el listado ya
+        // cargó los favoritos del usuario.
+        if ($this->relationLoaded('favoritos')) {
+            return $this->favoritos->contains('id', $id);
+        }
+
+        return $this->favoritos()->whereKey($id)->exists();
+    }
+
+    public function reportes(): HasMany
+    {
+        return $this->hasMany(Reporte::class);
     }
 
     public function ratings(): HasMany

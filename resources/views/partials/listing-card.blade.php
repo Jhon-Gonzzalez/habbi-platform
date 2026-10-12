@@ -12,6 +12,26 @@
         @endif
     </a>
 
+    @auth
+        {{-- El corazón va fuera del enlace de la tarjeta: si estuviera
+             dentro, al guardar se abriría también el detalle. --}}
+        @php($guardado = auth()->user()->tieneEnFavoritos($a))
+        <form class="hb-fav" method="POST" action="{{ route('favoritos.toggle', $a) }}">
+            @csrf
+            <button type="submit"
+                    class="hb-fav__btn {{ $guardado ? 'is-on' : '' }}"
+                    title="{{ $guardado ? 'Quitar de favoritos' : 'Guardar en favoritos' }}"
+                    aria-label="{{ $guardado ? 'Quitar de favoritos' : 'Guardar en favoritos' }}"
+                    aria-pressed="{{ $guardado ? 'true' : 'false' }}">
+                <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+                    <path d="M12 21s-7.5-4.7-9.3-9.1C1.3 8.3 3.2 5 6.6 5c2 0 3.5 1.1 4.4 2.4h2C13.9 6.1 15.4 5 17.4 5c3.4 0 5.3 3.3 3.9 6.9C19.5 16.3 12 21 12 21z"
+                          fill="{{ $guardado ? 'currentColor' : 'none' }}"
+                          stroke="currentColor" stroke-width="1.8"/>
+                </svg>
+            </button>
+        </form>
+    @endauth
+
     <div class="hb-listing__body">
         <h3 class="hb-listing__title">
             <a href="{{ route('alojamientos.show', $a) }}">{{ $a->title }}</a>

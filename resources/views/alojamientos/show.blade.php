@@ -300,6 +300,24 @@
                     </p>
                 @endauth
 
+                @auth
+                    @php($guardado = auth()->user()->tieneEnFavoritos($alojamiento))
+                    <form class="hb-fav hb-fav--inline" method="POST"
+                          action="{{ route('favoritos.toggle', $alojamiento) }}"
+                          style="margin-top:.6rem">
+                        @csrf
+                        <button class="hb-fav__btn {{ $guardado ? 'is-on' : '' }}" type="submit"
+                                aria-pressed="{{ $guardado ? 'true' : 'false' }}">
+                            <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+                                <path d="M12 21s-7.5-4.7-9.3-9.1C1.3 8.3 3.2 5 6.6 5c2 0 3.5 1.1 4.4 2.4h2C13.9 6.1 15.4 5 17.4 5c3.4 0 5.3 3.3 3.9 6.9C19.5 16.3 12 21 12 21z"
+                                      fill="{{ $guardado ? 'currentColor' : 'none' }}"
+                                      stroke="currentColor" stroke-width="1.8"/>
+                            </svg>
+                            {{ $guardado ? 'Guardado en favoritos' : 'Guardar en favoritos' }}
+                        </button>
+                    </form>
+                @endauth
+
                 @can('update', $alojamiento)
                     <hr style="border:0;border-top:1px solid var(--hb-border);margin:1.25rem 0">
                     <a class="hb-btn hb-btn--ghost hb-btn--block" href="{{ route('alojamientos.edit', $alojamiento) }}">
@@ -309,6 +327,17 @@
             </div>
         </div>
     </aside>
+
+    {{-- Reportar va al final y en letra pequeña: es una salida de emergencia,
+         no una acción que queramos invitar a usar. --}}
+    @auth
+        @if (auth()->id() !== $alojamiento->user_id)
+            <p class="hb-muted hb-small hb-center" style="grid-column:1/-1;margin-top:2rem">
+                ¿Algo anda mal con esta publicación?
+                <a href="{{ route('reportes.create', $alojamiento) }}">Reportarla</a>
+            </p>
+        @endif
+    @endauth
 
 </div>
 @endsection

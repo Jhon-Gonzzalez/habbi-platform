@@ -44,6 +44,15 @@
                     @endif
                 </a>
             </li>
+            <li>
+                @php $reportesAbiertos = \App\Models\Reporte::abiertos()->count(); @endphp
+                <a href="{{ route('admin.reportes.index') }}" class="{{ request()->routeIs('admin.reportes.*') ? 'is-active' : '' }}">
+                    <span aria-hidden="true">⚑</span> Reportes
+                    @if ($reportesAbiertos)
+                        <span class="hb-badge hb-badge--danger" style="margin-left:auto">{{ $reportesAbiertos }}</span>
+                    @endif
+                </a>
+            </li>
         </ul>
 
         <div class="hb-side__foot">

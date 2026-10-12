@@ -79,8 +79,9 @@ class MonteriaSeeder extends Seeder
             $arrendadores[$fila['name']] = User::updateOrCreate(
                 ['email' => $fila['email']],
                 [
-                    'name'          => $fila['name'],
-                    'password'      => Hash::make('habbi1234'),
+                    'name'              => $fila['name'],
+                    'password'          => Hash::make('habbi1234'),
+                    'email_verified_at' => now(),
                     'role'          => User::ROLE_ARRENDADOR,
                     'phone'         => $fila['phone'],
                     'ciudad'        => $fila['ciudad'],
@@ -111,8 +112,9 @@ class MonteriaSeeder extends Seeder
             return User::updateOrCreate(
                 ['email' => $correo],
                 [
-                    'name'        => $nombre,
-                    'password'    => Hash::make('habbi1234'),
+                    'name'              => $nombre,
+                    'password'          => Hash::make('habbi1234'),
+                    'email_verified_at' => now(),
                     'role'        => User::ROLE_ESTUDIANTE,
                     'ciudad'      => 'Montería',
                     'universidad' => $universidades[$i % count($universidades)],

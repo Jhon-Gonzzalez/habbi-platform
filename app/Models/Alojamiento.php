@@ -98,6 +98,17 @@ class Alojamiento extends Model
         return $this->belongsTo(User::class);
     }
 
+    public function reportes(): HasMany
+    {
+        return $this->hasMany(Reporte::class);
+    }
+
+    /** Quienes guardaron este alojamiento. */
+    public function guardadoPor(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
+    {
+        return $this->belongsToMany(User::class, 'favoritos')->withTimestamps();
+    }
+
     public function ratings(): HasMany
     {
         return $this->hasMany(Rating::class);

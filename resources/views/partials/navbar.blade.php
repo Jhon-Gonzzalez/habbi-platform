@@ -50,6 +50,7 @@
                             <span>{{ auth()->user()->email }}</span>
                         </li>
                         <li><a href="{{ route('perfil.edit') }}">Mi perfil</a></li>
+                        <li><a href="{{ route('favoritos.index') }}">Mis favoritos</a></li>
 
                         @if (auth()->user()->puedePublicar())
                             <li><a href="{{ route('alojamientos.mine') }}">Mis publicaciones</a></li>
