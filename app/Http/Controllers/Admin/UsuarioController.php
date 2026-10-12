@@ -4,7 +4,9 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\UsuarioRequest;
+use App\Models\Auditoria;
 use App\Models\User;
+use App\Services\Auditor;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -35,7 +37,14 @@ class UsuarioController extends Controller
 
     public function store(UsuarioRequest $request): RedirectResponse
     {
-        User::create($request->validated());
+        $usuario = User::create($request->validated());
+
+        Auditor::registrar(
+            Auditoria::USUARIO_CREADO,
+            'Creó la cuenta de ' . $usuario->name . ' con rol ' . (User::ROLES[$usuario->role] ?? $usuario->role),
+            $usuario,
+            ['rol' => $usuario->role],
+        );
 
         return redirect()
             ->route('admin.usuarios.index')
@@ -71,7 +80,32 @@ class UsuarioController extends Controller
             return back()->withInput()->with('error', 'No puedes quitar el rol al único administrador que queda.');
         }
 
+        // Se compara antes de guardar para registrar QUÉ cambió, sin
+        // guardar nunca el valor de la contraseña ni su hash.
+        $rolAnterior    = $usuario->role;
+        $correoAnterior = $usuario->email;
+
         $usuario->update($datos);
+
+        $cambios = [];
+        if ($rolAnterior !== $usuario->role) {
+            $cambios['rol'] = ['antes' => $rolAnterior, 'ahora' => $usuario->role];
+        }
+        if ($correoAnterior !== $usuario->email) {
+            $cambios['correo'] = ['antes' => $correoAnterior, 'ahora' => $usuario->email];
+        }
+        if (array_key_exists('password', $datos)) {
+            $cambios['contrasena'] = 'cambiada';
+        }
+
+        if ($cambios) {
+            Auditor::registrar(
+                Auditoria::USUARIO_EDITADO,
+                'Editó la cuenta de ' . $usuario->name . ' (' . implode(', ', array_keys($cambios)) . ')',
+                $usuario,
+                $cambios,
+            );
+        }
 
         return redirect()
             ->route('admin.usuarios.index')
@@ -97,6 +131,15 @@ class UsuarioController extends Controller
             $aviso = 'No se pudo enviar el correo, pero el enlace ya está generado.';
         }
 
+        Auditor::registrar(
+            Auditoria::ENLACE_RESET_GENERADO,
+            'Generó un enlace de restablecimiento para ' . $usuario->name,
+            $usuario,
+            // El token NO se guarda: el registro dice que se generó, no deja
+            // una llave usable en una tabla que lee cualquier administrador.
+            ['enviado_por_correo' => str_starts_with($aviso, 'Enlace enviado')],
+        );
+
         return back()
             ->with('success', $aviso)
             ->with('enlace_reset', $enlace);
@@ -119,6 +162,12 @@ class UsuarioController extends Controller
 
         $usuario->markEmailAsVerified();
 
+        Auditor::registrar(
+            Auditoria::CORREO_VERIFICADO,
+            'Marcó como verificado el correo de ' . $usuario->name,
+            $usuario,
+        );
+
         return back()->with('success', 'Correo de ' . $usuario->name . ' marcado como verificado.');
     }
 
@@ -132,11 +181,23 @@ class UsuarioController extends Controller
             return back()->with('error', 'No puedes eliminar al único administrador que queda.');
         }
 
+        Auditor::registrar(
+            Auditoria::USUARIO_BORRADO,
+            'Eliminó la cuenta de ' . $usuario->name . ' (' . $usuario->email . ')',
+            $usuario,
+            [
+                'rol'           => $usuario->role,
+                'alojamientos'  => $usuario->alojamientos()->count(),
+                'resenas'       => $usuario->ratings()->count(),
+                'registrado_el' => $usuario->created_at?->toDateString(),
+            ],
+        );
+
         $usuario->delete();
 
         return redirect()
             ->route('admin.usuarios.index')
-            ->with('success', 'Usuario eliminado correctamente.');
+            ->with('success', 'Usuario eliminado. La acción quedó registrada en la auditoría.');
     }
 
     private function esUltimoAdmin(User $usuario): bool

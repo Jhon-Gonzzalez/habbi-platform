@@ -3,7 +3,9 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Auditoria;
 use App\Models\Reporte;
+use App\Services\Auditor;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -57,6 +59,18 @@ class ReporteController extends Controller
             'revisado_por' => $request->user()->id,
             'revisado_en'  => now(),
         ]);
+
+        Auditor::registrar(
+            Auditoria::REPORTE_RESUELTO,
+            ($datos['estado'] === Reporte::ESTADO_ATENDIDO ? 'Atendió' : 'Descartó')
+                . ' el reporte sobre «' . ($reporte->alojamiento->title ?? 'un alojamiento eliminado') . '»',
+            $reporte,
+            [
+                'motivo' => $reporte->motivo,
+                'estado' => $datos['estado'],
+                'nota'   => $datos['nota_interna'] ?? null,
+            ],
+        );
 
         return back()->with('success', 'Reporte cerrado.');
     }

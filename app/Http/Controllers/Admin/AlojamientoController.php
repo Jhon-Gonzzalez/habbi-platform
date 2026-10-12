@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Alojamiento;
+use App\Models\Auditoria;
+use App\Services\Auditor;
 use App\Services\AlojamientoPhotoService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
@@ -39,6 +41,14 @@ class AlojamientoController extends Controller
     {
         $alojamiento->update(['is_active' => !$alojamiento->is_active]);
 
+        Auditor::registrar(
+            $alojamiento->is_active ? Auditoria::ALOJAMIENTO_ACTIVADO : Auditoria::ALOJAMIENTO_PAUSADO,
+            ($alojamiento->is_active ? 'Volvió a publicar' : 'Despublicó')
+                . ' «' . $alojamiento->title . '», de ' . ($alojamiento->user->name ?? 'un usuario eliminado'),
+            $alojamiento,
+            ['dueno_id' => $alojamiento->user_id],
+        );
+
         return back()->with('success', $alojamiento->is_active
             ? "«{$alojamiento->title}» vuelve a estar visible."
             : "«{$alojamiento->title}» fue despublicado.");
@@ -46,9 +56,23 @@ class AlojamientoController extends Controller
 
     public function destroy(Alojamiento $alojamiento): RedirectResponse
     {
+        // Se audita ANTES de borrar: después ya no hay de dónde sacar el
+        // título ni el dueño.
+        Auditor::registrar(
+            Auditoria::ALOJAMIENTO_BORRADO,
+            'Eliminó «' . $alojamiento->title . '», de ' . ($alojamiento->user->name ?? 'un usuario eliminado'),
+            $alojamiento,
+            [
+                'dueno_id' => $alojamiento->user_id,
+                'ciudad'   => $alojamiento->city,
+                'precio'   => $alojamiento->price,
+                'resenas'  => $alojamiento->ratings()->count(),
+            ],
+        );
+
         $this->fotos->eliminarTodas($alojamiento);
         $alojamiento->forceDelete();
 
-        return back()->with('success', 'Alojamiento eliminado de la plataforma.');
+        return back()->with('success', 'Alojamiento eliminado. La acción quedó registrada en la auditoría.');
     }
 }

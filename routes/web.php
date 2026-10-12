@@ -165,6 +165,9 @@ Route::middleware(['auth', 'admin'])
         Route::post('/usuarios/{usuario}/revocar', [Admin\SolicitudController::class, 'revocar'])
             ->whereNumber('usuario')->name('usuarios.revocar');
 
+        // La auditoría solo se consulta: no hay ruta para borrarla ni editarla.
+        Route::get('/auditoria', [Admin\AuditoriaController::class, 'index'])->name('auditoria.index');
+
         Route::get('/reportes', [Admin\ReporteController::class, 'index'])->name('reportes.index');
         Route::post('/reportes/{reporte}/resolver', [Admin\ReporteController::class, 'resolver'])
             ->whereNumber('reporte')->name('reportes.resolver');

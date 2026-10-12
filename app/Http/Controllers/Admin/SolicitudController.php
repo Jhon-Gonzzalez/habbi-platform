@@ -3,8 +3,10 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Auditoria;
 use App\Models\SolicitudArrendador;
 use App\Models\User;
+use App\Services\Auditor;
 use App\Services\VerificacionArrendadorService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
@@ -51,6 +53,13 @@ class SolicitudController extends Controller
 
         $this->verificacion->aprobar($solicitud, $request->user());
 
+        Auditor::registrar(
+            Auditoria::ARRENDADOR_APROBADO,
+            'Aprobó a ' . $solicitud->user->name . ' como arrendador verificado',
+            $solicitud->user,
+            ['solicitud_id' => $solicitud->id],
+        );
+
         return redirect()
             ->route('admin.solicitudes.index')
             ->with('success', "{$solicitud->user->name} ya puede publicar y aparece como verificado.");
@@ -68,6 +77,13 @@ class SolicitudController extends Controller
 
         $this->verificacion->rechazar($solicitud, $request->user(), $datos['motivo']);
 
+        Auditor::registrar(
+            Auditoria::ARRENDADOR_RECHAZADO,
+            'Rechazó la solicitud de ' . $solicitud->user->name,
+            $solicitud->user,
+            ['solicitud_id' => $solicitud->id, 'motivo' => $datos['motivo']],
+        );
+
         return redirect()
             ->route('admin.solicitudes.index')
             ->with('success', 'Solicitud rechazada. El usuario puede corregir y volver a enviarla.');
@@ -81,6 +97,13 @@ class SolicitudController extends Controller
         }
 
         $this->verificacion->revocar($usuario);
+
+        Auditor::registrar(
+            Auditoria::ARRENDADOR_REVOCADO,
+            'Retiró a ' . $usuario->name . ' la condición de arrendador',
+            $usuario,
+            ['alojamientos_que_tenia' => $usuario->alojamientos()->count()],
+        );
 
         return back()->with('success', "{$usuario->name} ya no puede publicar. Sus alojamientos siguen ahí: revísalos aparte si hace falta.");
     }

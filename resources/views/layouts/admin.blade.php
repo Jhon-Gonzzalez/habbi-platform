@@ -53,6 +53,11 @@
                     @endif
                 </a>
             </li>
+            <li>
+                <a href="{{ route('admin.auditoria.index') }}" class="{{ request()->routeIs('admin.auditoria.*') ? 'is-active' : '' }}">
+                    <span aria-hidden="true">≡</span> Auditoría
+                </a>
+            </li>
         </ul>
 
         <div class="hb-side__foot">
