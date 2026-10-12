@@ -8,6 +8,7 @@ use App\Models\User;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Password;
 
 class UsuarioController extends Controller
 {
@@ -75,6 +76,30 @@ class UsuarioController extends Controller
         return redirect()
             ->route('admin.usuarios.index')
             ->with('success', 'Usuario actualizado correctamente.');
+    }
+
+    /**
+     * Genera un enlace de restablecimiento para que el usuario recupere el
+     * acceso él mismo. El administrador nunca llega a conocer la contraseña:
+     * el enlace caduca y solo sirve para esa cuenta.
+     */
+    public function enlaceReset(User $usuario): RedirectResponse
+    {
+        $token = Password::broker()->createToken($usuario);
+        $enlace = route('password.reset', ['token' => $token, 'email' => $usuario->email]);
+
+        // Se intenta enviar por correo; si no hay correo configurado, el
+        // administrador puede pasarle el enlace por otro medio.
+        try {
+            Password::broker()->sendResetLink(['email' => $usuario->email]);
+            $aviso = 'Enlace enviado a ' . $usuario->email . '.';
+        } catch (\Throwable $e) {
+            $aviso = 'No se pudo enviar el correo, pero el enlace ya está generado.';
+        }
+
+        return back()
+            ->with('success', $aviso)
+            ->with('enlace_reset', $enlace);
     }
 
     public function destroy(Request $request, User $usuario): RedirectResponse

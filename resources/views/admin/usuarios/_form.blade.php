@@ -36,22 +36,32 @@
     </div>
 </div>
 
-<div class="hb-fields-2">
-    <div class="hb-field">
-        <label class="hb-label" for="password">
-            Contraseña @if (!$usuario) <span class="hb-req">*</span> @endif
-        </label>
-        <input class="hb-input @error('password') is-invalid @enderror" type="password" id="password"
-               name="password" autocomplete="new-password" @required(!$usuario)>
-        <span class="hb-hint">
-            {{ $usuario ? 'Déjala vacía para no cambiarla.' : 'Mínimo 8 caracteres, con letras y números.' }}
-        </span>
-        @error('password') <span class="hb-error">{{ $message }}</span> @enderror
-    </div>
+@if (!$usuario)
+    {{-- Solo al crear. Al editar no se ofrece: un administrador no debe poder
+         fijar la contraseña de otra persona. Ver el enlace de restablecimiento. --}}
+    <div class="hb-fields-2">
+        <div class="hb-field">
+            <label class="hb-label" for="password">Contraseña inicial <span class="hb-req">*</span></label>
+            <input class="hb-input @error('password') is-invalid @enderror" type="password" id="password"
+                   name="password" autocomplete="new-password" required>
+            <span class="hb-hint">Mínimo 8 caracteres, con letras y números. Pídele que la cambie al entrar.</span>
+            @error('password') <span class="hb-error">{{ $message }}</span> @enderror
+        </div>
 
-    <div class="hb-field">
-        <label class="hb-label" for="password_confirmation">Repetir contraseña</label>
-        <input class="hb-input" type="password" id="password_confirmation" name="password_confirmation"
-               autocomplete="new-password" @required(!$usuario)>
+        <div class="hb-field">
+            <label class="hb-label" for="password_confirmation">Repetir contraseña</label>
+            <input class="hb-input" type="password" id="password_confirmation" name="password_confirmation"
+                   autocomplete="new-password" required>
+        </div>
     </div>
-</div>
+@else
+    <div class="hb-alert hb-alert--info">
+        <span class="hb-alert__icon">i</span>
+        <div>
+            <strong>La contraseña no se puede cambiar desde aquí.</strong>
+            Nadie, ni un administrador, debe poder fijar la clave de otra persona.
+            Si este usuario perdió el acceso, genera un enlace de restablecimiento
+            con el botón que hay al final de la página: solo funciona para él.
+        </div>
+    </div>
+@endif

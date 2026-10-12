@@ -41,7 +41,9 @@
                                 <span class="hb-table__avatar">{{ $usuario->initials() }}</span>
                                 <div>
                                     <a href="{{ route('admin.usuarios.show', $usuario) }}">{{ $usuario->name }}</a>
-                                    <div class="hb-muted hb-small">{{ $usuario->email }}</div>
+                                    <div class="hb-muted hb-small" title="Abre la ficha para verlo completo">
+                                        {{ \App\Support\Texto::ocultarCorreo($usuario->email) }}
+                                    </div>
                                 </div>
                             </div>
                         </td>

@@ -18,10 +18,10 @@ class UsuarioRequest extends FormRequest
     /** @return array<string, mixed> */
     public function rules(): array
     {
-        $usuario   = $this->route('usuario');
-        $creando   = $this->isMethod('POST');
+        $usuario = $this->route('usuario');
+        $creando = $this->isMethod('POST');
 
-        return [
+        $reglas = [
             'name'     => ['required', 'string', 'max:120'],
             'email'    => [
                 'required', 'string', 'email', 'max:180',
@@ -29,12 +29,17 @@ class UsuarioRequest extends FormRequest
             ],
             'phone'    => ['nullable', 'string', 'max:40'],
             'role'     => ['required', Rule::in([User::ROLE_USER, User::ROLE_ADMIN])],
-            'password' => [
-                $creando ? 'required' : 'nullable',
-                'confirmed',
-                Password::min(8)->letters()->numbers(),
-            ],
         ];
+
+        // Al CREAR hace falta una contraseña inicial. Al EDITAR no se admite:
+        // un administrador no debe poder fijar la contraseña de otra persona,
+        // porque eso equivale a poder entrar en su cuenta. Para ese caso está
+        // el enlace de restablecimiento, que solo puede usar el propio dueño.
+        if ($creando) {
+            $reglas['password'] = ['required', 'confirmed', Password::min(8)->letters()->numbers()];
+        }
+
+        return $reglas;
     }
 
     /** @return array<string, string> */

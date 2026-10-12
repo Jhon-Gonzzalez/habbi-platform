@@ -33,6 +33,25 @@ class Texto
         return self::pluralizarPalabra($texto);
     }
 
+    /**
+     * Oculta parcialmente un correo para los listados: ana.martinez@gmail.com
+     * se muestra como an•••••••@gmail.com. Reduce la exposición de datos
+     * personales en pantallas que se ven de pasada o sobre el hombro.
+     */
+    public static function ocultarCorreo(?string $correo): string
+    {
+        if (!$correo || !str_contains($correo, '@')) {
+            return '—';
+        }
+
+        [$usuario, $dominio] = explode('@', $correo, 2);
+
+        $visibles = mb_substr($usuario, 0, min(2, mb_strlen($usuario)));
+        $ocultos  = str_repeat('•', max(3, mb_strlen($usuario) - 2));
+
+        return $visibles . $ocultos . '@' . $dominio;
+    }
+
     private static function pluralizarPalabra(string $palabra): string
     {
         if ($palabra === '') {

@@ -92,6 +92,10 @@ Route::middleware(['auth', 'admin'])
         Route::resource('usuarios', Admin\UsuarioController::class)
             ->parameters(['usuarios' => 'usuario']);
 
+        Route::post('/usuarios/{usuario}/enlace-reset', [Admin\UsuarioController::class, 'enlaceReset'])
+            ->whereNumber('usuario')
+            ->name('usuarios.enlace-reset');
+
         Route::get('/alojamientos', [Admin\AlojamientoController::class, 'index'])->name('alojamientos.index');
 
         Route::patch('/alojamientos/{alojamiento}/estado', [Admin\AlojamientoController::class, 'toggle'])
