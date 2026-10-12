@@ -171,7 +171,7 @@ Comprueba en cPanel:
 
 | Qué | Dónde | Valor necesario |
 |---|---|---|
-| Versión de PHP | **MultiPHP Manager** | 8.1 o superior (ideal 8.2) |
+| Versión de PHP | **MultiPHP Manager** | 8.2, 8.3 o 8.4 (8.1 ya no sirve, 8.5 todavía no) |
 | Extensiones | **Select PHP Version → Extensions** | `pdo_mysql`, `mbstring`, `openssl`, `tokenizer`, `xml`, `ctype`, `json`, `bcmath`, `fileinfo`, `gd` |
 | Terminal / SSH | **Terminal** en el menú | Si lo tienes, el despliegue es mucho más rápido |
 
@@ -248,7 +248,7 @@ Si por lo que sea el Document Root te quedó apuntando a `habbi` en lugar de
 
 ```bash
 cd ~/habbi
-php -v                      # confirma que sea 8.1+
+php -v                      # confirma que esté entre 8.2 y 8.4
 composer install --no-dev --optimize-autoloader
 ```
 

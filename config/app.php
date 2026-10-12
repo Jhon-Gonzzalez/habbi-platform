@@ -57,6 +57,27 @@ return [
 
     'url' => env('APP_URL', 'http://localhost'),
 
+    /*
+    |--------------------------------------------------------------------------
+    | Proxies de confianza
+    |--------------------------------------------------------------------------
+    |
+    | Lo lee App\Http\Middleware\TrustProxies. Vacío por defecto, que es lo
+    | seguro: confiar en las cabeceras X-Forwarded-* de cualquiera permite
+    | falsear la IP de origen, y esa IP la guarda la auditoría.
+    |
+    | Se pone a "*" solo cuando la aplicación está detrás de un proxy que uno
+    | controla y que termina el HTTPS (Codespaces, Cloudflare, un balanceador).
+    | También acepta una lista separada por comas.
+    |
+    | Tiene que estar aquí y no leerse con env() en el middleware: con
+    | «php artisan config:cache», env() devuelve null fuera de los archivos de
+    | configuración y el ajuste dejaría de aplicarse sin avisar.
+    |
+    */
+
+    'trusted_proxies' => env('TRUSTED_PROXIES'),
+
     'asset_url' => env('ASSET_URL'),
 
     /*

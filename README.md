@@ -6,7 +6,7 @@
 
 <p align="center">
   Buscar, publicar y calificar alojamiento cerca de la universidad.<br>
-  <strong>Laravel 10 · PHP 8.1+ · MySQL · Blade</strong>
+  <strong>Laravel 10 · PHP 8.2–8.4 · MySQL o SQLite · Blade</strong>
 </p>
 
 ---
@@ -90,7 +90,43 @@ public/assets/
 └── img/            Logos e imágenes
 ```
 
-## Probarlo en tu ordenador
+## Cómo verlo funcionando
+
+Hay tres formas, de la más rápida a la más completa.
+
+### 1. En el navegador, sin instalar nada (GitHub Codespaces)
+
+En la página del repositorio: botón verde **Code** → pestaña **Codespaces** →
+**Create codespace**. GitHub levanta una máquina Linux con PHP 8.3 ya puesto,
+instala todo solo y crea la base de datos con los 20 alojamientos de ejemplo.
+
+Cuando termine, abre la pestaña **PORTS** de VS Code y pincha el enlace del
+puerto 8000.
+
+Las cuentas de prueba (todas con contraseña `habbi1234`):
+
+| Correo | Qué puede hacer |
+|---|---|
+| `admin@habbi.test` | Todo: panel, reportes, auditoría |
+| `dolores.arrieta@ejemplo.test` | Arrendadora verificada: publicar |
+| `laura.hoyos@ejemplo.test` | Estudiante: buscar, reseñar, favoritos |
+
+> **Ojo con el gasto.** Codespaces es gratis hasta cierto número de horas al
+> mes en cuentas personales; pasado eso, se paga. **Párala cuando termines**
+> desde <https://github.com/codespaces> (no basta con cerrar la pestaña: la
+> máquina sigue encendida hasta que se apaga por inactividad).
+
+La configuración está en `.devcontainer/`. Si quieres saber qué hace, está
+comentado en `.devcontainer/preparar.sh`.
+
+### 2. GitHub Pages: **no sirve** para esto
+
+Vale la pena decirlo porque es la confusión más común: GitHub Pages solo sirve
+archivos estáticos (HTML, CSS, imágenes). HABBI es Laravel, o sea PHP
+ejecutándose en un servidor con una base de datos detrás. En Pages no
+funcionaría: verías el código fuente o una página en blanco.
+
+### 3. En tu propio computador
 
 ```bash
 git clone https://github.com/Jhon-Gonzzalez/habbi-platform.git habbi
@@ -160,6 +196,11 @@ Si prefieres no pelear con eso, entra como administrador y usa
 ```bash
 php artisan test
 ```
+
+También corren **en GitHub** en cada push a `master` o a una rama `claude/*`,
+contra PHP 8.2 y 8.4 (los dos extremos del rango soportado). Si algo se rompe,
+aparece una X roja en el commit sin que tengas que probarlo a mano. La
+configuración está en `.github/workflows/tests.yml`.
 
 164 pruebas funcionales. Además de lo obvio (publicación, permisos, fotos,
 reseñas, renderizado de las vistas), varias existen para fijar decisiones que

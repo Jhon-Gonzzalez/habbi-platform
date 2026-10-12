@@ -8,11 +8,30 @@ use Illuminate\Http\Request;
 class TrustProxies extends Middleware
 {
     /**
-     * The trusted proxies for this application.
+     * Proxies de confianza.
+     *
+     * Se toman de config('app.trusted_proxies'), donde está explicado el
+     * porqué y el riesgo. Se lee de la configuración y NO con env(): dentro
+     * de un middleware, env() devuelve null en cuanto alguien ejecuta
+     * «php artisan config:cache», y el ajuste dejaría de aplicarse sin que
+     * nada avisara.
      *
      * @var array<int, string>|string|null
      */
     protected $proxies;
+
+    public function __construct()
+    {
+        $configurados = config('app.trusted_proxies');
+
+        if (blank($configurados)) {
+            return;
+        }
+
+        $this->proxies = $configurados === '*'
+            ? '*'
+            : array_map('trim', explode(',', (string) $configurados));
+    }
 
     /**
      * The headers that should be used to detect proxies.

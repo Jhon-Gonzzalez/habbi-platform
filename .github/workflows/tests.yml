@@ -1,0 +1,52 @@
+name: Tests
+
+# Corre en GitHub, no en tu computador: cada vez que subes algo a master o a
+# una rama claude/*, y en cada pull request. Si algo se rompe, GitHub te lo
+# marca con una X roja en el commit antes de que lo notes usando la página.
+on:
+  push:
+    branches: [master, 'claude/**']
+  pull_request:
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+
+    strategy:
+      # Los dos extremos del rango que el proyecto soporta de verdad.
+      # El suelo es 8.2, no 8.1: symfony/string y symfony/event-dispatcher
+      # exigen >=8.2 (compruébalo con «composer why-not php 8.1»).
+      # El techo es 8.4: nette/schema no admite 8.5 todavía.
+      fail-fast: false
+      matrix:
+        php: ['8.2', '8.4']
+
+    name: PHP ${{ matrix.php }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Preparar PHP ${{ matrix.php }}
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          extensions: mbstring, xml, curl, zip, sqlite3, pdo_sqlite, gd
+          coverage: none
+
+      - name: Caché de dependencias
+        uses: actions/cache@v4
+        with:
+          path: vendor
+          key: composer-${{ matrix.php }}-${{ hashFiles('composer.lock') }}
+          restore-keys: composer-${{ matrix.php }}-
+
+      - name: Instalar dependencias
+        run: composer install --no-interaction --prefer-dist --no-progress
+
+      - name: Preparar el entorno
+        run: |
+          cp .env.example .env
+          php artisan key:generate
+
+      - name: Tests
+        run: php artisan test

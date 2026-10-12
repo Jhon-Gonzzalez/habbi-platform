@@ -9,7 +9,7 @@
 # Rango admitido: lo marca Laravel 10 por abajo (^8.1) y la dependencia
 # nette/schema por arriba ("8.1 - 8.4"). Actualízalo si se sube Laravel.
 
-PHP_MIN=${PHP_MIN:-80100}
+PHP_MIN=${PHP_MIN:-80200}
 PHP_MAX=${PHP_MAX:-80500}   # exclusivo
 
 # Rellenadas por buscar_php para que quien llame pueda dar un mensaje útil.
