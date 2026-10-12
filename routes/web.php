@@ -6,6 +6,7 @@ use App\Http\Controllers\ArrendadorController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\LegalController;
+use App\Http\Controllers\PerfilController;
 use App\Http\Controllers\RatingController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -84,6 +85,10 @@ Route::middleware('auth')->group(function () {
         ->name('ratings.destroy');
 
     Route::get('/mi-cuenta', [DashboardController::class, 'index'])->name('home');
+
+    /* ----- Perfil propio ----- */
+    Route::get('/mi-perfil', [PerfilController::class, 'edit'])->name('perfil.edit');
+    Route::put('/mi-perfil', [PerfilController::class, 'update'])->name('perfil.update');
 
     /* ----- Verificación como arrendador ----- */
     Route::get('/quiero-arrendar', [ArrendadorController::class, 'solicitud'])->name('arrendador.solicitud');

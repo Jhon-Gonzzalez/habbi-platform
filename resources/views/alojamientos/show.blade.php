@@ -57,6 +57,45 @@
             </p>
         </div>
 
+        {{-- Ubicación y ruta hasta la universidad --}}
+        @if ($alojamiento->address || $alojamiento->neighborhood)
+            @php($uni = $alojamiento->universidad())
+            <div class="hb-mapa">
+                <div class="hb-mapa__info">
+                    <span class="hb-mapa__icono" aria-hidden="true">📍</span>
+                    <div>
+                        <strong>¿Qué tan lejos queda de tu universidad?</strong>
+                        <p class="hb-muted" style="margin:.15rem 0 0;font-size:.9rem">
+                            Te mostramos la ruta desde este alojamiento hasta {{ $uni['corto'] }}.
+                        </p>
+                    </div>
+                </div>
+                <div class="hb-mapa__acciones">
+                    <a class="hb-btn hb-btn--primary" target="_blank" rel="noopener noreferrer"
+                       href="{{ $alojamiento->urlRuta() }}">
+                        Ver ruta a {{ $uni['corto'] }}
+                    </a>
+                    <a class="hb-btn hb-btn--ghost" target="_blank" rel="noopener noreferrer"
+                       href="{{ $alojamiento->urlMapa() }}">
+                        Ver ubicación
+                    </a>
+                </div>
+
+                <details class="hb-mapa__otras">
+                    <summary>Calcular la ruta hasta otra universidad</summary>
+                    <ul>
+                        @foreach (\App\Models\Alojamiento::UNIVERSIDADES as $otra)
+                            @continue($otra['nombre'] === $uni['nombre'])
+                            <li>
+                                <a target="_blank" rel="noopener noreferrer"
+                                   href="{{ $alojamiento->urlRuta($otra['maps']) }}">{{ $otra['nombre'] }}</a>
+                            </li>
+                        @endforeach
+                    </ul>
+                </details>
+            </div>
+        @endif
+
         {{-- Características --}}
         <div class="hb-specs" style="margin:1.5rem 0 2rem">
             <div class="hb-spec">
@@ -223,15 +262,22 @@
 
                 <hr style="border:0;border-top:1px solid var(--hb-border);margin:1.25rem 0">
 
-                <div class="hb-row" style="margin-bottom:1.25rem">
-                    <div class="hb-user__avatar" style="width:40px;height:40px;font-size:.85rem">
-                        {{ $alojamiento->user->initials() }}
-                    </div>
+                {{-- Quién publica: con foto y sello, para que el estudiante
+                     vea que al otro lado hay una persona verificada. --}}
+                <a class="hb-row hb-arrendador-mini" style="margin-bottom:1.25rem"
+                   href="{{ route('arrendadores.perfil', $alojamiento->user) }}">
+                    <x-avatar :usuario="$alojamiento->user" tamano="48" />
                     <div>
                         <div style="font-weight:600">{{ $alojamiento->user->name }}</div>
-                        <div class="hb-muted hb-small">Arrendador</div>
+                        <div class="hb-muted hb-small">
+                            @if ($alojamiento->user->estaVerificado())
+                                Arrendador verificado · ver perfil
+                            @else
+                                Arrendador · ver perfil
+                            @endif
+                        </div>
                     </div>
-                </div>
+                </a>
 
                 @auth
                     @if ($alojamiento->telefonoLimpio())

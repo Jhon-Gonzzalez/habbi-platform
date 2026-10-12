@@ -26,6 +26,40 @@ class Alojamiento extends Model
     /** Periodos de precio. */
     public const PERIODOS = ['mes', 'noche'];
 
+    /**
+     * Universidades de Montería, para calcular la ruta desde el alojamiento.
+     * La clave 'maps' es lo que se le pasa a Google Maps como destino: se usa
+     * el nombre y la ciudad en vez de coordenadas porque Google los resuelve
+     * mejor y el enlace sigue funcionando si el campus se muda.
+     */
+    public const UNIVERSIDADES = [
+        [
+            'nombre' => 'Universidad de Córdoba',
+            'corto'  => 'Unicórdoba',
+            'maps'   => 'Universidad de Córdoba, Carrera 6 #76-103, Montería, Córdoba, Colombia',
+        ],
+        [
+            'nombre' => 'Universidad Pontificia Bolivariana — Montería',
+            'corto'  => 'UPB',
+            'maps'   => 'Universidad Pontificia Bolivariana seccional Montería, Montería, Córdoba, Colombia',
+        ],
+        [
+            'nombre' => 'Universidad del Sinú',
+            'corto'  => 'Unisinú',
+            'maps'   => 'Universidad del Sinú Elías Bechara Zainúm, Montería, Córdoba, Colombia',
+        ],
+        [
+            'nombre' => 'Universidad Cooperativa de Colombia — Montería',
+            'corto'  => 'UCC',
+            'maps'   => 'Universidad Cooperativa de Colombia sede Montería, Montería, Córdoba, Colombia',
+        ],
+        [
+            'nombre' => 'UNAD — CEAD Montería',
+            'corto'  => 'UNAD',
+            'maps'   => 'UNAD CEAD Montería, Montería, Córdoba, Colombia',
+        ],
+    ];
+
     protected $fillable = [
         'user_id',
         'title',
@@ -36,6 +70,9 @@ class Alojamiento extends Model
         'city',
         'neighborhood',
         'address',
+        'universidad_referencia',
+        'lat',
+        'lng',
         'description',
         'amenities',
         'phone',
@@ -50,6 +87,8 @@ class Alojamiento extends Model
         'is_active' => 'boolean',
         'price'     => 'integer',
         'guests'    => 'integer',
+        'lat'       => 'float',
+        'lng'       => 'float',
     ];
 
     /* ===================== Relaciones ===================== */
@@ -163,6 +202,57 @@ class Alojamiento extends Model
     public function precioFormateado(): string
     {
         return '$' . number_format($this->price, 0, ',', '.');
+    }
+
+    /* ===================== Ubicación y rutas ===================== */
+
+    /**
+     * Dirección en el formato que mejor entiende Google Maps. Si hay
+     * coordenadas se usan esas, que son exactas; si no, el texto.
+     */
+    public function direccionParaMapa(): string
+    {
+        if ($this->lat && $this->lng) {
+            return $this->lat . ',' . $this->lng;
+        }
+
+        return collect([$this->address, $this->neighborhood, $this->city, 'Colombia'])
+            ->filter()
+            ->implode(', ');
+    }
+
+    /** La universidad de referencia, o la primera de la lista por defecto. */
+    public function universidad(): array
+    {
+        foreach (self::UNIVERSIDADES as $u) {
+            if ($u['nombre'] === $this->universidad_referencia) {
+                return $u;
+            }
+        }
+
+        return self::UNIVERSIDADES[0];
+    }
+
+    /** Enlace que abre Google Maps mostrando dónde está el alojamiento. */
+    public function urlMapa(): string
+    {
+        return 'https://www.google.com/maps/search/?api=1&query='
+            . rawurlencode($this->direccionParaMapa());
+    }
+
+    /**
+     * Enlace que abre Google Maps con la RUTA desde el alojamiento hasta la
+     * universidad. travelmode=walking porque para un estudiante lo relevante
+     * es cuánto se camina; Google deja cambiarlo con un toque.
+     */
+    public function urlRuta(?string $universidad = null): string
+    {
+        $destino = $universidad ?? $this->universidad()['maps'];
+
+        return 'https://www.google.com/maps/dir/?api=1'
+            . '&origin=' . rawurlencode($this->direccionParaMapa())
+            . '&destination=' . rawurlencode($destino)
+            . '&travelmode=walking';
     }
 
     /** Número de teléfono normalizado para enlaces wa.me / tel:. */

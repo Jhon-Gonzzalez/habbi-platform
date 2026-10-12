@@ -91,6 +91,23 @@
             @error('address') <span class="hb-error">{{ $message }}</span> @enderror
         </div>
 
+        <div class="hb-field">
+            <label class="hb-label" for="universidad_referencia">Universidad más cercana</label>
+            <select class="hb-input @error('universidad_referencia') is-invalid @enderror"
+                    id="universidad_referencia" name="universidad_referencia">
+                @foreach (\App\Models\Alojamiento::UNIVERSIDADES as $u)
+                    <option value="{{ $u['nombre'] }}"
+                        @selected(old('universidad_referencia', $a->universidad_referencia ?? '') === $u['nombre'])>
+                        {{ $u['nombre'] }}
+                    </option>
+                @endforeach
+            </select>
+            <span class="hb-hint">
+                Con esto los estudiantes pueden ver la ruta en Google Maps desde tu alojamiento hasta su universidad.
+            </span>
+            @error('universidad_referencia') <span class="hb-error">{{ $message }}</span> @enderror
+        </div>
+
     </div>
 </div>
 

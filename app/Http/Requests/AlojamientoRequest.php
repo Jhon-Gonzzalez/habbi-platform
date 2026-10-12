@@ -29,6 +29,13 @@ class AlojamientoRequest extends FormRequest
             'city'         => ['required', 'string', 'max:120'],
             'neighborhood' => ['nullable', 'string', 'max:120'],
             'address'      => ['nullable', 'string', 'max:255'],
+
+            // Solo se acepta una universidad de la lista: así el enlace a
+            // Google Maps siempre apunta a un destino que existe.
+            'universidad_referencia' => [
+                'nullable',
+                Rule::in(array_column(Alojamiento::UNIVERSIDADES, 'nombre')),
+            ],
             'description'  => ['required', 'string', 'min:30', 'max:5000'],
             'amenities'    => ['nullable', 'array'],
             'amenities.*'  => [Rule::in(Alojamiento::COMODIDADES)],
@@ -62,6 +69,7 @@ class AlojamientoRequest extends FormRequest
             'city'         => 'ciudad',
             'neighborhood' => 'barrio',
             'address'      => 'dirección',
+            'universidad_referencia' => 'universidad más cercana',
             'description'  => 'descripción',
             'amenities'    => 'comodidades',
             'phone'        => 'teléfono de contacto',

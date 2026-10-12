@@ -22,8 +22,15 @@
                    href="{{ route('alojamientos.index') }}">Buscar</a>
             </li>
             <li>
-                <a class="hb-nav__link {{ request()->routeIs('alojamientos.create') ? 'is-active' : '' }}"
-                   href="{{ route('alojamientos.create') }}">Publicar</a>
+                {{-- Para quien no puede publicar todavía, el enlace lleva a la
+                     solicitud de verificación en vez de a un formulario vetado. --}}
+                @if (auth()->check() && ! auth()->user()->puedePublicar())
+                    <a class="hb-nav__link {{ request()->routeIs('arrendador.solicitud') ? 'is-active' : '' }}"
+                       href="{{ route('arrendador.solicitud') }}">Quiero arrendar</a>
+                @else
+                    <a class="hb-nav__link {{ request()->routeIs('alojamientos.create') ? 'is-active' : '' }}"
+                       href="{{ route('alojamientos.create') }}">Publicar</a>
+                @endif
             </li>
 
             @auth
@@ -42,13 +49,20 @@
                             <strong>{{ auth()->user()->name }}</strong>
                             <span>{{ auth()->user()->email }}</span>
                         </li>
-                        <li><a href="{{ route('home') }}">Mi cuenta</a></li>
-                        <li><a href="{{ route('alojamientos.mine') }}">Mis publicaciones</a></li>
-                        <li><a href="{{ route('alojamientos.create') }}">Publicar alojamiento</a></li>
+                        <li><a href="{{ route('perfil.edit') }}">Mi perfil</a></li>
+
+                        @if (auth()->user()->puedePublicar())
+                            <li><a href="{{ route('alojamientos.mine') }}">Mis publicaciones</a></li>
+                            <li><a href="{{ route('alojamientos.create') }}">Publicar alojamiento</a></li>
+                        @else
+                            {{-- El estudiante no puede publicar hasta verificarse. --}}
+                            <li><a href="{{ route('arrendador.solicitud') }}">Quiero arrendar</a></li>
+                        @endif
 
                         @if (auth()->user()->isAdmin())
                             <li><hr></li>
                             <li><a href="{{ route('admin.index') }}">Panel de administración</a></li>
+                            <li><a href="{{ route('admin.solicitudes.index') }}">Solicitudes de arrendador</a></li>
                         @endif
 
                         <li><hr></li>

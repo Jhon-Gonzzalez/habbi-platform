@@ -130,6 +130,62 @@ p  { margin: 0 0 1em; }
 .hb-logo--grande .hb-logo__mark svg { width: 30px; height: 30px; }
 .hb-logo--grande .hb-logo__word { font-size: 2rem; }
 
+
+/* ---------- Avatar y sello de verificado ---------- */
+.hb-avatar {
+  position: relative;
+  display: inline-grid;
+  place-items: center;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: var(--hb-primary-soft);
+  color: var(--hb-primary-dark);
+  font-weight: 600;
+  letter-spacing: .02em;
+  overflow: visible;
+  text-decoration: none;
+}
+.hb-avatar img {
+  width: 100%; height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+}
+a.hb-avatar:hover { box-shadow: 0 0 0 3px var(--hb-primary-soft); }
+
+.hb-avatar__sello {
+  position: absolute; right: -2px; bottom: -2px;
+  width: 38%; height: 38%;
+  min-width: 15px; min-height: 15px;
+  border-radius: 50%;
+  background: var(--hb-success);
+  color: #fff;
+  display: grid; place-items: center;
+  font-size: .6em; font-weight: 700;
+  box-shadow: 0 0 0 2px var(--hb-surface);
+}
+
+.hb-verificado {
+  display: inline-flex; align-items: center; gap: .3rem;
+  color: var(--hb-success);
+  font-size: .8rem; font-weight: 600;
+}
+.hb-verificado svg { flex-shrink: 0; }
+
+/* ---------- Perfil público ---------- */
+.hb-perfil {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 1.5rem;
+  align-items: start;
+}
+@media (max-width: 640px) {
+  .hb-perfil { grid-template-columns: 1fr; justify-items: center; text-align: center; }
+}
+.hb-perfil__nombre { display: flex; align-items: center; gap: .6rem; flex-wrap: wrap; margin: 0 0 .25rem; }
+.hb-perfil__meta { color: var(--hb-muted); font-size: .9rem; display: flex; gap: .5rem; flex-wrap: wrap; }
+.hb-perfil__meta span:not(:last-child)::after { content: '·'; margin-left: .5rem; color: var(--hb-muted-light); }
+.hb-perfil__bio { margin-top: 1rem; color: #3A4557; max-width: 62ch; white-space: pre-line; }
+
 /* ---------- 3. Navbar ---------- */
 .hb-nav {
   position: sticky;
@@ -860,3 +916,70 @@ p  { margin: 0 0 1em; }
   .hb-nav, .hb-footer, .hb-booking, .hb-btn { display: none !important; }
   body { background: #fff; }
 }
+
+/* ===================================================================
+   Bloque de ubicación y ruta hasta la universidad
+   =================================================================== */
+
+.hb-mapa {
+    margin-top: 1.5rem;
+    padding: 1.15rem 1.25rem;
+    border: 1px solid var(--hb-border);
+    border-radius: var(--hb-radius);
+    background: linear-gradient(135deg, var(--hb-surface) 0%, var(--hb-primary-soft) 100%);
+}
+
+.hb-mapa__info {
+    display: flex;
+    gap: .75rem;
+    align-items: flex-start;
+}
+
+.hb-mapa__icono {
+    font-size: 1.4rem;
+    line-height: 1.2;
+}
+
+.hb-mapa__acciones {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .6rem;
+    margin-top: 1rem;
+}
+
+.hb-mapa__otras {
+    margin-top: .9rem;
+    font-size: .88rem;
+}
+
+.hb-mapa__otras summary {
+    cursor: pointer;
+    color: var(--hb-primary);
+    font-weight: 500;
+}
+
+.hb-mapa__otras ul {
+    margin: .6rem 0 0;
+    padding-left: 1.1rem;
+    display: grid;
+    gap: .3rem;
+}
+
+.hb-mapa__otras a {
+    color: var(--hb-muted);
+}
+
+.hb-mapa__otras a:hover {
+    color: var(--hb-primary);
+}
+
+.hb-arrendador-mini {
+    text-decoration: none;
+    color: inherit;
+    border-radius: var(--hb-radius-sm);
+    padding: .5rem;
+    margin-left: -.5rem;
+    transition: background .15s ease;
+}
+
+.hb-arrendador-mini:hover { background: var(--hb-bg); }
