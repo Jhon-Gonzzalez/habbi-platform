@@ -41,7 +41,7 @@ class AlojamientoTest extends TestCase
     {
         Storage::fake('public');
 
-        $usuario = User::factory()->create();
+        $usuario = User::factory()->arrendador()->create();
 
         $respuesta = $this->actingAs($usuario)->post(route('alojamientos.store'), [
             'title'        => 'Apartaestudio amoblado en Chapinero',
@@ -69,7 +69,7 @@ class AlojamientoTest extends TestCase
 
     public function test_publicar_sin_fotos_falla_la_validacion(): void
     {
-        $usuario = User::factory()->create();
+        $usuario = User::factory()->arrendador()->create();
 
         $this->actingAs($usuario)
             ->post(route('alojamientos.store'), ['title' => 'Corto'])

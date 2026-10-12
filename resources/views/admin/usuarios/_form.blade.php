@@ -28,10 +28,18 @@
     <div class="hb-field">
         <label class="hb-label" for="role">Rol <span class="hb-req">*</span></label>
         <select class="hb-select @error('role') is-invalid @enderror" id="role" name="role" required>
-            <option value="user"  @selected(old('role', $usuario->role ?? 'user') === 'user')>Usuario</option>
-            <option value="admin" @selected(old('role', $usuario->role ?? '') === 'admin')>Administrador</option>
+            @foreach (\App\Models\User::ROLES as $valor => $texto)
+                <option value="{{ $valor }}"
+                        @selected(old('role', $usuario->role ?? \App\Models\User::ROLE_ESTUDIANTE) === $valor)>
+                    {{ $texto }}
+                </option>
+            @endforeach
         </select>
-        <span class="hb-hint">Los administradores pueden moderar publicaciones y gestionar usuarios.</span>
+        <span class="hb-hint">
+            Estudiante: busca y reseña. Arrendador: además publica.
+            Administrador: modera todo. Lo normal es que un arrendador llegue
+            por la solicitud verificada, no por aquí.
+        </span>
         @error('role') <span class="hb-error">{{ $message }}</span> @enderror
     </div>
 </div>

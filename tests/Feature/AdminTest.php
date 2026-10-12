@@ -44,13 +44,13 @@ class AdminTest extends TestCase
             ->post(route('admin.usuarios.store'), [
                 'name'                  => 'Nueva Usuaria',
                 'email'                 => 'nueva@habbi.test',
-                'role'                  => 'user',
+                'role'                  => 'estudiante',
                 'password'              => 'clave1234',
                 'password_confirmation' => 'clave1234',
             ])
             ->assertRedirect(route('admin.usuarios.index'));
 
-        $this->assertDatabaseHas('users', ['email' => 'nueva@habbi.test', 'role' => 'user']);
+        $this->assertDatabaseHas('users', ['email' => 'nueva@habbi.test', 'role' => 'estudiante']);
     }
 
     public function test_una_contrasena_debil_es_rechazada(): void
@@ -59,7 +59,7 @@ class AdminTest extends TestCase
             ->post(route('admin.usuarios.store'), [
                 'name'                  => 'Test',
                 'email'                 => 'debil@habbi.test',
-                'role'                  => 'user',
+                'role'                  => 'estudiante',
                 'password'              => '123',
                 'password_confirmation' => '123',
             ])

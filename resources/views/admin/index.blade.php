@@ -94,8 +94,8 @@
                                     </div>
                                 </td>
                                 <td style="text-align:right">
-                                    <span class="hb-badge {{ $u->isAdmin() ? 'hb-badge--primary' : 'hb-badge--muted' }}">
-                                        {{ $u->isAdmin() ? 'Admin' : 'Usuario' }}
+                                    <span class="hb-badge {{ $u->isAdmin() ? 'hb-badge--primary' : ($u->esArrendador() ? 'hb-badge--success' : 'hb-badge--muted') }}">
+                                        {{ $u->nombreRol() }}
                                     </span>
                                 </td>
                             </tr>

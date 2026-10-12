@@ -24,7 +24,7 @@ class SmokeTest extends TestCase
 
     public function test_todas_las_paginas_de_usuario_responden(): void
     {
-        $usuario     = User::factory()->create();
+        $usuario     = User::factory()->arrendador()->create();
         $alojamiento = Alojamiento::factory()->for($usuario)->create();
         Rating::factory()->create(['alojamiento_id' => $alojamiento->id]);
 

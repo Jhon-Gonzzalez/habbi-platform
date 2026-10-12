@@ -20,7 +20,7 @@ class AuthTest extends TestCase
         $this->get(route('register'))->assertOk()->assertSee('Crear cuenta');
     }
 
-    public function test_un_usuario_puede_registrarse_y_queda_con_rol_user(): void
+    public function test_un_usuario_puede_registrarse_y_queda_como_estudiante(): void
     {
         $this->post(route('register'), [
             'name'                  => 'Ana Martinez',
@@ -29,7 +29,9 @@ class AuthTest extends TestCase
             'password_confirmation' => 'clave1234',
         ])->assertRedirect(route('home'));
 
-        $this->assertDatabaseHas('users', ['email' => 'ana@habbi.test', 'role' => 'user']);
+        // Registrarse NO da permiso para publicar: eso exige verificación aparte.
+        $this->assertDatabaseHas('users', ['email' => 'ana@habbi.test', 'role' => 'estudiante']);
+        $this->assertFalse(User::firstWhere('email', 'ana@habbi.test')->puedePublicar());
         $this->assertAuthenticated();
     }
 

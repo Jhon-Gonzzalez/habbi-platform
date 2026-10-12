@@ -25,7 +25,7 @@ class AlojamientoFactory extends Factory
         $tipo   = fake()->randomElement(Alojamiento::TIPOS);
 
         return [
-            'user_id'      => User::factory(),
+            'user_id'      => User::factory()->arrendador(),
             'title'        => $tipo . ' ' . fake()->randomElement([
                 'amoblado cerca de la universidad',
                 'con todos los servicios incluidos',

@@ -17,7 +17,7 @@ class UserFactory extends Factory
             'name'              => fake()->name(),
             'email'             => fake()->unique()->safeEmail(),
             'email_verified_at' => now(),
-            'role'              => User::ROLE_USER,
+            'role'              => User::ROLE_ESTUDIANTE,
             'phone'             => '+57 3' . fake()->numerify('## ### ####'),
             'password'          => bcrypt('password'),
             'remember_token'    => Str::random(10),
@@ -26,6 +26,27 @@ class UserFactory extends Factory
 
     public function admin(): static
     {
-        return $this->state(fn () => ['role' => User::ROLE_ADMIN]);
+        return $this->state(fn () => [
+            'role'          => User::ROLE_ADMIN,
+            'verificado_en' => now(),
+        ]);
+    }
+
+    /** Arrendador ya verificado, que es el único que puede publicar. */
+    public function arrendador(): static
+    {
+        return $this->state(fn () => [
+            'role'          => User::ROLE_ARRENDADOR,
+            'verificado_en' => now(),
+        ]);
+    }
+
+    /** Estudiante sin verificar: el estado por defecto al registrarse. */
+    public function estudiante(): static
+    {
+        return $this->state(fn () => [
+            'role'          => User::ROLE_ESTUDIANTE,
+            'verificado_en' => null,
+        ]);
     }
 }

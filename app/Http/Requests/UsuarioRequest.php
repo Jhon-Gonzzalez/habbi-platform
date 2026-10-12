@@ -28,7 +28,7 @@ class UsuarioRequest extends FormRequest
                 Rule::unique('users', 'email')->ignore($usuario?->id),
             ],
             'phone'    => ['nullable', 'string', 'max:40'],
-            'role'     => ['required', Rule::in([User::ROLE_USER, User::ROLE_ADMIN])],
+            'role'     => ['required', Rule::in(array_keys(User::ROLES))],
         ];
 
         // Al CREAR hace falta una contraseña inicial. Al EDITAR no se admite:

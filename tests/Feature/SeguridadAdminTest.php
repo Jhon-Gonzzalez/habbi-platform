@@ -32,7 +32,7 @@ class SeguridadAdminTest extends TestCase
         $this->actingAs($admin)->put(route('admin.usuarios.update', $victima), [
             'name'                  => $victima->name,
             'email'                 => $victima->email,
-            'role'                  => 'user',
+            'role'                  => 'estudiante',
             'password'              => 'claveIntrusa999',
             'password_confirmation' => 'claveIntrusa999',
         ])->assertRedirect(route('admin.usuarios.index'));

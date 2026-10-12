@@ -35,6 +35,15 @@
                     <span aria-hidden="true">⌂</span> Alojamientos
                 </a>
             </li>
+            <li>
+                @php $pendientes = \App\Models\SolicitudArrendador::pendientes()->count(); @endphp
+                <a href="{{ route('admin.solicitudes.index') }}" class="{{ request()->routeIs('admin.solicitudes.*') ? 'is-active' : '' }}">
+                    <span aria-hidden="true">✓</span> Solicitudes
+                    @if ($pendientes)
+                        <span class="hb-badge hb-badge--danger" style="margin-left:auto">{{ $pendientes }}</span>
+                    @endif
+                </a>
+            </li>
         </ul>
 
         <div class="hb-side__foot">

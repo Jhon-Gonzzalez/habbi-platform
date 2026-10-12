@@ -48,9 +48,12 @@
                             </div>
                         </td>
                         <td>
-                            <span class="hb-badge {{ $usuario->isAdmin() ? 'hb-badge--primary' : 'hb-badge--muted' }}">
-                                {{ $usuario->isAdmin() ? 'Admin' : 'Usuario' }}
+                            <span class="hb-badge {{ $usuario->isAdmin() ? 'hb-badge--primary' : ($usuario->esArrendador() ? 'hb-badge--success' : 'hb-badge--muted') }}">
+                                {{ $usuario->nombreRol() }}
                             </span>
+                            @if ($usuario->estaVerificado())
+                                <span class="hb-badge hb-badge--success" title="Verificado">✓</span>
+                            @endif
                         </td>
                         <td>{{ $usuario->alojamientos_count }}</td>
                         <td>{{ $usuario->ratings_count }}</td>

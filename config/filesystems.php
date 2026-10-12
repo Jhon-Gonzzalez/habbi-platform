@@ -36,6 +36,18 @@ return [
             'throw' => false,
         ],
 
+        /*
+         * Documentos de verificación: cédulas y recibos. Vive fuera de
+         * public/ y NUNCA se enlaza con storage:link, así que no existe
+         * ninguna URL que lleve a estos archivos. Se sirven solo a través
+         * de un controlador que comprueba permisos antes de entregarlos.
+         */
+        'private' => [
+            'driver' => 'local',
+            'root' => storage_path('app/private'),
+            'throw' => false,
+        ],
+
         'public' => [
             'driver' => 'local',
             'root' => storage_path('app/public'),

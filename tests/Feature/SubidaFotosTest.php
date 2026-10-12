@@ -49,7 +49,7 @@ class SubidaFotosTest extends TestCase
 
     public function test_el_formulario_de_publicar_anuncia_el_limite_al_navegador(): void
     {
-        $this->actingAs(User::factory()->create())
+        $this->actingAs(User::factory()->arrendador()->create())
             ->get(route('alojamientos.create'))
             ->assertOk()
             ->assertSee('data-max-bytes="' . Subidas::maxPost() . '"', false);
@@ -64,7 +64,7 @@ class SubidaFotosTest extends TestCase
             $fotos[] = UploadedFile::fake()->image("foto{$i}.jpg", 1200, 900)->size(900);
         }
 
-        $this->actingAs(User::factory()->create())
+        $this->actingAs(User::factory()->arrendador()->create())
             ->post(route('alojamientos.store'), [
                 'title'        => 'Habitacion con cuatro fotos de prueba',
                 'type'         => 'Habitación',
@@ -90,7 +90,7 @@ class SubidaFotosTest extends TestCase
     {
         Storage::fake('public');
 
-        $this->actingAs(User::factory()->create())
+        $this->actingAs(User::factory()->arrendador()->create())
             ->post(route('alojamientos.store'), [
                 'title'        => 'Habitacion con una foto enorme',
                 'type'         => 'Habitación',
