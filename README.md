@@ -53,6 +53,11 @@ habitaciones, apartaestudios o apartamentos disponibles.
   cuenta no borre su historial.
 - **Los destinos de Google Maps son una lista cerrada.** `Alojamiento::UNIVERSIDADES`
   se valida con `Rule::in`, así que el enlace nunca apunta a un sitio inventado.
+- **El `composer.lock` se resuelve para PHP 8.2,** aunque quien ejecute
+  `composer update` tenga 8.4. Lo fija `config.platform.php` en
+  `composer.json`. Sin eso, actualizar desde una máquina con 8.4 produce un
+  lock que solo se instala en 8.4, y el despliegue en un hosting con 8.2
+  falla. Lo descubrió el CI, no una suposición.
 - **El fallo del correo no tumba el registro.** Un listener propio reemplaza al de
   Laravel, que devuelve un error 500 justo después de crear la cuenta cuando el
   SMTP está caído.
