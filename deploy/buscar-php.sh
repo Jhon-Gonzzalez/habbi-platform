@@ -6,8 +6,13 @@
 #   source deploy/buscar-php.sh
 #   buscar_php pdo_sqlite     # deja la ruta en $PHP, o devuelve 1
 #
-# Rango admitido: lo marca Laravel 10 por abajo (^8.1) y la dependencia
-# nette/schema por arriba ("8.1 - 8.4"). Actualízalo si se sube Laravel.
+# Rango admitido: 8.2 a 8.4.
+#
+# El suelo NO lo marca Laravel (acepta ^8.1) sino las dependencias ya
+# resueltas: symfony/string y symfony/event-dispatcher exigen >=8.2.
+# Compruébalo con «composer why-not php 8.1» antes de bajarlo.
+#
+# El techo lo marca nette/schema, que admite hasta 8.4.
 
 PHP_MIN=${PHP_MIN:-80200}
 PHP_MAX=${PHP_MAX:-80500}   # exclusivo

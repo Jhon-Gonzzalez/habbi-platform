@@ -28,7 +28,7 @@ if buscar_php pdo_sqlite; then
     ok "PHP $PHP_VERSION_ENCONTRADA → $PHP"
     ok "Extensión sqlite disponible"
 else
-    printf '\n%s✗ No encontré un PHP compatible (necesito 8.1, 8.2, 8.3 o 8.4).%s\n\n' "$ROJO" "$FIN" >&2
+    printf '\n%s✗ No encontré un PHP compatible (necesito 8.2, 8.3 o 8.4).%s\n\n' "$ROJO" "$FIN" >&2
 
     if [ -n "$PHP_DESCARTADOS_VERSION" ]; then
         printf '  Estos están fuera del rango que admite el proyecto:'
@@ -81,6 +81,11 @@ touch database/database.sqlite
 "$PHP" deploy/env-set.php DB_DATABASE   "$RAIZ/database/database.sqlite"
 "$PHP" deploy/env-set.php ADMIN_EMAIL   "admin@habbi.test"
 "$PHP" deploy/env-set.php ADMIN_PASSWORD "habbi1234"
+
+# Los correos no se envían: se escriben en storage/logs/laravel.log. Sin
+# esto, un .env de antes apunta a un SMTP que no existe en tu máquina y el
+# enlace de verificación nunca llegaría a ninguna parte.
+"$PHP" deploy/env-set.php MAIL_MAILER "log"
 
 grep -qE '^APP_KEY=base64:.+' .env || "$PHP" artisan key:generate --force >/dev/null
 "$PHP" artisan config:clear >/dev/null

@@ -93,10 +93,10 @@ nota "${USUARIO_CPANEL}_loquesea — cPanel añade el prefijo solo."
 ok "Proyecto en: $RAIZ"
 
 # ============================================================
-paso "2/9 · Buscando PHP compatible (8.1 – 8.4)"
+paso "2/9 · Buscando PHP compatible (8.2 – 8.4)"
 # ============================================================
-# Rango admitido por el proyecto: lo marca Laravel 10 por abajo (^8.1) y la
-# dependencia nette/schema por arriba ("8.1 - 8.4").
+# Rango admitido por el proyecto: 8.2 (lo exigen symfony/string y
+# symfony/event-dispatcher) a 8.4 (lo limita nette/schema).
 PHP_MIN=80100
 PHP_MAX=80500   # exclusivo
 
@@ -129,12 +129,12 @@ for candidato in "${candidatos[@]}"; do
         ok "PHP $version → $PHP"
         break
     fi
-    nota "descartado: $candidato (PHP $version, fuera del rango 8.1–8.4)"
+    nota "descartado: $candidato (PHP $version, fuera del rango 8.2–8.4)"
 done
 
 if [ -z "$PHP" ]; then
     printf '\n'
-    aviso "No encontré un PHP compatible (necesito 8.1, 8.2, 8.3 o 8.4)."
+    aviso "No encontré un PHP compatible (necesito 8.2, 8.3 o 8.4)."
     nota "En cPanel, busca «Select PHP Version» (o «MultiPHP Manager»)"
     nota "y elige PHP 8.2 o 8.3. Luego vuelve a lanzar la instalación."
     error "Instalación detenida."

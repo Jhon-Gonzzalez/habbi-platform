@@ -27,7 +27,7 @@ for c in /opt/cpanel/ea-php83/root/usr/bin/php /opt/cpanel/ea-php82/root/usr/bin
     [ -n "$c" ] && [ -x "$c" ] || continue
     "$c" -r 'exit(PHP_VERSION_ID >= 80100 ? 0 : 1);' 2>/dev/null && { PHP="$c"; break; }
 done
-[ -n "$PHP" ] || { printf '%s✗ No encontré PHP 8.1+%s\n' "$ROJO" "$FIN" >&2; exit 1; }
+[ -n "$PHP" ] || { printf '%s✗ No encontré PHP 8.2-8.4%s\n' "$ROJO" "$FIN" >&2; exit 1; }
 
 COMPOSER_BIN="$(command -v composer || true)"
 if [ -n "$COMPOSER_BIN" ]; then

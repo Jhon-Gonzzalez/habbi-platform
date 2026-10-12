@@ -19,7 +19,7 @@ cd "$RAIZ"
 . "$RAIZ/deploy/buscar-php.sh"
 
 if ! buscar_php; then
-    printf '\n✗ No encontré un PHP compatible (necesito 8.1, 8.2, 8.3 o 8.4).\n\n' >&2
+    printf '\n✗ No encontré un PHP compatible (necesito 8.2, 8.3 o 8.4).\n\n' >&2
     [ -n "$PHP_DESCARTADOS_VERSION" ] && { printf '  Fuera de rango:'; printf "$PHP_DESCARTADOS_VERSION\n\n"; }
     printf '  Instálalo con:  brew install php@8.3\n\n'
     exit 1
