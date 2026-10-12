@@ -21,8 +21,12 @@ habitaciones, apartaestudios o apartamentos disponibles.
 | **Buscador público** | Filtros por texto, precio, tipo, capacidad y comodidades. Orden por precio, fecha o calificación. Paginación con filtros persistentes. |
 | **Publicaciones** | Alta con hasta 8 fotos, edición con gestión de galería (añadir, quitar, elegir portada), pausar/reactivar y borrado con limpieza de archivos. |
 | **Reseñas** | Una calificación de 1 a 5 estrellas por usuario y alojamiento, con comentario opcional. Nadie puede reseñar su propia publicación. |
-| **Cuentas** | Registro, login, recuperación de contraseña y panel personal con el resumen de publicaciones y reseñas. |
-| **Panel de administración** | Métricas generales, CRUD de usuarios con roles y moderación de publicaciones. |
+| **Cuentas y roles** | Registro, login, recuperación de contraseña y verificación de correo. Registrarse te hace **estudiante**; para publicar hay que pasar una **verificación como arrendador** que aprueba un administrador. |
+| **Perfiles** | Foto, descripción, ciudad y universidad. El arrendador tiene además perfil público con su sello de verificado y el promedio de sus reseñas, para que el estudiante vea con quién trata. |
+| **Ruta a la universidad** | Cada publicación abre Google Maps con la ruta a pie desde el alojamiento hasta el campus (las cinco universidades de Montería). |
+| **Favoritos** | Guardar alojamientos con un corazón y volver a ellos en `/mis-favoritos`. |
+| **Reportes** | Avisar de anuncios falsos, estafas o precios que no corresponden. Un reporte **no** oculta la publicación: lo revisa una persona. |
+| **Panel de administración** | Métricas, CRUD de usuarios con roles, moderación de publicaciones, revisión de solicitudes de arrendador, bandeja de reportes y **registro de auditoría**. |
 
 ## Decisiones técnicas
 
@@ -35,6 +39,23 @@ habitaciones, apartaestudios o apartamentos disponibles.
   así el listado de 12 tarjetas hace una consulta en lugar de veinticinco.
 - **Las fotos viven fuera del repositorio,** en `storage/app/public`, expuestas
   mediante el enlace simbólico `public/storage`.
+- **Los documentos de verificación NO son públicos.** Van al disco `private`
+  (`storage/app/private`), sin enlace simbólico, y solo se sirven a través de un
+  controlador que comprueba permisos. Una cédula escaneada no puede quedar
+  accesible por URL.
+- **El administrador no puede ver ni poner contraseñas.** No hay campo para
+  escribir la contraseña de otro: se genera un enlace de restablecimiento que
+  caduca y solo sirve para esa cuenta. `bcrypt` es irreversible, así que ni
+  consultando la base de datos se leen.
+- **Las acciones del panel quedan auditadas.** `Auditor::registrar()` escribe en
+  `auditorias` quién hizo qué, cuándo y sobre qué. No hay ruta para borrar ni
+  editar ese registro, y copia el nombre del actor en la fila para que borrar su
+  cuenta no borre su historial.
+- **Los destinos de Google Maps son una lista cerrada.** `Alojamiento::UNIVERSIDADES`
+  se valida con `Rule::in`, así que el enlace nunca apunta a un sitio inventado.
+- **El fallo del correo no tumba el registro.** Un listener propio reemplaza al de
+  Laravel, que devuelve un error 500 justo después de crear la cuenta cuando el
+  SMTP está caído.
 
 ## Estructura
 
@@ -99,8 +120,40 @@ php artisan serve
 ```
 
 El seeder crea un administrador con las credenciales de `ADMIN_EMAIL` y
-`ADMIN_PASSWORD` del `.env`, más datos de ejemplo (usuarios, alojamientos y
-reseñas) que **no** se generan cuando `APP_ENV=production`.
+`ADMIN_PASSWORD` del `.env`, más 20 alojamientos de ejemplo en Montería que
+**no** se generan cuando `APP_ENV=production`.
+
+### Sobre los datos de ejemplo
+
+Los barrios, calles, universidades y precios son **reales** (El Recreo, La
+Granja, Los Alcázares, Mocarí, Cantaclaro, Santa Fe...), así que la aplicación
+se prueba contra la ciudad de verdad y los enlaces a Google Maps llevan a
+sitios que existen.
+
+Los **negocios y las personas son inventados**, a propósito: no se copiaron
+pensiones reales de Google Maps porque esos negocios no han dado permiso para
+aparecer aquí, sus teléfonos recibirían llamadas por un dato de prueba y las
+reseñas serían opiniones falsas sobre un negocio con nombre propio. Los
+teléfonos usan el prefijo `300 555 ····` y los correos terminan en `.test`;
+hay tests que lo vigilan.
+
+Todas las cuentas de ejemplo usan la contraseña `habbi1234`.
+
+### El correo en local
+
+`MAIL_MAILER=log`, así que los correos no se envían: se escriben en
+`storage/logs/laravel.log`. Para verificar una cuenta nueva, busca el enlace
+ahí:
+
+```bash
+grep -o 'https\?://[^"<]*email/verify[^"<]*' storage/logs/laravel.log | tail -1 | sed 's/&amp;/\&/g'
+```
+
+(El `sed` del final es necesario: en el log el enlace va dentro de HTML y el
+`&` aparece escapado como `&amp;`, que rompería la firma al pegarlo.)
+
+Si prefieres no pelear con eso, entra como administrador y usa
+**Usuarios → editar → Marcar el correo como verificado**.
 
 ## Tests
 
@@ -108,9 +161,18 @@ reseñas) que **no** se generan cuando `APP_ENV=production`.
 php artisan test
 ```
 
-39 pruebas funcionales que cubren publicación, permisos de edición, gestión de
-fotos, reglas de las reseñas, acceso al panel de administración y el renderizado
-de todas las vistas.
+164 pruebas funcionales. Además de lo obvio (publicación, permisos, fotos,
+reseñas, renderizado de las vistas), varias existen para fijar decisiones que
+de otro modo se perderían en el próximo refactor:
+
+- El administrador **no** puede ponerle contraseña a otro (`SeguridadAdminTest`).
+- Un documento de verificación **no** es accesible para un tercero.
+- Reportar un anuncio **no** lo oculta.
+- La auditoría **no** guarda el token de restablecimiento.
+- **No** existe ninguna ruta para borrar la auditoría.
+- El registro se completa **aunque el correo falle** (el test apunta el SMTP a
+  un host inexistente y comprueba que redirige en vez de dar un 500).
+- Los teléfonos de ejemplo usan un prefijo sin líneas asignadas.
 
 ## Despliegue
 
