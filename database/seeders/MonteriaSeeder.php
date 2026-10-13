@@ -7,7 +7,9 @@ use App\Models\Rating;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
+use App\Models\SolicitudArrendador;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 
 /**
  * Carga veinte alojamientos de ejemplo en Montería.
@@ -60,6 +62,8 @@ class MonteriaSeeder extends Seeder
                 $alojamiento = $this->crearAlojamiento($fila, $arrendadores[$fila['arrendador']]);
                 $this->crearResenas($alojamiento, $fila['rating'] ?? [], $estudiantes);
             }
+
+            $this->crearSolicitudes($estudiantes);
         });
 
         $this->command?->info(sprintf(
@@ -121,6 +125,80 @@ class MonteriaSeeder extends Seeder
                 ]
             );
         });
+    }
+
+    /**
+     * Dos solicitudes de arrendador, para que la pantalla de revisión no
+     * esté vacía al probar la aplicación.
+     *
+     * Una pendiente CON documentos, para poder aprobarla y ver cómo se
+     * borran solos. Otra ya resuelta y con los documentos eliminados, que
+     * es como se ve una solicitud vieja.
+     */
+    private function crearSolicitudes($estudiantes): void
+    {
+        $pendiente = $estudiantes[0];
+        $resuelta  = $estudiantes[1];
+
+        SolicitudArrendador::updateOrCreate(
+            ['user_id' => $pendiente->id],
+            [
+                'estado'         => SolicitudArrendador::PENDIENTE,
+                'documento_path' => $this->documentoDeMentira($pendiente->id, 'documento', 'CÉDULA'),
+                'prueba_path'    => $this->documentoDeMentira($pendiente->id, 'prueba', 'RECIBO'),
+                'telefono'       => '+57 300 555 0199',
+                'mensaje'        => 'Mi mamá tiene dos cuartos libres desde que mis hermanos se fueron '
+                    . 'a estudiar a Medellín. Queremos arrendarlos a estudiantes de Unicórdoba.',
+            ],
+        );
+
+        SolicitudArrendador::updateOrCreate(
+            ['user_id' => $resuelta->id],
+            [
+                'estado'                 => SolicitudArrendador::RECHAZADA,
+                'documento_path'         => 'verificaciones/' . $resuelta->id . '/documento/borrado.jpg',
+                'prueba_path'            => 'verificaciones/' . $resuelta->id . '/prueba/borrado.jpg',
+                'documentos_borrados_en' => now()->subDays(12),
+                'telefono'               => '+57 300 555 0198',
+                'mensaje'                => 'Quiero publicar el apartamento de mi tío.',
+                'motivo_rechazo'         => 'El recibo que subiste está a nombre de otra persona. '
+                    . 'Necesitamos uno a tu nombre, o una autorización firmada del propietario.',
+                'revisada_en'            => now()->subDays(12),
+            ],
+        );
+    }
+
+    /**
+     * Genera un archivo que hace de documento subido.
+     *
+     * Es un rectángulo con una palabra, NO una cédula de verdad ni una
+     * imagen sacada de internet: en los datos de ejemplo no tiene por qué
+     * aparecer el documento de nadie.
+     */
+    private function documentoDeMentira(int $userId, string $tipo, string $texto): string
+    {
+        $ruta = 'verificaciones/' . $userId . '/' . $tipo . '/' . $tipo . '-ejemplo.png';
+
+        $img = imagecreatetruecolor(900, 560);
+        imagefilledrectangle($img, 0, 0, 900, 560, imagecolorallocate($img, 229, 235, 243));
+        imagefilledrectangle($img, 40, 40, 860, 520, imagecolorallocate($img, 255, 255, 255));
+
+        $tinta = imagecolorallocate($img, 102, 112, 133);
+        imagestring($img, 5, 70, 80, $texto . ' DE EJEMPLO', $tinta);
+        imagestring($img, 3, 70, 120, 'Documento ficticio generado por el seeder.', $tinta);
+        imagestring($img, 3, 70, 145, 'No contiene datos de ninguna persona real.', $tinta);
+
+        for ($y = 220; $y < 460; $y += 42) {
+            imagefilledrectangle($img, 70, $y, 70 + rand(380, 720), $y + 14,
+                imagecolorallocate($img, 223, 228, 237));
+        }
+
+        ob_start();
+        imagepng($img);
+        Storage::disk('private')->put($ruta, ob_get_clean());
+        imagedestroy($img);
+
+        return $ruta;
     }
 
     private function crearAlojamiento(array $fila, User $arrendador): Alojamiento
