@@ -109,6 +109,10 @@
                 <div class="hb-spec__value">{{ $alojamiento->guests }} @plural('huésped', $alojamiento->guests)</div>
             </div>
             <div class="hb-spec">
+                <div class="hb-spec__label">Disponibilidad</div>
+                <div class="hb-spec__value">{{ $alojamiento->textoDisponibilidad() }}</div>
+            </div>
+            <div class="hb-spec">
                 <div class="hb-spec__label">Tipo</div>
                 <div class="hb-spec__value">{{ $alojamiento->type }}</div>
             </div>

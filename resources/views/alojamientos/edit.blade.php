@@ -33,7 +33,8 @@
                     @foreach ($galeria as $foto)
                         @php $esPortada = $foto['path'] === $alojamiento->cover_path; @endphp
                         <div class="hb-thumb {{ $esPortada ? 'is-cover' : '' }}" data-ruta="{{ $foto['path'] }}">
-                            <img src="{{ $foto['url'] }}" alt="">
+                            <img src="{{ $foto['url'] }}"
+                                 alt="{{ $esPortada ? 'Foto de portada' : 'Foto' }} de {{ $alojamiento->title }}">
                             @if ($esPortada)
                                 <span class="hb-thumb__tag">Portada</span>
                             @endif

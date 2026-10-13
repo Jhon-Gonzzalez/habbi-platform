@@ -67,6 +67,7 @@ class Alojamiento extends Model
         'price',
         'price_period',
         'guests',
+        'disponible_desde',
         'city',
         'neighborhood',
         'address',
@@ -88,6 +89,7 @@ class Alojamiento extends Model
         'price'     => 'integer',
         'guests'    => 'integer',
         'lat'       => 'float',
+        'disponible_desde' => 'date',
         'lng'       => 'float',
     ];
 
@@ -216,6 +218,40 @@ class Alojamiento extends Model
     public function precioFormateado(): string
     {
         return '$' . number_format($this->price, 0, ',', '.');
+    }
+
+    /* ===================== Disponibilidad ===================== */
+
+    /** ¿Se puede entrar ya? Nulo o una fecha pasada significan que sí. */
+    public function estaDisponibleYa(): bool
+    {
+        return $this->disponible_desde === null
+            || $this->disponible_desde->isPast()
+            || $this->disponible_desde->isToday();
+    }
+
+    /**
+     * Texto corto para la tarjeta y el detalle.
+     *
+     * Una fecha pasada se trata como «ya»: el arrendador puso enero, llegó
+     * febrero y nadie volvió a editarlo. Mostrar «disponible desde enero»
+     * en marzo confunde más que ayudar.
+     */
+    public function textoDisponibilidad(): string
+    {
+        if ($this->estaDisponibleYa()) {
+            return 'Disponible ya';
+        }
+
+        return 'Disponible desde el ' . $this->disponible_desde->translatedFormat('j \d\e F');
+    }
+
+    /** Solo los que se pueden ocupar antes de una fecha. */
+    public function scopeDisponibleAntesDe(Builder $query, $fecha): Builder
+    {
+        return $query->where(fn ($q) => $q
+            ->whereNull('disponible_desde')
+            ->orWhere('disponible_desde', '<=', $fecha));
     }
 
     /* ===================== Ubicación y rutas ===================== */

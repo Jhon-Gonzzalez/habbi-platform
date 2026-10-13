@@ -122,6 +122,7 @@ return [
         [
             'arrendador'   => 'Marta Sofía Negrete',
             'title'        => 'Residencia femenina en La Granja — cupos disponibles',
+            'disponible'   => '+2 months',
             'type'         => 'Habitación',
             'price'        => 480000,
             'guests'       => 1,
@@ -202,6 +203,7 @@ return [
         [
             'arrendador'   => 'Rafael Berrocal',
             'title'        => 'Apartaestudio nuevo en La Castellana',
+            'disponible'   => '+45 days',
             'type'         => 'Apartaestudio',
             'price'        => 780000,
             'guests'       => 1,
@@ -256,6 +258,7 @@ return [
         [
             'arrendador'   => 'Rafael Berrocal',
             'title'        => 'Loft en El Níspero para estudiante de posgrado',
+            'disponible'   => '+3 months',
             'type'         => 'Loft',
             'price'        => 1100000,
             'guests'       => 2,

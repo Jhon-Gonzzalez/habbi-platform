@@ -92,6 +92,19 @@
         </div>
 
         <div class="hb-field">
+            <label class="hb-label" for="disponible_desde">¿Desde cuándo está libre?</label>
+            <input class="hb-input @error('disponible_desde') is-invalid @enderror" type="date"
+                   id="disponible_desde" name="disponible_desde"
+                   value="{{ old('disponible_desde', isset($a->disponible_desde) ? $a->disponible_desde?->format('Y-m-d') : '') }}">
+            <span class="hb-hint">
+                Déjalo vacío si se puede entrar ya. Ponlo si el inquilino actual
+                se va en una fecha concreta: así nadie te escribe para enero
+                cuando el cuarto se desocupa en junio.
+            </span>
+            @error('disponible_desde') <span class="hb-error">{{ $message }}</span> @enderror
+        </div>
+
+        <div class="hb-field">
             <label class="hb-label" for="universidad_referencia">Universidad más cercana</label>
             <select class="hb-input @error('universidad_referencia') is-invalid @enderror"
                     id="universidad_referencia" name="universidad_referencia">

@@ -40,6 +40,9 @@
         <x-estrellas :valor="$a->promedio()" :total="$a->totalResenas()" />
 
         <div class="hb-listing__meta">
+            @unless ($a->estaDisponibleYa())
+                <span class="hb-badge hb-badge--warning">{{ $a->textoDisponibilidad() }}</span>
+            @endunless
             <span>{{ $a->type }}</span>
             <span>{{ $a->guests }} @plural('huésped', $a->guests)</span>
             <span>{{ $a->city }}@if ($a->neighborhood), {{ $a->neighborhood }}@endif</span>

@@ -30,6 +30,11 @@ class AlojamientoRequest extends FormRequest
             'neighborhood' => ['nullable', 'string', 'max:120'],
             'address'      => ['nullable', 'string', 'max:255'],
 
+            // Solo 'date': no se exige que sea futura porque al editar un
+            // anuncio viejo la fecha ya pasó, y rechazarla obligaría a
+            // borrarla para poder guardar cualquier otro cambio.
+            'disponible_desde' => ['nullable', 'date'],
+
             // Solo se acepta una universidad de la lista: así el enlace a
             // Google Maps siempre apunta a un destino que existe.
             'universidad_referencia' => [
@@ -69,6 +74,7 @@ class AlojamientoRequest extends FormRequest
             'city'         => 'ciudad',
             'neighborhood' => 'barrio',
             'address'      => 'dirección',
+            'disponible_desde' => 'fecha de disponibilidad',
             'universidad_referencia' => 'universidad más cercana',
             'description'  => 'descripción',
             'amenities'    => 'comodidades',

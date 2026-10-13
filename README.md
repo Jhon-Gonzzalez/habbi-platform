@@ -58,6 +58,10 @@ habitaciones, apartaestudios o apartamentos disponibles.
   `composer.json`. Sin eso, actualizar desde una máquina con 8.4 produce un
   lock que solo se instala en 8.4, y el despliegue en un hosting con 8.2
   falla. Lo descubrió el CI, no una suposición.
+- **Nada de peso muerto en `public/`.** Se borraron `public/plugins` (61 MB) y
+  `public/dist` (25 MB): 2.024 archivos de una plantilla de administración que
+  ninguna vista, hoja de estilo ni script referenciaba. Siguen en el historial
+  de git por si alguna vez hicieran falta.
 - **El fallo del correo no tumba el registro.** Un listener propio reemplaza al de
   Laravel, que devuelve un error 500 justo después de crear la cuenta cuando el
   SMTP está caído.

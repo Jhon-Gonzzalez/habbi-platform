@@ -135,6 +135,12 @@ class MonteriaSeeder extends Seeder
                 'price'                  => $fila['price'],
                 'price_period'           => $fila['periodo'] ?? 'mes',
                 'guests'                 => $fila['guests'],
+
+                // La mayoría se puede ocupar ya (null); unos pocos traen
+                // fecha, para que la etiqueta se vea en el listado.
+                'disponible_desde'       => isset($fila['disponible'])
+                    ? now()->modify($fila['disponible'])->startOfDay()
+                    : null,
                 'city'                   => 'Montería',
                 'neighborhood'           => $fila['neighborhood'],
                 'address'                => $fila['address'],
