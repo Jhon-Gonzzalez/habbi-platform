@@ -180,11 +180,49 @@ hay tests que lo vigilan.
 
 Todas las cuentas de ejemplo usan la contraseña `habbi1234`.
 
-### El correo en local
+### El correo
 
-`MAIL_MAILER=log`, así que los correos no se envían: se escriben en
-`storage/logs/laravel.log`. Para verificar una cuenta nueva, busca el enlace
-ahí:
+**En local no se envía ningún correo de verdad.** `MAIL_MAILER=log` escribe
+los mensajes en `storage/logs/laravel.log` en vez de mandarlos, así que por
+más que te registres con tu Gmail, a tu Gmail no va a llegar nada. Es a
+propósito: desarrollando no quieres mandar correos reales sin querer.
+
+Para verificar una cuenta mientras trabajas en local, lo más corto:
+
+```bash
+php artisan habbi:enlace tucorreo@gmail.com              # te da el enlace
+php artisan habbi:enlace tucorreo@gmail.com --verificar  # o la verifica ya
+```
+
+También puedes entrar como administrador y usar
+**Usuarios → editar → Marcar el correo como verificado**.
+
+#### Que lleguen de verdad
+
+Cuando quieras que los correos salgan a bandejas reales, pon en el `.env`:
+
+```ini
+MAIL_MAILER=smtp
+MAIL_HOST=smtp.gmail.com
+MAIL_PORT=587
+MAIL_USERNAME=tucorreo@gmail.com
+MAIL_PASSWORD=la-contraseña-de-aplicación
+MAIL_ENCRYPTION=tls
+MAIL_FROM_ADDRESS=tucorreo@gmail.com
+```
+
+`MAIL_PASSWORD` **no** es tu contraseña de Gmail: es una
+[contraseña de aplicación](https://myaccount.google.com/apppasswords) de 16
+letras, y para generarla tu cuenta de Google necesita la verificación en dos
+pasos activada. Después: `php artisan config:clear`.
+
+Gmail tiene un límite de envíos diarios, así que vale para probar pero no
+para una plataforma con usuarios reales. Para eso hace falta un servicio de
+correo transaccional (Brevo, Resend, Postmark) con su propio SMTP.
+
+#### Sacar el enlace del log a mano
+
+Si prefieres el camino largo:
 
 ```bash
 grep -o 'https\?://[^"<]*email/verify[^"<]*' storage/logs/laravel.log | tail -1 | sed 's/&amp;/\&/g'

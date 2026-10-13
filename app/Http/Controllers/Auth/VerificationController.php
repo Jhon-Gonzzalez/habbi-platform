@@ -64,6 +64,18 @@ class VerificationController extends Controller
                 'error'   => $e->getMessage(),
             ]);
 
+            // En local el que lee esto eres tú, desarrollando: decir «es un
+            // problema nuestro» no ayuda a arreglarlo. Fuera de local, la
+            // persona no tiene por qué ver detalles de configuración.
+            if (app()->environment('local')) {
+                return back()->with('error', sprintf(
+                    'No se pudo enviar el correo (MAIL_MAILER=%s). %s · Saca el enlace con: php artisan habbi:enlace %s',
+                    config('mail.default'),
+                    $e->getMessage(),
+                    $request->user()->email,
+                ));
+            }
+
             return back()->with('error', 'No pudimos enviar el correo ahora mismo. '
                 . 'Es un problema nuestro, no tuyo. Inténtalo en un rato o escríbenos.');
         }
