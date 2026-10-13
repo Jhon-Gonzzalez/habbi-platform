@@ -107,9 +107,19 @@ return [
     |
     */
 
+    /*
+     * Se usa ?: y no el segundo argumento de env().
+     *
+     * env('X', 'defecto') solo aplica el defecto cuando la variable NO
+     * EXISTE. Si el .env trae «MAIL_FROM_ADDRESS=» (vacío), devuelve la
+     * cadena vacía, el correo sale sin remitente y Symfony lanza
+     * «An email must have a "From" or a "Sender" header» — incluso con el
+     * driver "log", que ni siquiera envía nada. Con ?: el valor vacío
+     * también cae al de respaldo.
+     */
     'from' => [
-        'address' => env('MAIL_FROM_ADDRESS', 'hello@example.com'),
-        'name' => env('MAIL_FROM_NAME', 'Example'),
+        'address' => env('MAIL_FROM_ADDRESS') ?: 'no-responder@habbi.local',
+        'name' => env('MAIL_FROM_NAME') ?: env('APP_NAME', 'HABBI'),
     ],
 
     /*

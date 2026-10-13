@@ -87,6 +87,12 @@ touch database/database.sqlite
 # enlace de verificación nunca llegaría a ninguna parte.
 "$PHP" deploy/env-set.php MAIL_MAILER "log"
 
+# Y hace falta un remitente: un correo sin «From» no se puede ni escribir
+# en el log. Muchos .env traen MAIL_FROM_ADDRESS vacío.
+"$PHP" deploy/env-set.php MAIL_FROM_ADDRESS "no-responder@habbi.local"
+"$PHP" deploy/env-set.php MAIL_FROM_NAME    "HABBI"
+"$PHP" deploy/env-set.php APP_NAME          "HABBI"
+
 grep -qE '^APP_KEY=base64:.+' .env || "$PHP" artisan key:generate --force >/dev/null
 "$PHP" artisan config:clear >/dev/null
 ok "Configurado con SQLite (no hace falta MySQL)"
