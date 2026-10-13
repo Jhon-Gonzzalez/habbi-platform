@@ -281,13 +281,22 @@
 
                 @auth
                     @if ($alojamiento->telefonoLimpio())
-                        <a class="hb-btn hb-btn--success hb-btn--block" style="margin-bottom:.6rem" target="_blank" rel="noopener"
-                           href="https://wa.me/{{ $alojamiento->telefonoLimpio() }}?text={{ urlencode('Hola, vi tu alojamiento "' . $alojamiento->title . '" en HABBI y me interesa.') }}">
-                            Contactar por WhatsApp
+                        {{-- El teléfono NO se imprime aquí. Si saliera, bastaría
+                             una cuenta nueva y un recorrido por el listado para
+                             llevarse los contactos de todos los arrendadores.
+                             Sin JavaScript, el enlace lleva a una página que lo
+                             muestra: la protección no depende del navegador. --}}
+                        <a class="hb-btn hb-btn--success hb-btn--block"
+                           data-telefono="{{ route('alojamientos.telefono', $alojamiento) }}"
+                           href="{{ route('alojamientos.telefono', $alojamiento) }}">
+                            Ver teléfono y escribir
                         </a>
-                        <a class="hb-btn hb-btn--ghost hb-btn--block" href="tel:{{ $alojamiento->telefonoLimpio() }}">
-                            Llamar al {{ $alojamiento->phone }}
-                        </a>
+
+                        <div class="hb-contacto" id="contactoRevelado" hidden></div>
+
+                        <p class="hb-muted hb-small hb-center" style="margin:.75rem 0 0">
+                            Nunca envíes dinero por adelantado a alguien que no conoces.
+                        </p>
                     @else
                         <p class="hb-muted hb-small hb-mb-0">Este arrendador no dejó teléfono de contacto.</p>
                     @endif

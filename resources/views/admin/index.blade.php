@@ -20,6 +20,31 @@
         </div>
     @endif
 
+    @if ($cosechadores->isNotEmpty())
+        <div class="hb-alert hb-alert--error" style="margin-bottom:1.5rem">
+            <span class="hb-alert__icon" aria-hidden="true">!</span>
+            <span>
+                <strong>Alguien está pidiendo muchos teléfonos.</strong>
+                En las últimas 24 horas:
+                <ul style="margin:.5rem 0 0;padding-left:1.1rem">
+                    @foreach ($cosechadores as $c)
+                        <li>
+                            {{ $c->user?->name ?? 'cuenta eliminada' }}
+                            ({{ \App\Support\Texto::ocultarCorreo($c->user?->email ?? '—') }})
+                            · <strong>{{ $c->total }}</strong> teléfonos
+                            @if ($c->user)
+                                · cuenta creada {{ $c->user->created_at->diffForHumans() }}
+                                · <a href="{{ route('admin.usuarios.show', $c->user) }}">ver</a>
+                            @endif
+                        </li>
+                    @endforeach
+                </ul>
+                Una persona buscando cuarto mira diez o quince. Si la cuenta es
+                nueva y pidió decenas, probablemente esté recogiendo contactos.
+            </span>
+        </div>
+    @endif
+
     <div class="hb-stats">
         <div class="hb-stat">
             <div class="hb-stat__icon" aria-hidden="true">◍</div>

@@ -40,6 +40,12 @@ class RegisterController extends Controller
     public function __construct()
     {
         $this->middleware('guest');
+
+        // Crear cuentas en masa es el primer paso de casi cualquier abuso.
+        // Se pone aquí y no en una ruta aparte porque Auth::routes() ya
+        // define POST /register: duplicarla funcionaría por el orden de
+        // registro, que es justo el tipo de cosa que se rompe sola.
+        $this->middleware('throttle:registro')->only('register');
     }
 
     /**

@@ -10,6 +10,7 @@ use App\Http\Controllers\LegalController;
 use App\Http\Controllers\PerfilController;
 use App\Http\Controllers\RatingController;
 use App\Http\Controllers\ReporteController;
+use App\Http\Controllers\TelefonoController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
@@ -44,7 +45,9 @@ Route::prefix('alojamientos')->name('alojamientos.')->group(function () {
         // Publicar exige ser arrendador verificado, no solo tener sesión.
         Route::middleware('puede.publicar')->group(function () {
             Route::get('/publicar', [AlojamientoController::class, 'create'])->name('create');
-            Route::post('/', [AlojamientoController::class, 'store'])->name('store');
+            Route::post('/', [AlojamientoController::class, 'store'])
+                ->middleware('throttle:publicar')
+                ->name('store');
         });
         Route::get('/mis-publicaciones', [AlojamientoController::class, 'mine'])->name('mine');
 
@@ -83,7 +86,7 @@ Route::middleware('auth')->group(function () {
     // se quiera. Buscar, guardar favoritos y editar el perfil no lo exigen:
     // castigar la navegación por no haber abierto un correo no protege a nadie.
     Route::post('/alojamientos/{alojamiento}/resenas', [RatingController::class, 'store'])
-        ->middleware('verified')
+        ->middleware(['verified', 'throttle:resenas'])
         ->whereNumber('alojamiento')
         ->name('ratings.store');
 
@@ -97,6 +100,15 @@ Route::middleware('auth')->group(function () {
     Route::get('/mi-perfil', [PerfilController::class, 'edit'])->name('perfil.edit');
     Route::put('/mi-perfil', [PerfilController::class, 'update'])->name('perfil.update');
 
+    /* ----- Ver el teléfono de un alojamiento ----- */
+    // No se imprime en la página: hay que pedirlo, y cada petición queda
+    // registrada. Si saliera impreso, bastaría una cuenta nueva y un
+    // recorrido por el listado para llevarse todos los contactos.
+    Route::get('/alojamientos/{alojamiento}/telefono', TelefonoController::class)
+        ->middleware('throttle:telefonos')
+        ->whereNumber('alojamiento')
+        ->name('alojamientos.telefono');
+
     /* ----- Favoritos ----- */
     Route::get('/mis-favoritos', [FavoritoController::class, 'index'])->name('favoritos.index');
     Route::post('/alojamientos/{alojamiento}/favorito', [FavoritoController::class, 'toggle'])
@@ -109,6 +121,7 @@ Route::middleware('auth')->group(function () {
             ->whereNumber('alojamiento')
             ->name('reportes.create');
         Route::post('/alojamientos/{alojamiento}/reportar', [ReporteController::class, 'store'])
+            ->middleware('throttle:reportes')
             ->whereNumber('alojamiento')
             ->name('reportes.store');
     });

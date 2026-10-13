@@ -17,6 +17,52 @@
     });
   }
 
+  /* ---------- Revelar el teléfono del arrendador ---------- */
+  /* El número no viene en el HTML: se pide al servidor, que deja registro
+     de quién lo pidió. Si esto falla o no hay JavaScript, el enlace sigue
+     siendo un enlace normal a una página que muestra lo mismo. */
+  function initTelefono() {
+    var boton = document.querySelector('[data-telefono]');
+    var caja  = document.getElementById('contactoRevelado');
+    if (!boton || !caja) return;
+
+    boton.addEventListener('click', function (e) {
+      e.preventDefault();
+
+      boton.textContent = 'Buscando…';
+      boton.style.pointerEvents = 'none';
+
+      fetch(boton.getAttribute('data-telefono'), {
+        headers: { 'Accept': 'application/json' },
+        credentials: 'same-origin'
+      })
+        .then(function (r) {
+          if (r.status === 429) throw new Error('demasiados');
+          if (!r.ok) throw new Error('fallo');
+          return r.json();
+        })
+        .then(function (d) {
+          boton.hidden = true;
+          caja.hidden  = false;
+          caja.innerHTML =
+            '<div class="hb-contacto__numero">' + d.telefono + '</div>' +
+            '<a class="hb-btn hb-btn--success hb-btn--block" target="_blank" rel="noopener" href="' +
+              d.whatsapp + '">Escribir por WhatsApp</a>' +
+            '<a class="hb-btn hb-btn--ghost hb-btn--block" style="margin-top:.6rem" href="tel:' +
+              d.limpio + '">Llamar</a>';
+        })
+        .catch(function (err) {
+          if (err.message === 'demasiados') {
+            boton.textContent = 'Has visto muchos teléfonos hoy';
+            boton.style.pointerEvents = '';
+            return;
+          }
+          // Cualquier otro fallo: se deja que el enlace haga su trabajo.
+          window.location = boton.getAttribute('href');
+        });
+    });
+  }
+
   /* ---------- Menú desplegable de usuario ---------- */
   function initUserMenu() {
     var btn  = document.getElementById('userMenuBtn');
@@ -223,6 +269,7 @@
 
   document.addEventListener('DOMContentLoaded', function () {
     initNavbar();
+    initTelefono();
     initUserMenu();
     initAlerts();
     initRating();
