@@ -56,6 +56,11 @@ class VerificacionArrendadorService
                 'verificado_en' => now(),
                 'phone'         => $solicitud->user->phone ?: $solicitud->telefono,
             ])->save();
+
+            // Los documentos ya hicieron su trabajo. Guardarlos «por si
+            // acaso» es justo lo que convierte una verificación en un
+            // depósito de cédulas que un día se filtra.
+            $this->eliminarDocumentos($solicitud);
         });
     }
 
@@ -68,6 +73,10 @@ class VerificacionArrendadorService
             'revisada_por'   => $revisor->id,
             'revisada_en'    => now(),
         ]);
+
+        // También al rechazar: si vuelve a intentarlo, subirá documentos
+        // nuevos. No hay motivo para conservar los de un intento fallido.
+        $this->eliminarDocumentos($solicitud);
     }
 
     /**
@@ -82,14 +91,26 @@ class VerificacionArrendadorService
         ])->save();
     }
 
-    /** Borra del disco los documentos de una solicitud ya resuelta. */
+    /**
+     * Borra del disco los documentos de una solicitud y lo deja anotado.
+     *
+     * La ruta en la base de datos se conserva: es un hash aleatorio, no
+     * revela nada, y sirve para saber que ahí hubo un archivo. Lo que
+     * desaparece es el archivo.
+     */
     public function eliminarDocumentos(SolicitudArrendador $solicitud): void
     {
+        if ($solicitud->documentos_borrados_en) {
+            return;
+        }
+
         foreach ([$solicitud->documento_path, $solicitud->prueba_path] as $ruta) {
             if ($ruta && Storage::disk(self::DISCO)->exists($ruta)) {
                 Storage::disk(self::DISCO)->delete($ruta);
             }
         }
+
+        $solicitud->forceFill(['documentos_borrados_en' => now()])->save();
     }
 
     /** Devuelve el contenido de un documento para entregarlo tras comprobar permisos. */

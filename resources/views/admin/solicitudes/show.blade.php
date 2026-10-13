@@ -57,20 +57,34 @@
                 <span class="hb-badge hb-badge--muted">Solo visibles aquí</span>
             </div>
             <div class="hb-card__body">
-                <div class="hb-row">
-                    <a class="hb-btn hb-btn--ghost" target="_blank" rel="noopener"
-                       href="{{ route('arrendador.documento', [$solicitud, 'documento']) }}">
-                        Ver documento de identidad
-                    </a>
-                    <a class="hb-btn hb-btn--ghost" target="_blank" rel="noopener"
-                       href="{{ route('arrendador.documento', [$solicitud, 'prueba']) }}">
-                        Ver prueba del inmueble
-                    </a>
-                </div>
-                <span class="hb-hint" style="margin-top:.75rem">
-                    Estos archivos están fuera de la carpeta pública. No existe ninguna
-                    dirección que lleve a ellos sin pasar por esta comprobación de permisos.
-                </span>
+                @if ($solicitud->tieneDocumentos())
+                    <div class="hb-row">
+                        <a class="hb-btn hb-btn--ghost" target="_blank" rel="noopener"
+                           href="{{ route('arrendador.documento', [$solicitud, 'documento']) }}">
+                            Ver documento de identidad
+                        </a>
+                        <a class="hb-btn hb-btn--ghost" target="_blank" rel="noopener"
+                           href="{{ route('arrendador.documento', [$solicitud, 'prueba']) }}">
+                            Ver prueba del inmueble
+                        </a>
+                    </div>
+                    <span class="hb-hint" style="margin-top:.75rem">
+                        Están fuera de la carpeta pública y no hay ninguna dirección que
+                        lleve a ellos sin pasar por esta comprobación de permisos.
+                        <strong>Se borrarán solos en cuanto tomes la decisión.</strong>
+                    </span>
+                @else
+                    <p class="hb-muted hb-mb-0">
+                        <strong>Ya se eliminaron</strong>, el
+                        {{ $solicitud->documentos_borrados_en?->format('d/m/Y \a \l\a\s H:i') }}.
+                    </p>
+                    <span class="hb-hint" style="margin-top:.5rem">
+                        Los documentos se borran al resolver la solicitud. Se piden para
+                        comprobar una cosa concreta y, comprobada, guardarlos solo añade
+                        riesgo: una cédula escaneada que se filtra sirve para suplantar a
+                        alguien. Queda constancia de quién revisó y cuándo en la auditoría.
+                    </span>
+                @endif
             </div>
         </div>
     </div>

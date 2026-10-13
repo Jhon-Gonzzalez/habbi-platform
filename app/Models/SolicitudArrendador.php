@@ -39,10 +39,12 @@ class SolicitudArrendador extends Model
         'motivo_rechazo',
         'revisada_por',
         'revisada_en',
+        'documentos_borrados_en',
     ];
 
     protected $casts = [
-        'revisada_en' => 'datetime',
+        'revisada_en'            => 'datetime',
+        'documentos_borrados_en' => 'datetime',
     ];
 
     /* ===================== Relaciones ===================== */
@@ -58,6 +60,12 @@ class SolicitudArrendador extends Model
     }
 
     /* ===================== Scopes ===================== */
+
+    /** ¿Siguen estando los archivos, o ya se eliminaron al resolverla? */
+    public function tieneDocumentos(): bool
+    {
+        return $this->documentos_borrados_en === null;
+    }
 
     public function scopePendientes(Builder $query): Builder
     {

@@ -76,10 +76,19 @@
 
         <h2 style="font-size:1.15rem;margin-top:2rem">6. Cuánto conservamos cada cosa</h2>
         <p>
-            Los datos de tu cuenta, mientras la mantengas abierta. Los documentos
-            de verificación, hasta que resolvamos la solicitud o hasta que pidas
-            su eliminación. Si cierras tu cuenta, borramos todo salvo lo que la
-            ley nos obligue a conservar.
+            Los datos de tu cuenta, mientras la mantengas abierta.
+        </p>
+        <p>
+            <strong>Tu cédula y la prueba del inmueble se borran solos</strong> en
+            cuanto aprobamos o rechazamos tu solicitud. No se archivan ni se
+            guardan «por si acaso»: se piden para comprobar una cosa concreta y,
+            una vez comprobada, conservarlos solo añadiría riesgo para ti. Lo
+            único que queda es la anotación de quién revisó, cuándo y qué
+            decidió.
+        </p>
+        <p>
+            Si cierras tu cuenta, borramos todo salvo lo que la ley nos obligue
+            a conservar.
         </p>
 
     </div>
