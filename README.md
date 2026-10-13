@@ -199,26 +199,38 @@ También puedes entrar como administrador y usar
 
 #### Que lleguen de verdad
 
-Cuando quieras que los correos salgan a bandejas reales, pon en el `.env`:
-
-```ini
-MAIL_MAILER=smtp
-MAIL_HOST=smtp.gmail.com
-MAIL_PORT=587
-MAIL_USERNAME=tucorreo@gmail.com
-MAIL_PASSWORD=la-contraseña-de-aplicación
-MAIL_ENCRYPTION=tls
-MAIL_FROM_ADDRESS=tucorreo@gmail.com
+```bash
+php artisan habbi:correo
 ```
 
-`MAIL_PASSWORD` **no** es tu contraseña de Gmail: es una
-[contraseña de aplicación](https://myaccount.google.com/apppasswords) de 16
-letras, y para generarla tu cuenta de Google necesita la verificación en dos
-pasos activada. Después: `php artisan config:clear`.
+Pregunta tu Gmail y la contraseña de aplicación, lo guarda en el `.env` y
+**manda un correo de prueba** para que sepas en el momento si funcionó, en
+vez de descubrirlo cuando un usuario se queje. Si falla, traduce el error de
+SMTP a algo accionable.
 
-Gmail tiene un límite de envíos diarios, así que vale para probar pero no
-para una plataforma con usuarios reales. Para eso hace falta un servicio de
-correo transaccional (Brevo, Resend, Postmark) con su propio SMTP.
+Antes necesitas una contraseña de aplicación de Google, que es lo único que
+no se puede automatizar:
+
+1. Activa la verificación en dos pasos en
+   <https://myaccount.google.com/security>
+2. Crea la contraseña en <https://myaccount.google.com/apppasswords>
+
+Son 16 letras. **No es la contraseña de tu Gmail**: Google eliminó el acceso
+con la contraseña normal, así que no hay atajo. Si la página del paso 2 dice
+que no está disponible, es que falta el paso 1.
+
+Otros comandos:
+
+```bash
+php artisan habbi:correo --probar    # probar la configuración que ya hay
+php artisan habbi:correo --log       # volver al modo local (no envía)
+php artisan habbi:correo --host=smtp.otro.com --port=587   # otro proveedor
+```
+
+Gmail tiene un límite de envíos diarios, así que vale para probar y para
+enseñárselo a alguien, pero **no para una plataforma con usuarios reales**.
+Para eso hace falta un servicio de correo transaccional (Brevo, Resend,
+Postmark) con su propio SMTP, que se configura con `--host` y `--port`.
 
 #### Sacar el enlace del log a mano
 
