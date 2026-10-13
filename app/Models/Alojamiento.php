@@ -185,7 +185,10 @@ class Alojamiento extends Model
             return Storage::disk('public')->url($this->cover_path);
         }
 
-        return asset('assets/img/images/principal.jpg');
+        // Sin foto propia, una imagen generada para ESTE anuncio. Antes se
+        // devolvía la portada del sitio, así que veinte tarjetas salían
+        // idénticas y encima sugerían un alojamiento que nadie había visto.
+        return route('alojamientos.marcador', $this);
     }
 
     /**

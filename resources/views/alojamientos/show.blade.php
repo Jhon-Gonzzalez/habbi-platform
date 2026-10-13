@@ -1,7 +1,13 @@
 @extends('layouts.app')
 
 @section('titulo', $alojamiento->title)
-@section('descripcion', Str::limit($alojamiento->description, 150))
+@section('descripcion',
+    $alojamiento->precioFormateado() . ' / ' . $alojamiento->price_period . ' · '
+    . $alojamiento->city . ($alojamiento->neighborhood ? ', ' . $alojamiento->neighborhood : '')
+    . ' · ' . Str::limit($alojamiento->description, 110))
+
+{{-- La foto del anuncio es lo que aparece al compartirlo por WhatsApp. --}}
+@section('imagen', $alojamiento->coverUrl())
 
 @section('contenido')
 

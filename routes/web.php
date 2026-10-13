@@ -7,6 +7,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\FavoritoController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\LegalController;
+use App\Http\Controllers\MarcadorController;
 use App\Http\Controllers\PerfilController;
 use App\Http\Controllers\RatingController;
 use App\Http\Controllers\ReporteController;
@@ -39,6 +40,13 @@ Route::get('/privacidad', [LegalController::class, 'privacidad'])->name('legal.p
 Route::prefix('alojamientos')->name('alojamientos.')->group(function () {
     // Público
     Route::get('/', [AlojamientoController::class, 'index'])->name('index');
+
+    // Imagen de marcador para los anuncios sin foto. Es pública a
+    // propósito: también la piden WhatsApp y las redes al previsualizar
+    // un enlace compartido, y esos no tienen sesión.
+    Route::get('/{alojamiento}/marcador.png', MarcadorController::class)
+        ->whereNumber('alojamiento')
+        ->name('marcador');
 
     // Privado
     Route::middleware('auth')->group(function () {

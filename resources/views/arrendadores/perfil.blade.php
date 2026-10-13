@@ -2,6 +2,7 @@
 
 @section('titulo', $arrendador->name)
 @section('descripcion', 'Perfil de ' . $arrendador->name . ' en HABBI' . ($arrendador->ciudad ? ', ' . $arrendador->ciudad : '') . '.')
+@section('imagen', $arrendador->fotoUrl() ?? asset('assets/img/images/principal.jpg'))
 
 @section('contenido')
 
