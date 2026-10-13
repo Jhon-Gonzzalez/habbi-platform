@@ -5,6 +5,21 @@
 
 @section('contenido')
 
+    {{-- Solo en producción: en local tener la verificación apagada es lo
+         normal y el aviso sería ruido en cada carga. --}}
+    @if (app()->environment('production') && ! config('habbi.verificar_correo'))
+        <div class="hb-alert hb-alert--error" style="margin-bottom:1.5rem">
+            <span class="hb-alert__icon" aria-hidden="true">!</span>
+            <span>
+                <strong>La verificación de correo está apagada.</strong>
+                Cualquiera puede registrarse con un correo inventado, las veces que
+                quiera, y usarlo para reseñar o reportar. Para encenderla, pon
+                <code>HABBI_VERIFICAR_CORREO=true</code> en el <code>.env</code> y
+                comprueba el envío con <code>php artisan habbi:correo</code>.
+            </span>
+        </div>
+    @endif
+
     <div class="hb-stats">
         <div class="hb-stat">
             <div class="hb-stat__icon" aria-hidden="true">◍</div>

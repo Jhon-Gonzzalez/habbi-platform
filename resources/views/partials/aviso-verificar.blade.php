@@ -1,7 +1,7 @@
 {{-- Recordatorio de verificar el correo. Se muestra en todas las páginas
      mientras falte, pero no bloquea nada: solo informa qué se desbloquea. --}}
 @auth
-    @if (! auth()->user()->hasVerifiedEmail())
+    @if (config('habbi.verificar_correo') && ! auth()->user()->hasVerifiedEmail())
         <div class="hb-verificar">
             <div class="hb-container hb-verificar__inner">
                 <span>

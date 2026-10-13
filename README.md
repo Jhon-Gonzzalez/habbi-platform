@@ -180,6 +180,30 @@ hay tests que lo vigilan.
 
 Todas las cuentas de ejemplo usan la contraseña `habbi1234`.
 
+### Verificación de correo: apagada por defecto
+
+`HABBI_VERIFICAR_CORREO=false` en `config/habbi.php`. Con eso, quien se
+registra **queda verificado al instante** y no se envía ningún correo, así
+que el proyecto funciona recién clonado sin montar un servidor de correo.
+
+**El código de verificación sigue entero.** No se borró nada: el middleware,
+las rutas, la pantalla y los tests están ahí. Para encenderlo:
+
+```ini
+HABBI_VERIFICAR_CORREO=true
+```
+
+Y para las cuentas que ya existían sin verificar:
+
+```bash
+php artisan habbi:enlace --todos
+```
+
+> **Enciéndelo antes de publicar con usuarios reales.** Sin verificación,
+> cualquiera se registra con un correo inventado las veces que quiera y lo
+> usa para reseñar o reportar. Si la aplicación está en producción con esto
+> apagado, el panel de administración lo avisa en rojo.
+
 ### El correo
 
 **En local no se envía ningún correo de verdad.** `MAIL_MAILER=log` escribe

@@ -11,6 +11,16 @@ class VerificacionCorreoTest extends TestCase
 {
     use RefreshDatabase;
 
+    /**
+     * La verificación viene apagada por defecto (config/habbi.php), para que
+     * el proyecto funcione recién clonado sin servidor de correo. Los tests
+     * que comprueban el BLOQUEO tienen que encenderla a propósito.
+     */
+    private function conVerificacionActiva(): void
+    {
+        config(['habbi.verificar_correo' => true]);
+    }
+
     private function sinVerificar(array $extra = []): User
     {
         return User::factory()->create(array_merge(['email_verified_at' => null], $extra));
@@ -79,6 +89,8 @@ class VerificacionCorreoTest extends TestCase
 
     public function test_sin_verificar_no_se_puede_resenar(): void
     {
+        $this->conVerificacionActiva();
+
         $alojamiento = Alojamiento::factory()->create();
 
         $this->actingAs($this->sinVerificar())
@@ -90,6 +102,8 @@ class VerificacionCorreoTest extends TestCase
 
     public function test_sin_verificar_no_se_puede_reportar(): void
     {
+        $this->conVerificacionActiva();
+
         $alojamiento = Alojamiento::factory()->create();
 
         $this->actingAs($this->sinVerificar())
@@ -99,6 +113,8 @@ class VerificacionCorreoTest extends TestCase
 
     public function test_sin_verificar_no_se_puede_pedir_ser_arrendador(): void
     {
+        $this->conVerificacionActiva();
+
         $this->actingAs($this->sinVerificar())
             ->get(route('arrendador.solicitud'))
             ->assertRedirect(route('verification.notice'));
@@ -108,6 +124,8 @@ class VerificacionCorreoTest extends TestCase
 
     public function test_el_aviso_aparece_mientras_falte_verificar(): void
     {
+        $this->conVerificacionActiva();
+
         $this->actingAs($this->sinVerificar())
             ->get(route('alojamientos.index'))
             ->assertOk()
@@ -116,6 +134,8 @@ class VerificacionCorreoTest extends TestCase
 
     public function test_el_aviso_desaparece_al_verificar(): void
     {
+        $this->conVerificacionActiva();
+
         $this->actingAs(User::factory()->create())
             ->get(route('alojamientos.index'))
             ->assertOk()
@@ -159,6 +179,10 @@ class VerificacionCorreoTest extends TestCase
 
     public function test_el_registro_se_completa_aunque_el_correo_falle(): void
     {
+        // Con la verificación apagada no se envía nada y el test no probaría
+        // nada: hay que encenderla para que el listener intente enviar.
+        $this->conVerificacionActiva();
+
         // Con el listener de serie, un SMTP caído devuelve un 500 justo
         // DESPUÉS de crear la cuenta: la persona ve un error aunque ya está
         // registrada. Esto comprueba que no pasa.
@@ -188,6 +212,70 @@ class VerificacionCorreoTest extends TestCase
             ->from(route('verification.notice'))
             ->post(route('verification.resend'))
             ->assertSessionHas('error');
+    }
+
+    /* ========== Con la verificación APAGADA (lo de por defecto) ========== */
+
+    public function test_apagada_quien_se_registra_queda_verificado_solo(): void
+    {
+        $this->post(route('register'), [
+            'name'                  => 'Jhon González',
+            'email'                 => 'jhon.nuevo@ejemplo.test',
+            'password'              => 'ClaveSegura123',
+            'password_confirmation' => 'ClaveSegura123',
+        ]);
+
+        $this->assertTrue(
+            User::where('email', 'jhon.nuevo@ejemplo.test')->sole()->hasVerifiedEmail()
+        );
+    }
+
+    public function test_apagada_no_se_envia_ningun_correo_al_registrarse(): void
+    {
+        // Si intentara enviar, esto lo haría estallar.
+        $this->romperElCorreo();
+
+        $this->post(route('register'), [
+            'name'                  => 'Ana Pérez',
+            'email'                 => 'ana@ejemplo.test',
+            'password'              => 'ClaveSegura123',
+            'password_confirmation' => 'ClaveSegura123',
+        ])->assertRedirect();
+
+        $this->assertDatabaseHas('users', ['email' => 'ana@ejemplo.test']);
+    }
+
+    public function test_apagada_no_se_bloquea_resenar_ni_reportar(): void
+    {
+        $alojamiento = Alojamiento::factory()->create();
+
+        $this->actingAs($this->sinVerificar())
+            ->get(route('reportes.create', $alojamiento))
+            ->assertOk();
+    }
+
+    public function test_apagada_no_aparece_el_aviso_amarillo(): void
+    {
+        $this->actingAs($this->sinVerificar())
+            ->get(route('alojamientos.index'))
+            ->assertOk()
+            ->assertDontSee('Falta verificar tu correo');
+    }
+
+    public function test_el_interruptor_no_borra_nada_y_se_puede_volver_a_encender(): void
+    {
+        // Lo que importa de este diseño: apagar es reversible con una línea
+        // del .env, sin tocar rutas ni recuperar código borrado.
+        $usuario     = $this->sinVerificar();
+        $alojamiento = Alojamiento::factory()->create();
+
+        $this->actingAs($usuario)->get(route('reportes.create', $alojamiento))->assertOk();
+
+        $this->conVerificacionActiva();
+
+        $this->actingAs($usuario)
+            ->get(route('reportes.create', $alojamiento))
+            ->assertRedirect(route('verification.notice'));
     }
 
     public function test_verificar_a_mano_no_cambia_el_rol(): void

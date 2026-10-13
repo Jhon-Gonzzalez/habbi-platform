@@ -18,14 +18,49 @@ use Illuminate\Support\Facades\URL;
 class EnlaceVerificacion extends Command
 {
     protected $signature = 'habbi:enlace
-                            {correo : El correo del usuario}
-                            {--verificar : En vez del enlace, marcarlo como verificado ya}';
+                            {correo? : El correo del usuario}
+                            {--verificar : En vez del enlace, marcarlo como verificado ya}
+                            {--todos : Marcar como verificados a TODOS los usuarios}';
 
     protected $description = 'Da el enlace de verificación de un usuario (o lo verifica directamente)';
 
+    /** Marca como verificados a todos los que no lo estén. */
+    private function verificarATodos(): int
+    {
+        $pendientes = User::whereNull('email_verified_at')->get();
+
+        if ($pendientes->isEmpty()) {
+            $this->info('Todas las cuentas ya tenían el correo verificado.');
+
+            return self::SUCCESS;
+        }
+
+        $pendientes->each->markEmailAsVerified();
+
+        $this->info(sprintf(
+            '%d %s marcada%s como verificada%s.',
+            $pendientes->count(),
+            $pendientes->count() === 1 ? 'cuenta' : 'cuentas',
+            $pendientes->count() === 1 ? '' : 's',
+            $pendientes->count() === 1 ? '' : 's',
+        ));
+
+        return self::SUCCESS;
+    }
+
     public function handle(): int
     {
+        if ($this->option('todos')) {
+            return $this->verificarATodos();
+        }
+
         $correo = $this->argument('correo');
+
+        if (! $correo) {
+            $this->error('Falta el correo. O usa --todos para verificarlos a todos.');
+
+            return self::FAILURE;
+        }
 
         $usuario = User::where('email', $correo)->first();
 

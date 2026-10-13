@@ -27,6 +27,15 @@ class EnviarVerificacionDeCorreo
             return;
         }
 
+        // Con la verificación apagada no se manda nada: la cuenta queda
+        // verificada al instante. Así el proyecto funciona recién clonado,
+        // sin montar un servidor de correo.
+        if (! config('habbi.verificar_correo')) {
+            $usuario->markEmailAsVerified();
+
+            return;
+        }
+
         try {
             $usuario->sendEmailVerificationNotification();
         } catch (\Throwable $e) {
