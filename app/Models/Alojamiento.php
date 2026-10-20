@@ -26,6 +26,24 @@ class Alojamiento extends Model
     /** Periodos de precio. */
     public const PERIODOS = ['mes', 'noche'];
 
+    /*
+    |--------------------------------------------------------------------------
+    | Estado de revisión
+    |--------------------------------------------------------------------------
+    | Lo controla el ADMINISTRADOR y es distinto de is_active, que lo
+    | controla el arrendador para pausar su propio anuncio. Una publicación
+    | nace pendiente y no se ve en el buscador hasta que alguien la aprueba.
+    */
+    public const PENDIENTE = 'pendiente';
+    public const APROBADA  = 'aprobada';
+    public const RECHAZADA = 'rechazada';
+
+    public const ESTADOS = [
+        self::PENDIENTE => 'Pendiente de revisión',
+        self::APROBADA  => 'Aprobada',
+        self::RECHAZADA => 'Rechazada',
+    ];
+
     /**
      * Universidades de Montería, para calcular la ruta desde el alojamiento.
      * La clave 'maps' es lo que se le pasa a Google Maps como destino: se usa
@@ -68,6 +86,10 @@ class Alojamiento extends Model
         'price_period',
         'guests',
         'cupos',
+        'estado',
+        'motivo_rechazo',
+        'revisada_por',
+        'revisada_en',
         'disponible_desde',
         'city',
         'neighborhood',
@@ -90,6 +112,7 @@ class Alojamiento extends Model
         'price'     => 'integer',
         'guests'    => 'integer',
         'cupos'     => 'integer',
+        'revisada_en' => 'datetime',
         'lat'       => 'float',
         'disponible_desde' => 'date',
         'lng'       => 'float',
@@ -134,7 +157,16 @@ class Alojamiento extends Model
      */
     public function scopeDisponibles(Builder $query): Builder
     {
-        return $query->where('is_active', true)->where('cupos', '>', 0);
+        return $query
+            ->where('estado', self::APROBADA)
+            ->where('is_active', true)
+            ->where('cupos', '>', 0);
+    }
+
+    /** Las que esperan decisión del administrador. */
+    public function scopePendientes(Builder $query): Builder
+    {
+        return $query->where('estado', self::PENDIENTE);
     }
 
     /** Añade promedio y total de reseñas en una sola consulta (evita N+1). */
@@ -235,6 +267,34 @@ class Alojamiento extends Model
     }
 
     /* ===================== Disponibilidad ===================== */
+
+    /* ===================== Revisión ===================== */
+
+    public function estaAprobada(): bool
+    {
+        return $this->estado === self::APROBADA;
+    }
+
+    public function estaPendiente(): bool
+    {
+        return $this->estado === self::PENDIENTE;
+    }
+
+    public function fueRechazada(): bool
+    {
+        return $this->estado === self::RECHAZADA;
+    }
+
+    /** ¿La ve alguien que no sea su dueño ni un administrador? */
+    public function esVisibleAlPublico(): bool
+    {
+        return $this->estaAprobada() && $this->is_active && ! $this->estaArrendado();
+    }
+
+    public function nombreEstado(): string
+    {
+        return self::ESTADOS[$this->estado] ?? $this->estado;
+    }
 
     /** Sin plazas libres: alguien cerró el trato. */
     public function estaArrendado(): bool

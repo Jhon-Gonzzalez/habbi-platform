@@ -23,6 +23,21 @@
     @else
         <div class="hb-grid">
             @foreach ($alojamientos as $a)
+                @if ($a->fueRechazada() && $a->motivo_rechazo)
+                    <div class="hb-alert hb-alert--error" style="margin-bottom:.75rem">
+                        <span class="hb-alert__icon" aria-hidden="true">!</span>
+                        <span>
+                            <strong>«{{ Str::limit($a->title, 40) }}» fue rechazada.</strong>
+                            {{ $a->motivo_rechazo }}
+                            <a href="{{ route('alojamientos.edit', $a) }}">Corregir y reenviar</a>.
+                        </span>
+                    </div>
+                @elseif ($a->estaPendiente())
+                    <p class="hb-muted hb-small">
+                        «{{ Str::limit($a->title, 40) }}» está en revisión. Aparecerá en el
+                        buscador cuando un administrador la apruebe.
+                    </p>
+                @endif
                 @include('partials.listing-card', ['a' => $a, 'gestion' => true])
             @endforeach
         </div>

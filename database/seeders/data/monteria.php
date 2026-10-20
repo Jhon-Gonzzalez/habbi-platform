@@ -136,6 +136,7 @@ return [
         [
             'arrendador'   => 'Dolores Arrieta',
             'title'        => 'Habitación económica en Cantaclaro',
+            'pendiente'    => true,
             'type'         => 'Habitación',
             'price'        => 320000,
             'guests'       => 1,
@@ -287,6 +288,7 @@ return [
         [
             'arrendador'   => 'Yudith Petro',
             'title'        => 'Suite con entrada independiente en El Prado',
+            'pendiente'    => true,
             'type'         => 'Suite',
             'price'        => 700000,
             'guests'       => 2,

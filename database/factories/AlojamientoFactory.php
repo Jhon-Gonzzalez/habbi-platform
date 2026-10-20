@@ -46,11 +46,35 @@ class AlojamientoFactory extends Factory
             'cover_path'   => null,
             'photos'       => [],
             'is_active'    => true,
+            'cupos'        => 1,
+
+            // Aprobada por defecto: casi todos los tests hablan de
+            // publicaciones que ya se ven, no del flujo de revisión. Para ese
+            // flujo están los estados pendiente() y rechazada().
+            'estado'       => Alojamiento::APROBADA,
+            'revisada_en'  => now(),
         ];
     }
 
     public function pausado(): static
     {
         return $this->state(fn () => ['is_active' => false]);
+    }
+
+    public function pendiente(): static
+    {
+        return $this->state(fn () => [
+            'estado'      => Alojamiento::PENDIENTE,
+            'revisada_en' => null,
+        ]);
+    }
+
+    public function rechazada(): static
+    {
+        return $this->state(fn () => [
+            'estado'         => Alojamiento::RECHAZADA,
+            'motivo_rechazo' => 'Las fotos no corresponden a la dirección que indicas.',
+            'revisada_en'    => now(),
+        ]);
     }
 }

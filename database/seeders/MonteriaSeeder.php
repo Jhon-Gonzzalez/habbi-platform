@@ -231,6 +231,13 @@ class MonteriaSeeder extends Seeder
                 'cover_path'             => null,
                 'photos'                 => [],
                 'is_active'              => true,
+
+                // Casi todas aprobadas, pero dos quedan pendientes para que
+                // la pantalla de revisión no salga vacía al probar.
+                'estado'                 => ($fila['pendiente'] ?? false)
+                    ? Alojamiento::PENDIENTE
+                    : Alojamiento::APROBADA,
+                'revisada_en'            => ($fila['pendiente'] ?? false) ? null : now(),
             ]
         );
     }

@@ -45,6 +45,9 @@ class Auditoria extends Model
     public const ARRENDADOR_RECHAZADO  = 'arrendador.rechazado';
     public const ARRENDADOR_REVOCADO   = 'arrendador.revocado';
     public const REPORTE_RESUELTO      = 'reporte.resuelto';
+    public const ALOJAMIENTO_APROBADO  = 'alojamiento.aprobado';
+    public const ALOJAMIENTO_RECHAZADO = 'alojamiento.rechazado';
+    public const ALOJAMIENTO_EDITADO   = 'alojamiento.editado_tras_aprobar';
 
     /** Nombre legible de cada acción, para la pantalla y sus filtros. */
     public const ETIQUETAS = [
@@ -61,6 +64,9 @@ class Auditoria extends Model
         self::ARRENDADOR_RECHAZADO  => 'Rechazó una solicitud',
         self::ARRENDADOR_REVOCADO   => 'Revocó un arrendador',
         self::REPORTE_RESUELTO      => 'Cerró un reporte',
+        self::ALOJAMIENTO_APROBADO  => 'Aprobó una publicación',
+        self::ALOJAMIENTO_RECHAZADO => 'Rechazó una publicación',
+        self::ALOJAMIENTO_EDITADO   => 'Editó una publicación ya aprobada',
     ];
 
     protected $fillable = [
@@ -80,6 +86,48 @@ class Auditoria extends Model
         'datos'      => 'array',
         'created_at' => 'datetime',
     ];
+
+    /* ===================== Atajos de registro ===================== */
+
+    public static function registrarAprobacion(Alojamiento $a, User $revisor): void
+    {
+        \App\Services\Auditor::registrar(
+            self::ALOJAMIENTO_APROBADO,
+            'Aprobó «' . $a->title . '», de ' . ($a->user->name ?? 'un usuario eliminado'),
+            $a,
+            ['dueno_id' => $a->user_id],
+            $revisor,
+        );
+    }
+
+    public static function registrarRechazo(Alojamiento $a, User $revisor, string $motivo): void
+    {
+        \App\Services\Auditor::registrar(
+            self::ALOJAMIENTO_RECHAZADO,
+            'Rechazó «' . $a->title . '», de ' . ($a->user->name ?? 'un usuario eliminado'),
+            $a,
+            ['dueno_id' => $a->user_id, 'motivo' => $motivo],
+            $revisor,
+        );
+    }
+
+    /**
+     * Una edición hecha DESPUÉS de aprobar.
+     *
+     * Editar no devuelve la publicación a la cola (ver
+     * RevisionAlojamientoService), así que esta anotación es lo único que
+     * permite detectar a quien aprueba un anuncio limpio y luego lo cambia.
+     */
+    public static function registrarEdicionTrasAprobar(Alojamiento $a, User $autor): void
+    {
+        \App\Services\Auditor::registrar(
+            self::ALOJAMIENTO_EDITADO,
+            'Editó «' . $a->title . '» después de que fuera aprobada',
+            $a,
+            ['dueno_id' => $a->user_id],
+            $autor,
+        );
+    }
 
     /* ===================== Relaciones ===================== */
 

@@ -1176,3 +1176,20 @@ a.hb-avatar:hover { box-shadow: 0 0 0 3px var(--hb-primary-soft); }
 .hb-acuerdo.is-propuesto { border-color: #F3D9B5; background: var(--hb-warning-soft); }
 .hb-acuerdo.is-abierto  { display: block; }
 .hb-acuerdo.is-abierto summary { cursor: pointer; }
+
+/* ===================================================================
+   Pantallas de revisión del panel: contenido + columna de decisión
+   =================================================================== */
+
+.hb-admin-grid {
+    display: grid;
+    gap: 1.5rem;
+    grid-template-columns: 1fr 360px;
+    align-items: start;
+}
+
+/* En pantallas estrechas la decisión baja debajo del contenido, en vez
+   de quedar aplastada en una columna de 360px que no cabe. */
+@media (max-width: 900px) {
+    .hb-admin-grid { grid-template-columns: 1fr; }
+}

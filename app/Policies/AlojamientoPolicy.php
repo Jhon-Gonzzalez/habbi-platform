@@ -18,9 +18,20 @@ class AlojamientoPolicy
         return $user->isAdmin() ? true : null;
     }
 
+    /**
+     * Quién puede abrir la ficha.
+     *
+     * El dueño siempre, para poder ver cómo quedó y corregirla mientras se
+     * revisa. Un administrador también (lo resuelve before()). Cualquier
+     * otro, solo si está aprobada y activa; si no, ve un 404.
+     */
     public function view(?User $user, Alojamiento $alojamiento): bool
     {
-        return $alojamiento->is_active || ($user && $user->id === $alojamiento->user_id);
+        if ($user && $user->id === $alojamiento->user_id) {
+            return true;
+        }
+
+        return $alojamiento->estaAprobada() && $alojamiento->is_active;
     }
 
     public function update(User $user, Alojamiento $alojamiento): bool
@@ -36,6 +47,8 @@ class AlojamientoPolicy
     /** Nadie puede calificar su propio alojamiento. */
     public function rate(User $user, Alojamiento $alojamiento): bool
     {
-        return $user->id !== $alojamiento->user_id && $alojamiento->is_active;
+        return $user->id !== $alojamiento->user_id
+            && $alojamiento->is_active
+            && $alojamiento->estaAprobada();
     }
 }

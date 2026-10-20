@@ -45,6 +45,15 @@
                 </a>
             </li>
             <li>
+                @php $enRevision = \App\Models\Alojamiento::pendientes()->count(); @endphp
+                <a href="{{ route('admin.revision.index') }}" class="{{ request()->routeIs('admin.revision.*') ? 'is-active' : '' }}">
+                    <span aria-hidden="true">◎</span> Revisión
+                    @if ($enRevision)
+                        <span class="hb-badge hb-badge--danger" style="margin-left:auto">{{ $enRevision }}</span>
+                    @endif
+                </a>
+            </li>
+            <li>
                 @php $reportesAbiertos = \App\Models\Reporte::abiertos()->count(); @endphp
                 <a href="{{ route('admin.reportes.index') }}" class="{{ request()->routeIs('admin.reportes.*') ? 'is-active' : '' }}">
                     <span aria-hidden="true">⚑</span> Reportes

@@ -207,6 +207,15 @@ Route::middleware(['auth', 'admin'])
         // La auditoría solo se consulta: no hay ruta para borrarla ni editarla.
         Route::get('/auditoria', [Admin\AuditoriaController::class, 'index'])->name('auditoria.index');
 
+        /* Revisión de publicaciones antes de que se vean (RF-10, CU-07). */
+        Route::get('/revision', [Admin\RevisionController::class, 'index'])->name('revision.index');
+        Route::get('/revision/{alojamiento}', [Admin\RevisionController::class, 'show'])
+            ->whereNumber('alojamiento')->name('revision.show');
+        Route::post('/revision/{alojamiento}/aprobar', [Admin\RevisionController::class, 'aprobar'])
+            ->whereNumber('alojamiento')->name('revision.aprobar');
+        Route::post('/revision/{alojamiento}/rechazar', [Admin\RevisionController::class, 'rechazar'])
+            ->whereNumber('alojamiento')->name('revision.rechazar');
+
         Route::get('/reportes', [Admin\ReporteController::class, 'index'])->name('reportes.index');
         Route::post('/reportes/{reporte}/resolver', [Admin\ReporteController::class, 'resolver'])
             ->whereNumber('reporte')->name('reportes.resolver');

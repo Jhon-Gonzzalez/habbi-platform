@@ -7,7 +7,11 @@
         <span class="hb-listing__price">
             {{ $a->precioFormateado() }} <small>/ {{ $a->price_period }}</small>
         </span>
-        @if (!$a->is_active)
+        @if ($a->estaPendiente())
+            <span class="hb-listing__flag">En revisión</span>
+        @elseif ($a->fueRechazada())
+            <span class="hb-listing__flag">Rechazada</span>
+        @elseif (!$a->is_active)
             <span class="hb-listing__flag">Pausado</span>
         @elseif ($a->estaArrendado())
             <span class="hb-listing__flag">Ya arrendado</span>

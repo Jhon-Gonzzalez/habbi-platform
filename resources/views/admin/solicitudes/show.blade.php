@@ -8,7 +8,7 @@
 @endsection
 
 @section('contenido')
-<div style="display:grid;gap:1.5rem;grid-template-columns:1fr 360px;align-items:start">
+<div class="hb-admin-grid">
 
     <div>
         {{-- Quién la envía --}}
