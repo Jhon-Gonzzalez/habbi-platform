@@ -207,6 +207,10 @@ Route::middleware(['auth', 'admin'])
         // La auditoría solo se consulta: no hay ruta para borrarla ni editarla.
         Route::get('/auditoria', [Admin\AuditoriaController::class, 'index'])->name('auditoria.index');
 
+        /* Informes de gestión con gráficas y PDF (RF-11, CU-08). */
+        Route::get('/informes', [Admin\InformeController::class, 'index'])->name('informes.index');
+        Route::get('/informes/pdf', [Admin\InformeController::class, 'pdf'])->name('informes.pdf');
+
         /* Revisión de publicaciones antes de que se vean (RF-10, CU-07). */
         Route::get('/revision', [Admin\RevisionController::class, 'index'])->name('revision.index');
         Route::get('/revision/{alojamiento}', [Admin\RevisionController::class, 'show'])

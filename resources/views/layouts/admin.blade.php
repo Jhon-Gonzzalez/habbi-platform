@@ -45,6 +45,11 @@
                 </a>
             </li>
             <li>
+                <a href="{{ route('admin.informes.index') }}" class="{{ request()->routeIs('admin.informes.*') ? 'is-active' : '' }}">
+                    <span aria-hidden="true">▤</span> Informes
+                </a>
+            </li>
+            <li>
                 @php $enRevision = \App\Models\Alojamiento::pendientes()->count(); @endphp
                 <a href="{{ route('admin.revision.index') }}" class="{{ request()->routeIs('admin.revision.*') ? 'is-active' : '' }}">
                     <span aria-hidden="true">◎</span> Revisión

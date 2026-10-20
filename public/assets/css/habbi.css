@@ -1193,3 +1193,41 @@ a.hb-avatar:hover { box-shadow: 0 0 0 3px var(--hb-primary-soft); }
 @media (max-width: 900px) {
     .hb-admin-grid { grid-template-columns: 1fr; }
 }
+
+/* ===================================================================
+   Informes del panel (las mismas clases que el PDF)
+   =================================================================== */
+
+.hb-informe .hb-inf__h2 {
+    font-size: 1.05rem;
+    color: var(--hb-primary-dark);
+    margin: 1.75rem 0 .6rem;
+    border-bottom: 1px solid var(--hb-border);
+    padding-bottom: .3rem;
+}
+
+.hb-informe .hb-inf__h2:first-child { margin-top: 0; }
+
+.hb-informe .hb-inf__tabla,
+.hb-informe .hb-inf__barras { width: 100%; border-collapse: collapse; }
+
+.hb-informe .hb-inf__tabla td {
+    padding: .45rem 0;
+    border-bottom: 1px solid var(--hb-bg);
+}
+
+.hb-informe .hb-inf__tabla td:last-child { text-align: right; }
+
+.hb-informe .hb-inf__barras td { padding: .25rem 0; vertical-align: middle; }
+.hb-informe .hb-inf__etiqueta { width: 28%; font-size: .85rem; color: var(--hb-muted); }
+.hb-informe .hb-inf__pista    { width: 57%; padding-right: .75rem !important; }
+.hb-informe .hb-inf__valor    { width: 15%; text-align: right; font-size: .85rem; }
+
+.hb-informe .hb-inf__barra {
+    display: block;
+    height: 12px;
+    background: var(--hb-primary);
+    border-radius: 3px;
+}
+
+.hb-informe .hb-inf__vacio { color: var(--hb-muted); font-style: italic; }
