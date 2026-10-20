@@ -11,7 +11,7 @@ class HomeController extends Controller
     public function index(): View
     {
         $destacados = Alojamiento::query()
-            ->activos()
+            ->disponibles()
             ->conResenas()
             ->orderByDesc('ratings_avg_rating')
             ->orderByDesc('created_at')

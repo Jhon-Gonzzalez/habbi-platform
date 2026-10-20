@@ -110,7 +110,17 @@
             </div>
             <div class="hb-spec">
                 <div class="hb-spec__label">Disponibilidad</div>
-                <div class="hb-spec__value">{{ $alojamiento->textoDisponibilidad() }}</div>
+                <div class="hb-spec__value">
+                    @if ($alojamiento->estaArrendado())
+                        Ya arrendado
+                    @else
+                        {{ $alojamiento->textoDisponibilidad() }}
+                    @endif
+                </div>
+            </div>
+            <div class="hb-spec">
+                <div class="hb-spec__label">Plazas libres</div>
+                <div class="hb-spec__value">{{ $alojamiento->cupos }}</div>
             </div>
             <div class="hb-spec">
                 <div class="hb-spec__label">Tipo</div>
@@ -290,26 +300,39 @@
                 </a>
 
                 @auth
+                    @if (auth()->id() !== $alojamiento->user_id)
+                        {{-- El chat es la vía principal, no WhatsApp. Si la
+                             conversación se va fuera, HABBI no puede dejar
+                             constancia de lo que se prometió, ni cerrar el
+                             acuerdo, ni actualizar la publicación. --}}
+                        <form method="POST" action="{{ route('mensajes.abrir', $alojamiento) }}">
+                            @csrf
+                            <button class="hb-btn hb-btn--primary hb-btn--block" type="submit">
+                                Enviar mensaje al arrendador
+                            </button>
+                        </form>
+                    @endif
+
                     @if ($alojamiento->telefonoLimpio())
-                        {{-- El teléfono NO se imprime aquí. Si saliera, bastaría
-                             una cuenta nueva y un recorrido por el listado para
-                             llevarse los contactos de todos los arrendadores.
-                             Sin JavaScript, el enlace lleva a una página que lo
-                             muestra: la protección no depende del navegador. --}}
-                        <a class="hb-btn hb-btn--success hb-btn--block"
+                        {{-- El teléfono queda como dato secundario. No se
+                             imprime: hay que pedirlo y cada petición queda
+                             registrada. Sin JavaScript, el enlace lleva a una
+                             página que lo muestra; la protección no depende
+                             de que el navegador colabore. --}}
+                        <a class="hb-btn hb-btn--ghost hb-btn--block" style="margin-top:.6rem"
                            data-telefono="{{ route('alojamientos.telefono', $alojamiento) }}"
                            href="{{ route('alojamientos.telefono', $alojamiento) }}">
-                            Ver teléfono y escribir
+                            Ver teléfono
                         </a>
 
                         <div class="hb-contacto" id="contactoRevelado" hidden></div>
-
-                        <p class="hb-muted hb-small hb-center" style="margin:.75rem 0 0">
-                            Nunca envíes dinero por adelantado a alguien que no conoces.
-                        </p>
-                    @else
-                        <p class="hb-muted hb-small hb-mb-0">Este arrendador no dejó teléfono de contacto.</p>
                     @endif
+
+                    <p class="hb-muted hb-small hb-center" style="margin:.75rem 0 0">
+                        Habla por el chat: queda constancia de lo que se acuerda.
+                        Nunca envíes dinero por adelantado.
+                    </p>
+
                 @else
                     <a class="hb-btn hb-btn--primary hb-btn--block" href="{{ route('login') }}">
                         Inicia sesión para contactar

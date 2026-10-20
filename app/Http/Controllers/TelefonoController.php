@@ -42,26 +42,15 @@ class TelefonoController extends Controller
             return response()->json([
                 'telefono' => $alojamiento->phone,
                 'limpio'   => $alojamiento->telefonoLimpio(),
-                'whatsapp' => $this->enlaceWhatsapp($alojamiento),
             ]);
         }
 
-        return view('alojamientos.telefono', [
-            'alojamiento' => $alojamiento,
-            'whatsapp'    => $this->enlaceWhatsapp($alojamiento),
-        ]);
+        return view('alojamientos.telefono', ['alojamiento' => $alojamiento]);
     }
 
     private function esPropioOAdmin(Request $request, Alojamiento $alojamiento): bool
     {
         return $request->user()->id === $alojamiento->user_id
             || $request->user()->isAdmin();
-    }
-
-    private function enlaceWhatsapp(Alojamiento $alojamiento): string
-    {
-        $mensaje = 'Hola, vi tu alojamiento "' . $alojamiento->title . '" en HABBI y me interesa.';
-
-        return 'https://wa.me/' . $alojamiento->telefonoLimpio() . '?text=' . urlencode($mensaje);
     }
 }

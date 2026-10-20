@@ -3,6 +3,7 @@
 use App\Http\Controllers\Admin;
 use App\Http\Controllers\AlojamientoController;
 use App\Http\Controllers\ArrendadorController;
+use App\Http\Controllers\ConversacionController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\FavoritoController;
 use App\Http\Controllers\HomeController;
@@ -116,6 +117,23 @@ Route::middleware('auth')->group(function () {
         ->middleware('throttle:telefonos')
         ->whereNumber('alojamiento')
         ->name('alojamientos.telefono');
+
+    /* ----- Mensajes entre estudiante y arrendador ----- */
+    Route::get('/mensajes', [ConversacionController::class, 'index'])->name('mensajes.index');
+    Route::get('/mensajes/{conversacion}', [ConversacionController::class, 'show'])
+        ->whereNumber('conversacion')->name('mensajes.show');
+    Route::post('/mensajes/{conversacion}', [ConversacionController::class, 'enviar'])
+        ->middleware('throttle:mensajes')->whereNumber('conversacion')->name('mensajes.enviar');
+
+    Route::post('/alojamientos/{alojamiento}/escribir', [ConversacionController::class, 'abrir'])
+        ->middleware('throttle:mensajes')->whereNumber('alojamiento')->name('mensajes.abrir');
+
+    Route::post('/mensajes/{conversacion}/acuerdo', [ConversacionController::class, 'proponer'])
+        ->whereNumber('conversacion')->name('mensajes.acuerdo.proponer');
+    Route::post('/mensajes/{conversacion}/acuerdo/confirmar', [ConversacionController::class, 'confirmar'])
+        ->whereNumber('conversacion')->name('mensajes.acuerdo.confirmar');
+    Route::post('/mensajes/{conversacion}/acuerdo/retirar', [ConversacionController::class, 'retirar'])
+        ->whereNumber('conversacion')->name('mensajes.acuerdo.retirar');
 
     /* ----- Favoritos ----- */
     Route::get('/mis-favoritos', [FavoritoController::class, 'index'])->name('favoritos.index');

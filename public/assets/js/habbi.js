@@ -46,9 +46,7 @@
           caja.hidden  = false;
           caja.innerHTML =
             '<div class="hb-contacto__numero">' + d.telefono + '</div>' +
-            '<a class="hb-btn hb-btn--success hb-btn--block" target="_blank" rel="noopener" href="' +
-              d.whatsapp + '">Escribir por WhatsApp</a>' +
-            '<a class="hb-btn hb-btn--ghost hb-btn--block" style="margin-top:.6rem" href="tel:' +
+            '<a class="hb-btn hb-btn--ghost hb-btn--block" href="tel:' +
               d.limpio + '">Llamar</a>';
         })
         .catch(function (err) {

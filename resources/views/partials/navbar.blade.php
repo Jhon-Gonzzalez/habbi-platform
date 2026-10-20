@@ -51,6 +51,14 @@
                         </li>
                         <li><a href="{{ route('perfil.edit') }}">Mi perfil</a></li>
                         <li><a href="{{ route('favoritos.index') }}">Mis favoritos</a></li>
+                        <li>
+                            <a href="{{ route('mensajes.index') }}">
+                                Mensajes
+                                @if ($hbSinLeer = auth()->user()->mensajesSinLeer())
+                                    <span class="hb-badge hb-badge--danger">{{ $hbSinLeer }}</span>
+                                @endif
+                            </a>
+                        </li>
 
                         @if (auth()->user()->puedePublicar())
                             <li><a href="{{ route('alojamientos.mine') }}">Mis publicaciones</a></li>

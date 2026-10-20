@@ -56,7 +56,7 @@
                 <article class="hb-feature">
                     <div class="hb-feature__icon" aria-hidden="true">✆</div>
                     <h3>Contacto directo</h3>
-                    <p>WhatsApp o llamada al arrendador desde la ficha. Sin intermediarios y sin comisiones.</p>
+                    <p>Chat directo con el arrendador dentro de HABBI. Sin intermediarios y sin comisiones.</p>
                 </article>
 
                 <article class="hb-feature">
@@ -110,7 +110,7 @@
                 </article>
                 <article class="hb-step">
                     <h3>Contacta al arrendador</h3>
-                    <p>Escríbele por WhatsApp o llámalo directamente. Tú negocias, sin intermediarios.</p>
+                    <p>Escríbele por el chat y cierren el acuerdo ahí mismo. Queda constancia de lo hablado.</p>
                 </article>
             </div>
         </div>

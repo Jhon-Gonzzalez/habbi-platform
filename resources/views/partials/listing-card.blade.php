@@ -9,6 +9,8 @@
         </span>
         @if (!$a->is_active)
             <span class="hb-listing__flag">Pausado</span>
+        @elseif ($a->estaArrendado())
+            <span class="hb-listing__flag">Ya arrendado</span>
         @endif
     </a>
 

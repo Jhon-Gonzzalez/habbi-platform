@@ -67,6 +67,7 @@ class Alojamiento extends Model
         'price',
         'price_period',
         'guests',
+        'cupos',
         'disponible_desde',
         'city',
         'neighborhood',
@@ -88,6 +89,7 @@ class Alojamiento extends Model
         'is_active' => 'boolean',
         'price'     => 'integer',
         'guests'    => 'integer',
+        'cupos'     => 'integer',
         'lat'       => 'float',
         'disponible_desde' => 'date',
         'lng'       => 'float',
@@ -121,6 +123,18 @@ class Alojamiento extends Model
     public function scopeActivos(Builder $query): Builder
     {
         return $query->where('is_active', true);
+    }
+
+    /**
+     * Lo que se puede arrendar hoy: activo Y con plazas libres.
+     *
+     * Es distinto de «activo». Un alojamiento ya arrendado sigue siendo una
+     * publicación válida —el arrendador puede reabrirla cuando se vaya el
+     * inquilino— pero no tiene sentido enseñárselo a quien está buscando.
+     */
+    public function scopeDisponibles(Builder $query): Builder
+    {
+        return $query->where('is_active', true)->where('cupos', '>', 0);
     }
 
     /** Añade promedio y total de reseñas en una sola consulta (evita N+1). */
@@ -221,6 +235,18 @@ class Alojamiento extends Model
     }
 
     /* ===================== Disponibilidad ===================== */
+
+    /** Sin plazas libres: alguien cerró el trato. */
+    public function estaArrendado(): bool
+    {
+        return $this->cupos <= 0;
+    }
+
+    public function conversaciones(): HasMany
+    {
+        return $this->hasMany(Conversacion::class);
+    }
+
 
     /** ¿Se puede entrar ya? Nulo o una fecha pasada significan que sí. */
     public function estaDisponibleYa(): bool

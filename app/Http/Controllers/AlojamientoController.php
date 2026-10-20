@@ -23,7 +23,7 @@ class AlojamientoController extends Controller
         $filtros = $request->only(['q', 'type', 'guests', 'price_min', 'price_max', 'amenities', 'sort']);
 
         $alojamientos = Alojamiento::query()
-            ->activos()
+            ->disponibles()
             ->conResenas()
             ->filtrar($filtros)
             ->paginate(12)

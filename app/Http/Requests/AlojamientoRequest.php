@@ -34,6 +34,10 @@ class AlojamientoRequest extends FormRequest
             // anuncio viejo la fecha ya pasó, y rechazarla obligaría a
             // borrarla para poder guardar cualquier otro cambio.
             'disponible_desde' => ['nullable', 'date'],
+            // 'sometimes' y no 'required': casi siempre es 1 y la base de
+            // datos ya pone ese valor por defecto. Exigirlo solo añadiría un
+            // campo más que rellenar para decir lo evidente.
+            'cupos'            => ['sometimes', 'integer', 'min:1', 'max:50'],
 
             // Solo se acepta una universidad de la lista: así el enlace a
             // Google Maps siempre apunta a un destino que existe.
@@ -75,6 +79,7 @@ class AlojamientoRequest extends FormRequest
             'neighborhood' => 'barrio',
             'address'      => 'dirección',
             'disponible_desde' => 'fecha de disponibilidad',
+            'cupos'            => 'plazas libres',
             'universidad_referencia' => 'universidad más cercana',
             'description'  => 'descripción',
             'amenities'    => 'comodidades',

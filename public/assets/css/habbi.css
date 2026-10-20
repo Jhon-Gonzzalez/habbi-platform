@@ -1085,3 +1085,94 @@ a.hb-avatar:hover { box-shadow: 0 0 0 3px var(--hb-primary-soft); }
     margin-bottom: .75rem;
     letter-spacing: .5px;
 }
+
+/* ===================================================================
+   Mensajería y acuerdos
+   =================================================================== */
+
+.hb-hilos { list-style: none; margin: 0; padding: 0; }
+
+.hb-hilo + .hb-hilo { border-top: 1px solid var(--hb-border); }
+
+.hb-hilo a {
+    display: flex;
+    align-items: center;
+    gap: .9rem;
+    padding: 1rem 1.25rem;
+    text-decoration: none;
+    color: inherit;
+    transition: background .15s ease;
+}
+
+.hb-hilo a:hover { background: var(--hb-bg); }
+.hb-hilo.is-nuevo a { background: var(--hb-primary-soft); }
+.hb-hilo__texto { flex: 1; min-width: 0; }
+
+/* ---------- El hilo de mensajes ---------- */
+
+.hb-chat {
+    display: flex;
+    flex-direction: column;
+    gap: .6rem;
+    max-height: 60vh;
+    overflow-y: auto;
+}
+
+.hb-chat__linea { display: flex; }
+.hb-chat__linea.is-mio { justify-content: flex-end; }
+
+.hb-chat__burbuja {
+    max-width: 78%;
+    padding: .7rem .9rem;
+    border-radius: var(--hb-radius);
+    background: var(--hb-bg);
+    border: 1px solid var(--hb-border);
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+}
+
+.hb-chat__linea.is-mio .hb-chat__burbuja {
+    background: var(--hb-primary-soft);
+    border-color: #C9E2FD;
+}
+
+.hb-chat__burbuja time {
+    display: block;
+    margin-top: .3rem;
+    font-size: .72rem;
+    color: var(--hb-muted);
+}
+
+/* Avisos escritos por la plataforma, no por una persona. */
+.hb-chat__aviso {
+    align-self: center;
+    text-align: center;
+    max-width: 90%;
+    padding: .5rem .9rem;
+    border-radius: var(--hb-radius-pill);
+    background: var(--hb-warning-soft);
+    color: var(--hb-warning);
+    font-size: .82rem;
+}
+
+.hb-chat__aviso time { display: block; font-size: .7rem; opacity: .8; }
+
+/* ---------- Acuerdo ---------- */
+
+.hb-acuerdo {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: .9rem;
+    margin-top: 1.25rem;
+    padding: 1rem 1.25rem;
+    border: 1px solid var(--hb-border);
+    border-radius: var(--hb-radius);
+    background: var(--hb-surface);
+}
+
+.hb-acuerdo.is-cerrado  { border-color: #A7E0C8; background: var(--hb-success-soft); }
+.hb-acuerdo.is-propuesto { border-color: #F3D9B5; background: var(--hb-warning-soft); }
+.hb-acuerdo.is-abierto  { display: block; }
+.hb-acuerdo.is-abierto summary { cursor: pointer; }

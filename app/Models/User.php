@@ -86,6 +86,29 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->favoritos()->whereKey($id)->exists();
     }
 
+    /* ===================== Mensajería ===================== */
+
+    public function conversacionesComoEstudiante(): HasMany
+    {
+        return $this->hasMany(Conversacion::class, 'estudiante_id');
+    }
+
+    public function conversacionesComoArrendador(): HasMany
+    {
+        return $this->hasMany(Conversacion::class, 'arrendador_id');
+    }
+
+    /** Mensajes sin leer en todas sus conversaciones, para el aviso del menú. */
+    public function mensajesSinLeer(): int
+    {
+        return Mensaje::whereNull('leido_en')
+            ->whereNot('user_id', $this->id)
+            ->whereHas('conversacion', fn ($q) => $q
+                ->where('estudiante_id', $this->id)
+                ->orWhere('arrendador_id', $this->id))
+            ->count();
+    }
+
     public function reportes(): HasMany
     {
         return $this->hasMany(Reporte::class);

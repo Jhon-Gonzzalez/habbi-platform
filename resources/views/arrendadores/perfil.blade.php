@@ -35,20 +35,23 @@
                     </span>
                 </div>
 
-                {{-- El teléfono solo con sesión iniciada --}}
+                {{--
+                    Aquí NO se imprime el teléfono.
+
+                    Esta página lo sacaba en claro, lo que dejaba sin efecto
+                    todo el control de la ficha del alojamiento: bastaba con
+                    recorrer los perfiles en vez de los anuncios para llevarse
+                    los contactos, sin que quedara registro ni tope.
+
+                    Se contacta desde cualquiera de sus publicaciones, que es
+                    donde el chat tiene sentido: una conversación va siempre
+                    sobre un alojamiento concreto.
+                --}}
                 @auth
-                    @if ($arrendador->phone)
-                        <div class="hb-row" style="margin-top:1.25rem">
-                            <a class="hb-btn hb-btn--success hb-btn--sm" target="_blank" rel="noopener"
-                               href="https://wa.me/{{ preg_replace('/\D/', '', $arrendador->phone) }}">
-                                WhatsApp
-                            </a>
-                            <a class="hb-btn hb-btn--ghost hb-btn--sm"
-                               href="tel:{{ preg_replace('/\D/', '', $arrendador->phone) }}">
-                                {{ $arrendador->phone }}
-                            </a>
-                        </div>
-                    @endif
+                    <p class="hb-muted hb-small" style="margin-top:1.25rem">
+                        Para hablar con {{ $arrendador->name }}, entra en una de sus
+                        publicaciones y escríbele por el chat.
+                    </p>
                 @else
                     <p class="hb-small hb-muted" style="margin-top:1.25rem">
                         <a href="{{ route('login') }}">Inicia sesión</a> para ver sus datos de contacto.

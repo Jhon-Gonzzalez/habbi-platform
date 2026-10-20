@@ -92,6 +92,20 @@
         </div>
 
         <div class="hb-field">
+            <label class="hb-label" for="cupos">¿Cuántas plazas tienes libres?</label>
+            <input class="hb-input @error('cupos') is-invalid @enderror" type="number"
+                   id="cupos" name="cupos" value="{{ old('cupos', $a->cupos ?? 1) }}"
+                   min="1" max="50" required>
+            <span class="hb-hint">
+                Normalmente 1: la habitación o el apartamento entero. Pon más solo si
+                arriendas varias plazas iguales con este mismo anuncio. Cuando se cierre
+                un acuerdo por el chat, esta cifra baja sola, y al llegar a cero el
+                anuncio deja de salir en el buscador.
+            </span>
+            @error('cupos') <span class="hb-error">{{ $message }}</span> @enderror
+        </div>
+
+        <div class="hb-field">
             <label class="hb-label" for="disponible_desde">¿Desde cuándo está libre?</label>
             <input class="hb-input @error('disponible_desde') is-invalid @enderror" type="date"
                    id="disponible_desde" name="disponible_desde"
@@ -155,7 +169,7 @@
             <input class="hb-input @error('phone') is-invalid @enderror" type="tel" id="phone" name="phone"
                    value="{{ old('phone', $a->phone ?? auth()->user()->phone ?? '') }}" required
                    placeholder="+57 300 000 0000">
-            <span class="hb-hint">Solo lo ven los usuarios que han iniciado sesión. Se usa para el botón de WhatsApp.</span>
+            <span class="hb-hint">Es un dato secundario: hay que pedirlo y queda registrado quién lo pidió. El contacto normal es por el chat.</span>
             @error('phone') <span class="hb-error">{{ $message }}</span> @enderror
         </div>
 

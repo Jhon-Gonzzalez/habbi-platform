@@ -65,6 +65,10 @@ class RouteServiceProvider extends ServiceProvider
             Limit::perDay(80)->by('tel-dia:' . ($r->user()?->id ?: $r->ip())),
         ]);
 
+        // Mensajes: un acosador no puede inundar a nadie, y una persona
+        // normal escribiendo a varios arrendadores no lo nota.
+        RateLimiter::for('mensajes', fn (Request $r) => Limit::perMinute(20)->by($r->user()?->id ?: $r->ip()));
+
         // Crear cuentas en masa es el primer paso de casi todo lo demás.
         RateLimiter::for('registro', fn (Request $r) => Limit::perHour(5)->by($r->ip()));
 

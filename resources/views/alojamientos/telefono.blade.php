@@ -19,11 +19,20 @@
                 {{ $alojamiento->phone }}
             </p>
 
-            <a class="hb-btn hb-btn--success hb-btn--block" target="_blank" rel="noopener"
-               href="{{ $whatsapp }}">Escribir por WhatsApp</a>
+            <form method="POST" action="{{ route('mensajes.abrir', $alojamiento) }}">
+                @csrf
+                <button class="hb-btn hb-btn--primary hb-btn--block" type="submit">
+                    Mejor escríbele por el chat
+                </button>
+            </form>
 
             <a class="hb-btn hb-btn--ghost hb-btn--block" style="margin-top:.6rem"
                href="tel:{{ $alojamiento->telefonoLimpio() }}">Llamar</a>
+
+            <p class="hb-hint" style="margin-top:.75rem">
+                Por el chat queda constancia de lo que se acuerda y la publicación
+                se actualiza sola al cerrar el trato. Por teléfono, no.
+            </p>
 
             <p class="hb-muted hb-small" style="margin-top:1.25rem">
                 Escribe desde tu propio número y acuerda ver el lugar en persona
