@@ -7,6 +7,16 @@
         <span class="hb-listing__price">
             {{ $a->precioFormateado() }} <small>/ {{ $a->price_period }}</small>
         </span>
+        {{--
+            La etiqueta de destacado va la ÚLTIMA en esta cadena, no la
+            primera: si una publicación está pausada o ya arrendada, eso
+            es lo que el estudiante necesita saber, haya pagado o no. El
+            dinero no tapa el estado real de la publicación.
+
+            Y dice «Destacado» en claro. Hacer pasar un anuncio pagado por
+            un resultado normal es engañar al que busca, y es justo lo que
+            hace que la gente deje de fiarse de un buscador.
+        --}}
         @if ($a->estaPendiente())
             <span class="hb-listing__flag">En revisión</span>
         @elseif ($a->fueRechazada())
@@ -15,6 +25,10 @@
             <span class="hb-listing__flag">Pausado</span>
         @elseif ($a->estaArrendado())
             <span class="hb-listing__flag">Ya arrendado</span>
+        @elseif ($a->estaDestacado())
+            <span class="hb-listing__flag hb-listing__flag--destacado" title="Este arrendador pagó para que su anuncio aparezca de primero">
+                ★ Destacado
+            </span>
         @endif
     </a>
 
@@ -68,6 +82,15 @@
         <div class="hb-listing__actions">
             @if ($gestion)
                 <a class="hb-btn hb-btn--ghost hb-btn--sm" href="{{ route('alojamientos.edit', $a) }}">Editar</a>
+
+                {{-- Solo se ofrece destacar lo que de verdad se ve en el
+                     buscador: cobrar por subir de posición algo que está
+                     pendiente o pausado sería cobrar por nada. --}}
+                @if (config('destacados.activo') && $a->esVisibleAlPublico())
+                    <a class="hb-btn hb-btn--ghost hb-btn--sm" href="{{ route('alojamientos.destacar', $a) }}">
+                        {{ $a->estaDestacado() ? '★ Destacada' : 'Destacar' }}
+                    </a>
+                @endif
 
                 <form method="POST" action="{{ route('alojamientos.toggle', $a) }}" style="flex:1">
                     @csrf @method('PATCH')

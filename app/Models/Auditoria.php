@@ -57,6 +57,9 @@ class Auditoria extends Model
      */
     public const RESPALDO_CREADO       = 'sistema.respaldo';
 
+    public const DESTACADO_ACTIVADO    = 'destacado.activado';
+    public const DESTACADO_QUITADO     = 'destacado.quitado';
+
     /** Nombre legible de cada acción, para la pantalla y sus filtros. */
     public const ETIQUETAS = [
         self::RESENA_BORRADA        => 'Borró una reseña',
@@ -76,6 +79,8 @@ class Auditoria extends Model
         self::ALOJAMIENTO_RECHAZADO => 'Rechazó una publicación',
         self::ALOJAMIENTO_EDITADO   => 'Editó una publicación ya aprobada',
         self::RESPALDO_CREADO       => 'Respaldó la base de datos',
+        self::DESTACADO_ACTIVADO    => 'Destacó una publicación',
+        self::DESTACADO_QUITADO     => 'Quitó un destaque',
     ];
 
     protected $fillable = [

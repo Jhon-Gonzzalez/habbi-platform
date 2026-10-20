@@ -114,6 +114,7 @@ class Alojamiento extends Model
         'cover_path',
         'photos',
         'is_active',
+        'destacado_hasta',
     ];
 
     protected $casts = [
@@ -124,6 +125,7 @@ class Alojamiento extends Model
         'guests'    => 'integer',
         'cupos'     => 'integer',
         'revisada_en' => 'datetime',
+        'destacado_hasta' => 'datetime',
         'lat'       => 'float',
         'disponible_desde' => 'date',
         'lng'       => 'float',
@@ -291,6 +293,69 @@ class Alojamiento extends Model
         ));
     }
 
+    /* ===================== Destacados de pago ===================== */
+
+    /**
+     * ¿Está destacada ahora mismo?
+     *
+     * Se mira la fecha, no un interruptor: así caduca sola y no hace
+     * falta ninguna tarea nocturna que vaya apagando destacados. Un
+     * booleano habría exigido esa tarea, y el día que fallara se
+     * quedarían publicaciones destacadas sin haberlas pagado.
+     */
+    public function estaDestacado(): bool
+    {
+        return $this->destacado_hasta !== null && $this->destacado_hasta->isFuture();
+    }
+
+    public function scopeDestacados(Builder $query): Builder
+    {
+        return $query->whereNotNull('destacado_hasta')->where('destacado_hasta', '>', now());
+    }
+
+    /**
+     * Pone las destacadas arriba, sin excluir a nadie.
+     *
+     * CASE WHEN en vez de ordenar por la fecha: ordenar por
+     * destacado_hasta pondría primero al que compró más días, lo que
+     * convertiría esto en una subasta. Así, todos los destacados van
+     * arriba en igualdad y dentro de ese grupo manda el orden normal.
+     */
+    public function scopeDestacadosPrimero(Builder $query): Builder
+    {
+        return $query->orderByRaw(
+            'CASE WHEN destacado_hasta IS NOT NULL AND destacado_hasta > ? THEN 0 ELSE 1 END',
+            [now()],
+        );
+    }
+
+    /** Cuántos días le quedan de destaque (0 si ya se le acabó). */
+    public function diasDestacadoRestantes(): int
+    {
+        return $this->estaDestacado()
+            ? max(1, (int) ceil(now()->diffInHours($this->destacado_hasta) / 24))
+            : 0;
+    }
+
+    /**
+     * Amplía el destaque en $dias a partir de hoy.
+     *
+     * Si ya estaba destacada, se SUMA a lo que le quedaba en vez de
+     * reemplazarlo: quien paga dos quincenas seguidas no puede perder los
+     * días que ya había comprado por renovar antes de tiempo.
+     */
+    public function destacar(int $dias): void
+    {
+        $desde = $this->estaDestacado() ? $this->destacado_hasta : now();
+
+        $this->update(['destacado_hasta' => $desde->copy()->addDays($dias)]);
+    }
+
+    public function quitarDestaque(): void
+    {
+        $this->update(['destacado_hasta' => null]);
+    }
+
     /** Las que esperan decisión del administrador. */
     public function scopePendientes(Builder $query): Builder
     {
@@ -343,12 +408,25 @@ class Alojamiento extends Model
             return $query;
         }
 
+        /*
+         * Las destacadas van arriba SOLO en el orden por defecto.
+         *
+         * Si el estudiante pidió expresamente «precio: menor a mayor», lo
+         * que espera es la más barata primero. Colar ahí una publicación
+         * pagada sería mentirle sobre lo que está mirando, y el día que lo
+         * note deja de fiarse del buscador entero. El dinero no puede
+         * comprar el orden que el usuario eligió a mano; solo la
+         * visibilidad cuando no eligió ninguno.
+         *
+         * Lo mismo vale para el filtro por distancia, que sale antes de
+         * aquí con su propio orden.
+         */
         return match ($f['sort'] ?? null) {
             'price_asc'  => $query->orderBy('price'),
             'price_desc' => $query->orderByDesc('price'),
             'rating'     => $query->orderByDesc('ratings_avg_rating'),
             'oldest'     => $query->oldest(),
-            default      => $query->latest(),
+            default      => $query->destacadosPrimero()->latest(),
         };
     }
 
@@ -442,6 +520,19 @@ class Alojamiento extends Model
     public function estaArrendado(): bool
     {
         return $this->cupos <= 0;
+    }
+
+    /**
+     * El historial de cobros por destacar esta publicación.
+     *
+     * NO se llama destacados() a propósito: ese nombre lo usa el scope
+     * scopeDestacados(), y una relación con el mismo nombre lo tapa.
+     * Alojamiento::destacados() resolvería al método real en vez de al
+     * scope y reventaría con «cannot be called statically».
+     */
+    public function cobrosDeDestaque(): HasMany
+    {
+        return $this->hasMany(Destacado::class)->latest('termina_en');
     }
 
     public function conversaciones(): HasMany

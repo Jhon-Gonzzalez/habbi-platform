@@ -69,6 +69,18 @@ class AlojamientoFactory extends Factory
         ]);
     }
 
+    /** Destacada y pagada: sale de primera en el buscador. */
+    public function destacado(int $dias = 15): static
+    {
+        return $this->state(fn () => ['destacado_hasta' => now()->addDays($dias)]);
+    }
+
+    /** Pagó en su día, pero ya se le acabó. */
+    public function destaqueVencido(): static
+    {
+        return $this->state(fn () => ['destacado_hasta' => now()->subDay()]);
+    }
+
     public function rechazada(): static
     {
         return $this->state(fn () => [

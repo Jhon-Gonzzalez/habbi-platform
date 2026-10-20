@@ -5,6 +5,7 @@ use App\Http\Controllers\AlojamientoController;
 use App\Http\Controllers\ArrendadorController;
 use App\Http\Controllers\ConversacionController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\DestacarController;
 use App\Http\Controllers\FavoritoController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\LegalController;
@@ -171,6 +172,11 @@ Route::get('/arrendadores/{usuario}', [ArrendadorController::class, 'perfil'])
     ->whereNumber('usuario')
     ->name('arrendadores.perfil');
 
+/* Destacar una publicación: qué es, cuánto cuesta y cómo se pide. */
+Route::get('/alojamientos/{alojamiento}/destacar', [DestacarController::class, 'show'])
+    ->whereNumber('alojamiento')
+    ->name('alojamientos.destacar');
+
 /*
 |--------------------------------------------------------------------------
 | Panel de administración
@@ -223,6 +229,12 @@ Route::middleware(['auth', 'admin'])
         Route::get('/reportes', [Admin\ReporteController::class, 'index'])->name('reportes.index');
         Route::post('/reportes/{reporte}/resolver', [Admin\ReporteController::class, 'resolver'])
             ->whereNumber('reporte')->name('reportes.resolver');
+
+        /* Destacados de pago: cobro manual por Nequi/Daviplata. */
+        Route::get('/destacados', [Admin\DestacadoController::class, 'index'])->name('destacados.index');
+        Route::post('/destacados', [Admin\DestacadoController::class, 'store'])->name('destacados.store');
+        Route::delete('/destacados/{alojamiento}', [Admin\DestacadoController::class, 'destroy'])
+            ->whereNumber('alojamiento')->name('destacados.destroy');
 
         Route::get('/alojamientos', [Admin\AlojamientoController::class, 'index'])->name('alojamientos.index');
 

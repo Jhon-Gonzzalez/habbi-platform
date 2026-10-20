@@ -59,6 +59,15 @@
                 </a>
             </li>
             <li>
+                @php $destacadasAhora = \App\Models\Alojamiento::destacados()->count(); @endphp
+                <a href="{{ route('admin.destacados.index') }}" class="{{ request()->routeIs('admin.destacados.*') ? 'is-active' : '' }}">
+                    <span aria-hidden="true">★</span> Destacados
+                    @if ($destacadasAhora)
+                        <span class="hb-badge hb-badge--success" style="margin-left:auto">{{ $destacadasAhora }}</span>
+                    @endif
+                </a>
+            </li>
+            <li>
                 @php $reportesAbiertos = \App\Models\Reporte::abiertos()->count(); @endphp
                 <a href="{{ route('admin.reportes.index') }}" class="{{ request()->routeIs('admin.reportes.*') ? 'is-active' : '' }}">
                     <span aria-hidden="true">⚑</span> Reportes

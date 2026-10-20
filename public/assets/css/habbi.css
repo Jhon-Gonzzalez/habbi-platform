@@ -411,6 +411,13 @@ a.hb-avatar:hover { box-shadow: 0 0 0 3px var(--hb-primary-soft); }
   font-size: .72rem; font-weight: 600;
 }
 
+/* El destacado va en el azul de la marca, no en el ámbar de los avisos:
+   no es una advertencia, es un anuncio pagado. */
+.hb-listing__flag--destacado {
+  background: var(--hb-primary-soft);
+  color: var(--hb-primary-dark);
+}
+
 .hb-listing__body { padding: 1.1rem 1.15rem 1.25rem; display: flex; flex-direction: column; gap: .55rem; flex: 1; }
 .hb-listing__title {
   margin: 0; font-size: 1.02rem; font-weight: 600;
