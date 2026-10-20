@@ -1241,16 +1241,53 @@ a.hb-avatar:hover { box-shadow: 0 0 0 3px var(--hb-primary-soft); }
     border: 1px solid var(--hb-border);
     border-radius: var(--hb-radius);
     overflow: hidden;
+    background: var(--hb-surface);
 }
 
+.hb-mapa-barra {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: .5rem .5rem .5rem .9rem;
+}
+
+.hb-mapa-barra__titulo {
+    font-size: .9rem;
+    font-weight: 600;
+    color: var(--hb-muted);
+}
+
+.hb-mapa-barra__botones {
+    display: flex;
+    gap: .4rem;
+    flex-shrink: 0;
+}
+
+/*
+    Alto compacto por defecto. A 420 px el mapa empujaba las tarjetas
+    fuera de la pantalla y había que bajar para ver el primer resultado.
+*/
 .hb-mapa-lienzo {
-    height: 420px;
+    height: 240px;
     width: 100%;
     background: var(--hb-bg);
+    border-top: 1px solid var(--hb-border);
 }
 
+.hb-mapa-caja[data-grande] .hb-mapa-lienzo { height: 520px; }
+
+.hb-mapa-caja[data-cerrado] .hb-mapa-lienzo { display: none; }
+
 @media (max-width: 640px) {
-    .hb-mapa-lienzo { height: 300px; }
+    .hb-mapa-lienzo { height: 200px; }
+    .hb-mapa-caja[data-grande] .hb-mapa-lienzo { height: 380px; }
+
+    .hb-mapa-barra {
+        flex-direction: column;
+        align-items: stretch;
+        gap: .5rem;
+    }
 }
 
 /* Selector de coordenadas del formulario de publicación */

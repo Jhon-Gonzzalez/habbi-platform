@@ -216,6 +216,39 @@ class DistanciaYMapaTest extends TestCase
         $this->assertStringContainsString('8.75', $respuesta->getContent());
     }
 
+    public function test_el_mapa_trae_los_botones_de_ampliar_y_ocultar(): void
+    {
+        $this->alojamiento(8.75, -75.88);
+
+        $respuesta = $this->get(route('alojamientos.index'))->assertOk();
+
+        $respuesta->assertSee('data-mapa-tamano', false);
+        $respuesta->assertSee('data-mapa-ver', false);
+        $respuesta->assertSee('Ampliar');
+        $respuesta->assertSee('Ocultar');
+    }
+
+    public function test_la_barra_del_mapa_dice_cuantos_alojamientos_pinta(): void
+    {
+        $this->alojamiento(8.75, -75.88);
+        $this->alojamiento(8.76, -75.89);
+        // Este no tiene punto, así que no debe contarse.
+        $this->alojamiento(null, null);
+
+        $this->get(route('alojamientos.index'))
+            ->assertOk()
+            ->assertSee('2 alojamientos en el mapa');
+    }
+
+    public function test_un_solo_punto_se_anuncia_en_singular(): void
+    {
+        $this->alojamiento(8.75, -75.88);
+
+        $this->get(route('alojamientos.index'))
+            ->assertOk()
+            ->assertSee('1 alojamiento en el mapa');
+    }
+
     public function test_sin_publicaciones_con_coordenadas_no_se_carga_el_mapa(): void
     {
         $this->alojamiento(null, null, ['title' => 'Habitación sin punto en el mapa']);

@@ -1,26 +1,53 @@
 /* ==========================================================================
    HABBI — Mapa de alojamientos (Leaflet + OpenStreetMap)
 
-   Sin dependencias más allá de Leaflet. Si Leaflet no cargó (sin red, un
-   bloqueador, el CDN caído), no se rompe nada: el contenedor se queda
-   vacío y el resto de la página sigue funcionando. Por eso el listado
-   nunca depende del mapa para mostrar resultados.
+   Sin dependencias más allá de Leaflet, que se sirve desde el propio
+   proyecto. Si por lo que sea no cargó, no se rompe nada: el contenedor
+   se queda como está y el resto de la página sigue funcionando. Por eso
+   el listado nunca depende del mapa para mostrar resultados.
    ========================================================================== */
 (function () {
   'use strict';
+
+  /* Dónde se recuerda cómo dejó el usuario el mapa la última vez. */
+  var CLAVE_CERRADO = 'habbi:mapa:cerrado';
+  var CLAVE_GRANDE  = 'habbi:mapa:grande';
+
+  /* El almacenamiento del navegador falla en ventanas privadas y con las
+     cookies bloqueadas. Es una comodidad, no un requisito: si no se puede
+     leer ni escribir, el mapa sale con su tamaño normal y ya está. */
+  function recordar(clave, valor) {
+    try { localStorage.setItem(clave, valor ? '1' : '0'); } catch (e) { /* da igual */ }
+  }
+
+  function recordado(clave) {
+    try { return localStorage.getItem(clave) === '1'; } catch (e) { return false; }
+  }
 
   function iniciar() {
     if (typeof L === 'undefined') return;
 
     /* Varios mapas en la misma página: hoy solo hay uno, pero recorrer la
        lista cuesta lo mismo que leer el primero y no deja una trampa. */
-    document.querySelectorAll('.hb-mapa-lienzo').forEach(pintar);
+    document.querySelectorAll('[data-mapa]').forEach(montar);
   }
 
-  function pintar(lienzo) {
+  function montar(caja) {
+    var lienzo = caja.querySelector('.hb-mapa-lienzo');
+    if (!lienzo) return;
+
     var puntos = JSON.parse(lienzo.getAttribute('data-puntos') || '[]');
     var unis   = JSON.parse(lienzo.getAttribute('data-universidades') || '[]');
     if (!puntos.length) return;
+
+    /* El tamaño guardado se aplica ANTES de crear el mapa: así Leaflet
+       mide el contenedor ya con su alto definitivo y no hay que
+       recolocarlo nada más nacer. */
+    var cerrado = recordado(CLAVE_CERRADO);
+    var grande  = recordado(CLAVE_GRANDE);
+
+    if (cerrado) caja.setAttribute('data-cerrado', '');
+    if (grande)  caja.setAttribute('data-grande', '');
 
     var mapa = L.map(lienzo, { scrollWheelZoom: false });
 
@@ -56,12 +83,72 @@
       limites.push([p.lat, p.lng]);
     });
 
-    mapa.fitBounds(limites, { padding: [30, 30], maxZoom: 15 });
+    function encuadrar() {
+      mapa.fitBounds(limites, { padding: [30, 30], maxZoom: 15 });
+    }
+
+    encuadrar();
 
     /* La rueda del ratón mueve la página, no el zoom, salvo que se pulse
        sobre el mapa primero: si no, bajar por la página se queda atascado. */
     mapa.on('click', function () { mapa.scrollWheelZoom.enable(); });
     mapa.on('mouseout', function () { mapa.scrollWheelZoom.disable(); });
+
+    conectarBotones(caja, mapa, encuadrar);
+  }
+
+  function conectarBotones(caja, mapa, encuadrar) {
+    var botonVer    = caja.querySelector('[data-mapa-ver]');
+    var botonTamano = caja.querySelector('[data-mapa-tamano]');
+
+    /*
+     * Leaflet guarda el tamaño del contenedor cuando se crea el mapa. Al
+     * cambiarlo con CSS hay que avisarle con invalidateSize o se queda
+     * dibujando sobre las medidas viejas: mosaicos a medias y el centro
+     * descolocado. Y volvemos a encuadrar para que los pines sigan
+     * cabiendo en el alto nuevo.
+     */
+    function reajustar() {
+      mapa.invalidateSize();
+      encuadrar();
+    }
+
+    function pintarEstado() {
+      var cerrado = caja.hasAttribute('data-cerrado');
+      var grande  = caja.hasAttribute('data-grande');
+
+      if (botonVer) {
+        botonVer.textContent = cerrado ? 'Ver el mapa' : 'Ocultar';
+        botonVer.setAttribute('aria-expanded', cerrado ? 'false' : 'true');
+      }
+
+      if (botonTamano) {
+        botonTamano.textContent = grande ? 'Reducir' : 'Ampliar';
+        botonTamano.setAttribute('aria-pressed', grande ? 'true' : 'false');
+        /* Con el mapa oculto, cambiar su alto no significa nada. */
+        botonTamano.disabled = cerrado;
+      }
+    }
+
+    if (botonVer) {
+      botonVer.addEventListener('click', function () {
+        var cerrado = caja.toggleAttribute('data-cerrado');
+        recordar(CLAVE_CERRADO, cerrado);
+        pintarEstado();
+        /* Al reaparecer, el contenedor pasa de alto cero al suyo. */
+        if (!cerrado) reajustar();
+      });
+    }
+
+    if (botonTamano) {
+      botonTamano.addEventListener('click', function () {
+        recordar(CLAVE_GRANDE, caja.toggleAttribute('data-grande'));
+        pintarEstado();
+        reajustar();
+      });
+    }
+
+    pintarEstado();
   }
 
   document.addEventListener('DOMContentLoaded', iniciar);
