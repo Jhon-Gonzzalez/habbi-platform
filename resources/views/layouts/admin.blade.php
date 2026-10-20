@@ -59,6 +59,11 @@
                 </a>
             </li>
             <li>
+                <a href="{{ route('admin.aliados.index') }}" class="{{ request()->routeIs('admin.aliados.*') ? 'is-active' : '' }}">
+                    <span aria-hidden="true">◈</span> Aliados
+                </a>
+            </li>
+            <li>
                 @php $destacadasAhora = \App\Models\Alojamiento::destacados()->count(); @endphp
                 <a href="{{ route('admin.destacados.index') }}" class="{{ request()->routeIs('admin.destacados.*') ? 'is-active' : '' }}">
                     <span aria-hidden="true">★</span> Destacados

@@ -107,6 +107,12 @@
                 <button class="hb-btn hb-btn--primary hb-btn--block" type="submit">Aplicar filtros</button>
             </form>
         </div>
+
+        {{-- La publicidad va aquí, debajo de los filtros: fuera de la
+             rejilla de resultados y sin empujar ni un alojamiento hacia
+             abajo. Un anuncio con forma de tarjeta de alojamiento sería
+             un engaño, y en una página de vivienda, un vector de estafa. --}}
+        @include('partials.aliados')
     </aside>
 
     {{-- ===== Resultados ===== --}}

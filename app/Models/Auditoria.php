@@ -60,6 +60,9 @@ class Auditoria extends Model
     public const DESTACADO_ACTIVADO    = 'destacado.activado';
     public const DESTACADO_QUITADO     = 'destacado.quitado';
 
+    public const ALIADO_GUARDADO       = 'aliado.guardado';
+    public const ALIADO_BORRADO        = 'aliado.borrado';
+
     /** Nombre legible de cada acción, para la pantalla y sus filtros. */
     public const ETIQUETAS = [
         self::RESENA_BORRADA        => 'Borró una reseña',
@@ -81,6 +84,8 @@ class Auditoria extends Model
         self::RESPALDO_CREADO       => 'Respaldó la base de datos',
         self::DESTACADO_ACTIVADO    => 'Destacó una publicación',
         self::DESTACADO_QUITADO     => 'Quitó un destaque',
+        self::ALIADO_GUARDADO       => 'Dio de alta o editó un aliado',
+        self::ALIADO_BORRADO        => 'Eliminó un aliado',
     ];
 
     protected $fillable = [

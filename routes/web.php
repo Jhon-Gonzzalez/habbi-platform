@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Admin;
+use App\Http\Controllers\AliadoController;
 use App\Http\Controllers\AlojamientoController;
 use App\Http\Controllers\ArrendadorController;
 use App\Http\Controllers\ConversacionController;
@@ -172,6 +173,14 @@ Route::get('/arrendadores/{usuario}', [ArrendadorController::class, 'perfil'])
     ->whereNumber('usuario')
     ->name('arrendadores.perfil');
 
+/*
+ * Salida hacia el sitio de un aliado. El enlace pasa por aquí para poder
+ * contar los clics; se cuenta el clic, no quién lo hizo.
+ */
+Route::get('/ir/{aliado}', [AliadoController::class, 'salir'])
+    ->whereNumber('aliado')
+    ->name('aliados.salir');
+
 /* Destacar una publicación: qué es, cuánto cuesta y cómo se pide. */
 Route::get('/alojamientos/{alojamiento}/destacar', [DestacarController::class, 'show'])
     ->whereNumber('alojamiento')
@@ -229,6 +238,11 @@ Route::middleware(['auth', 'admin'])
         Route::get('/reportes', [Admin\ReporteController::class, 'index'])->name('reportes.index');
         Route::post('/reportes/{reporte}/resolver', [Admin\ReporteController::class, 'resolver'])
             ->whereNumber('reporte')->name('reportes.resolver');
+
+        /* Negocios aliados: publicidad local vendida directamente. */
+        Route::resource('aliados', Admin\AliadoController::class)
+            ->parameters(['aliados' => 'aliado'])
+            ->except(['show']);
 
         /* Destacados de pago: cobro manual por Nequi/Daviplata. */
         Route::get('/destacados', [Admin\DestacadoController::class, 'index'])->name('destacados.index');
