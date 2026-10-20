@@ -16,6 +16,16 @@
 
     {{-- ===== Filtros ===== --}}
     <aside class="hb-filters">
+        {{-- La publicidad va en la barra lateral, NUNCA en la rejilla de
+             resultados: un anuncio con forma de tarjeta de alojamiento es
+             un engaño y, en una página de vivienda, un vector de estafa.
+
+             Arriba y no al fondo porque al fondo no se veía: la barra es
+             más alta que la pantalla y, al estar fija, su parte inferior
+             no se alcanza por mucho que se baje. Un anuncio invisible no
+             se le puede cobrar a nadie. --}}
+        @include('partials.aliados')
+
         <div class="hb-card">
             <div class="hb-card__header">
                 <h2 style="font-size:1.05rem">Filtros</h2>
@@ -108,11 +118,6 @@
             </form>
         </div>
 
-        {{-- La publicidad va aquí, debajo de los filtros: fuera de la
-             rejilla de resultados y sin empujar ni un alojamiento hacia
-             abajo. Un anuncio con forma de tarjeta de alojamiento sería
-             un engaño, y en una página de vivienda, un vector de estafa. --}}
-        @include('partials.aliados')
     </aside>
 
     {{-- ===== Resultados ===== --}}

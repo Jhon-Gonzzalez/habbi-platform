@@ -720,8 +720,23 @@ a.hb-avatar:hover { box-shadow: 0 0 0 3px var(--hb-primary-soft); }
 .hb-layout { display: grid; grid-template-columns: 300px 1fr; gap: 2rem; align-items: start; }
 @media (max-width: 980px) { .hb-layout { grid-template-columns: 1fr; } }
 
-.hb-filters { position: sticky; top: calc(var(--hb-nav-h) + 1.5rem); }
-@media (max-width: 980px) { .hb-filters { position: static; } }
+/*
+    La barra lateral se queda fija al bajar, y con su propio scroll.
+
+    El overflow no es un adorno: un elemento sticky MÁS ALTO que la
+    pantalla se queda clavado arriba y su parte de abajo no se puede
+    alcanzar nunca, por mucho que se baje en la página. Con los filtros
+    largos que tiene el buscador, eso dejaba las comodidades y el botón
+    de aplicar fuera del alcance en pantallas bajas. Se vio al colocar
+    el bloque de aliados: quedaba literalmente invisible.
+*/
+.hb-filters {
+    position: sticky;
+    top: calc(var(--hb-nav-h) + 1.5rem);
+    max-height: calc(100vh - var(--hb-nav-h) - 3rem);
+    overflow-y: auto;
+}
+@media (max-width: 980px) { .hb-filters { position: static; max-height: none; overflow: visible; } }
 .hb-filters__body { padding: 1.25rem; }
 .hb-filters .hb-field:last-of-type { margin-bottom: 1rem; }
 
@@ -1335,7 +1350,7 @@ a.hb-avatar:hover { box-shadow: 0 0 0 3px var(--hb-primary-soft); }
    =================================================================== */
 
 .hb-aliados {
-    margin-top: 1.5rem;
+    margin-bottom: 1.25rem;
     padding: 1rem;
     border: 1px solid var(--hb-border);
     border-radius: var(--hb-radius);
