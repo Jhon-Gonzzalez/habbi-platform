@@ -83,12 +83,12 @@
             @if ($gestion)
                 <a class="hb-btn hb-btn--ghost hb-btn--sm" href="{{ route('alojamientos.edit', $a) }}">Editar</a>
 
-                {{-- Solo se ofrece destacar lo que de verdad se ve en el
-                     buscador: cobrar por subir de posición algo que está
-                     pendiente o pausado sería cobrar por nada. --}}
-                @if (config('destacados.activo') && $a->esVisibleAlPublico())
-                    <a class="hb-btn hb-btn--ghost hb-btn--sm" href="{{ route('alojamientos.destacar', $a) }}">
-                        {{ $a->estaDestacado() ? '★ Destacada' : 'Destacar' }}
+                {{-- Solo se ofrece una campaña para lo que de verdad se ve
+                     en el buscador: cobrar por subir de posición algo que
+                     está pendiente o pausado sería cobrar por nada. --}}
+                @if ($a->esVisibleAlPublico())
+                    <a class="hb-btn hb-btn--ghost hb-btn--sm" href="{{ route('alojamientos.campana', $a) }}">
+                        {{ $a->estaDestacado() ? '★ En campaña' : 'Promocionar' }}
                     </a>
                 @endif
 

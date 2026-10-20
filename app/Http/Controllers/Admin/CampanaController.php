@@ -4,8 +4,9 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Alojamiento;
-use App\Models\Destacado;
-use App\Services\DestacadoService;
+use App\Models\Campana;
+use App\Models\TarifaCampana;
+use App\Services\CampanaService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -17,9 +18,9 @@ use Illuminate\Validation\Rule;
  * El flujo real: el arrendador paga por Nequi o Daviplata, avisa, y aquí
  * se registra. Es manual a propósito mientras el volumen sea pequeño.
  */
-class DestacadoController extends Controller
+class CampanaController extends Controller
 {
-    public function __construct(private readonly DestacadoService $destacados)
+    public function __construct(private readonly CampanaService $destacados)
     {
     }
 
@@ -28,10 +29,10 @@ class DestacadoController extends Controller
         $vigentes = Alojamiento::query()
             ->destacados()
             ->with('user:id,name')
-            ->orderBy('destacado_hasta')
+            ->orderBy('campana_hasta')
             ->get();
 
-        $cobros = Destacado::query()
+        $cobros = Campana::query()
             ->with(['alojamiento:id,title', 'registrador:id,name'])
             ->latest()
             ->paginate(20);
@@ -41,11 +42,12 @@ class DestacadoController extends Controller
          * dice si esto funciona, así que va arriba y no escondida en los
          * informes.
          */
-        $delMes = Destacado::query()
+        $delMes = Campana::query()
             ->where('created_at', '>=', now()->startOfMonth())
             ->sum('monto');
 
-        return view('admin.destacados.index', [
+        return view('admin.campanas.index', [
+            'tarifas'      => TarifaCampana::activas()->get(),
             'vigentes'     => $vigentes,
             'cobros'       => $cobros,
             'delMes'       => (int) $delMes,
@@ -58,8 +60,8 @@ class DestacadoController extends Controller
             'candidatas'   => Alojamiento::query()
                 ->disponibles()
                 ->where(fn ($sql) => $sql
-                    ->whereNull('destacado_hasta')
-                    ->orWhere('destacado_hasta', '<=', now()))
+                    ->whereNull('campana_hasta')
+                    ->orWhere('campana_hasta', '<=', now()))
                 ->with('user:id,name')
                 ->orderBy('title')
                 ->get(['id', 'title', 'user_id']),
@@ -68,21 +70,47 @@ class DestacadoController extends Controller
 
     public function store(Request $request): RedirectResponse
     {
+        /*
+         * O se elige una tarifa, o se escriben días y monto a mano.
+         *
+         * Lo segundo hace falta de verdad: un arrendador que paga a
+         * medias, un descuento puntual o una campaña de regalo en
+         * temporada baja no caben en ninguna tarifa, y obligar a crear
+         * una tarifa falsa para cada caso ensuciaría la lista de precios
+         * que ven todos.
+         */
         $datos = $request->validate([
             'alojamiento_id' => ['required', 'exists:alojamientos,id'],
-            'dias'           => ['required', 'integer', 'min:1', 'max:90'],
-            // Hasta un millón: un destaque cuesta decenas de miles. Un
+            'tarifa_id'      => ['nullable', 'exists:tarifas_campana,id'],
+            'dias'           => ['required_without:tarifa_id', 'nullable', 'integer', 'min:1', 'max:365'],
+            // Hasta un millón: una campaña cuesta decenas de miles. Un
             // cero de más es un error de dedo, no una venta.
-            'monto'          => ['required', 'integer', 'min:0', 'max:1000000'],
-            'medio'          => ['required', Rule::in(Destacado::MEDIOS)],
+            'monto'          => ['required_without:tarifa_id', 'nullable', 'integer', 'min:0', 'max:1000000'],
+            'medio'          => ['required', Rule::in(Campana::MEDIOS)],
             'referencia'     => ['nullable', 'string', 'max:120'],
             'nota'           => ['nullable', 'string', 'max:500'],
-        ], [], [
+        ], [
+            'dias.required_without'  => 'Elige una tarifa o escribe cuántos días.',
+            'monto.required_without' => 'Elige una tarifa o escribe cuánto pagó.',
+        ], [
             'alojamiento_id' => 'publicación',
+            'tarifa_id'      => 'tarifa',
             'dias'           => 'días',
             'monto'          => 'monto',
             'medio'          => 'medio de pago',
         ]);
+
+        /*
+         * Los días y el monto se COPIAN al cobro, no se referencian.
+         * Así, el día que suba el precio de la quincena, lo que ya se
+         * cobró sigue diciendo lo que de verdad se pagó.
+         */
+        if (! empty($datos['tarifa_id'])) {
+            $tarifa = TarifaCampana::findOrFail($datos['tarifa_id']);
+
+            $datos['dias']  ??= $tarifa->dias;
+            $datos['monto'] ??= $tarifa->precio;
+        }
 
         $alojamiento = Alojamiento::findOrFail($datos['alojamiento_id']);
 

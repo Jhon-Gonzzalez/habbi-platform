@@ -7,20 +7,27 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
- * Un cobro por destacar una publicación.
+ * Una campaña: un periodo pagado en el que la publicación sale de
+ * primera en el buscador.
  *
- * Es el registro contable, no el estado: si una publicación está
- * destacada hoy lo dice Alojamiento::destacado_hasta. Aquí queda qué se
- * cobró, a quién, cuándo y por cuántos días, que es lo que permite
- * cuadrar cuentas y ver quién repite.
+ * El arrendador no compra un adjetivo, compra un tiempo. Elige cuántos
+ * días quiere estar y el precio sale de la tarifa que el administrador
+ * tenga puesta. Por eso no hay suscripción mensual: casi nadie pagaría
+ * los meses en los que sabe que nadie está buscando vivienda.
+ *
+ * Esta tabla es el registro contable, no el estado: si una publicación
+ * está en campaña HOY lo dice Alojamiento::campana_hasta. Aquí queda qué
+ * se cobró, a quién, cuándo y por cuántos días.
  *
  * El pago ocurre FUERA de la plataforma (Nequi, Daviplata, efectivo). No
  * se guarda ningún dato bancario: solo la referencia que reporta el
  * arrendador, para poder cruzarla con el extracto.
  */
-class Destacado extends Model
+class Campana extends Model
 {
     use HasFactory;
+
+    protected $table = 'campanas';
 
     /** Los medios que se aceptan hoy. Cobro manual, sin pasarela. */
     public const MEDIOS = ['Nequi', 'Daviplata', 'Transferencia', 'Efectivo'];
@@ -38,10 +45,10 @@ class Destacado extends Model
     ];
 
     protected $casts = [
-        'dias'        => 'integer',
-        'monto'       => 'integer',
-        'empieza_en'  => 'datetime',
-        'termina_en'  => 'datetime',
+        'dias'       => 'integer',
+        'monto'      => 'integer',
+        'empieza_en' => 'datetime',
+        'termina_en' => 'datetime',
     ];
 
     public function alojamiento(): BelongsTo

@@ -114,7 +114,7 @@ class Alojamiento extends Model
         'cover_path',
         'photos',
         'is_active',
-        'destacado_hasta',
+        'campana_hasta',
     ];
 
     protected $casts = [
@@ -125,7 +125,7 @@ class Alojamiento extends Model
         'guests'    => 'integer',
         'cupos'     => 'integer',
         'revisada_en' => 'datetime',
-        'destacado_hasta' => 'datetime',
+        'campana_hasta' => 'datetime',
         'lat'       => 'float',
         'disponible_desde' => 'date',
         'lng'       => 'float',
@@ -293,67 +293,67 @@ class Alojamiento extends Model
         ));
     }
 
-    /* ===================== Destacados de pago ===================== */
+    /* ===================== Campañas de pago ===================== */
 
     /**
-     * ¿Está destacada ahora mismo?
+     * ¿Tiene una campaña activa ahora mismo?
      *
      * Se mira la fecha, no un interruptor: así caduca sola y no hace
-     * falta ninguna tarea nocturna que vaya apagando destacados. Un
+     * falta ninguna tarea nocturna que vaya apagando campañas. Un
      * booleano habría exigido esa tarea, y el día que fallara se
      * quedarían publicaciones destacadas sin haberlas pagado.
      */
     public function estaDestacado(): bool
     {
-        return $this->destacado_hasta !== null && $this->destacado_hasta->isFuture();
+        return $this->campana_hasta !== null && $this->campana_hasta->isFuture();
     }
 
     public function scopeDestacados(Builder $query): Builder
     {
-        return $query->whereNotNull('destacado_hasta')->where('destacado_hasta', '>', now());
+        return $query->whereNotNull('campana_hasta')->where('campana_hasta', '>', now());
     }
 
     /**
      * Pone las destacadas arriba, sin excluir a nadie.
      *
      * CASE WHEN en vez de ordenar por la fecha: ordenar por
-     * destacado_hasta pondría primero al que compró más días, lo que
+     * campana_hasta pondría primero al que compró más días, lo que
      * convertiría esto en una subasta. Así, todos los destacados van
      * arriba en igualdad y dentro de ese grupo manda el orden normal.
      */
     public function scopeDestacadosPrimero(Builder $query): Builder
     {
         return $query->orderByRaw(
-            'CASE WHEN destacado_hasta IS NOT NULL AND destacado_hasta > ? THEN 0 ELSE 1 END',
+            'CASE WHEN campana_hasta IS NOT NULL AND campana_hasta > ? THEN 0 ELSE 1 END',
             [now()],
         );
     }
 
-    /** Cuántos días le quedan de destaque (0 si ya se le acabó). */
+    /** Cuántos días le quedan de campaña (0 si ya se le acabó). */
     public function diasDestacadoRestantes(): int
     {
         return $this->estaDestacado()
-            ? max(1, (int) ceil(now()->diffInHours($this->destacado_hasta) / 24))
+            ? max(1, (int) ceil(now()->diffInHours($this->campana_hasta) / 24))
             : 0;
     }
 
     /**
-     * Amplía el destaque en $dias a partir de hoy.
+     * Amplía la campaña en $dias a partir de hoy.
      *
-     * Si ya estaba destacada, se SUMA a lo que le quedaba en vez de
+     * Si ya tenía una activa, se SUMA a lo que le quedaba en vez de
      * reemplazarlo: quien paga dos quincenas seguidas no puede perder los
      * días que ya había comprado por renovar antes de tiempo.
      */
     public function destacar(int $dias): void
     {
-        $desde = $this->estaDestacado() ? $this->destacado_hasta : now();
+        $desde = $this->estaDestacado() ? $this->campana_hasta : now();
 
-        $this->update(['destacado_hasta' => $desde->copy()->addDays($dias)]);
+        $this->update(['campana_hasta' => $desde->copy()->addDays($dias)]);
     }
 
     public function quitarDestaque(): void
     {
-        $this->update(['destacado_hasta' => null]);
+        $this->update(['campana_hasta' => null]);
     }
 
     /** Las que esperan decisión del administrador. */
@@ -523,16 +523,16 @@ class Alojamiento extends Model
     }
 
     /**
-     * El historial de cobros por destacar esta publicación.
+     * El historial de campañas pagadas de esta publicación.
      *
-     * NO se llama destacados() a propósito: ese nombre lo usa el scope
-     * scopeDestacados(), y una relación con el mismo nombre lo tapa.
-     * Alojamiento::destacados() resolvería al método real en vez de al
-     * scope y reventaría con «cannot be called statically».
+     * NO se llama campanas() a propósito: ese nombre lo usa el scope
+     * scopeEnCampana... y en general, una relación con el mismo nombre
+     * que un scope lo tapa. Alojamiento::destacados() ya reventó una vez
+     * con «cannot be called statically» por exactamente eso.
      */
-    public function cobrosDeDestaque(): HasMany
+    public function cobrosDeCampana(): HasMany
     {
-        return $this->hasMany(Destacado::class)->latest('termina_en');
+        return $this->hasMany(Campana::class)->latest('termina_en');
     }
 
     public function conversaciones(): HasMany

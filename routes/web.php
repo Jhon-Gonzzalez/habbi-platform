@@ -6,7 +6,7 @@ use App\Http\Controllers\AlojamientoController;
 use App\Http\Controllers\ArrendadorController;
 use App\Http\Controllers\ConversacionController;
 use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\DestacarController;
+use App\Http\Controllers\CampanaController;
 use App\Http\Controllers\FavoritoController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\LegalController;
@@ -181,10 +181,10 @@ Route::get('/ir/{aliado}', [AliadoController::class, 'salir'])
     ->whereNumber('aliado')
     ->name('aliados.salir');
 
-/* Destacar una publicación: qué es, cuánto cuesta y cómo se pide. */
-Route::get('/alojamientos/{alojamiento}/destacar', [DestacarController::class, 'show'])
+/* Campaña de una publicación: qué es, cuánto cuesta y cómo se pide. */
+Route::get('/alojamientos/{alojamiento}/campana', [CampanaController::class, 'show'])
     ->whereNumber('alojamiento')
-    ->name('alojamientos.destacar');
+    ->name('alojamientos.campana');
 
 /*
 |--------------------------------------------------------------------------
@@ -244,11 +244,20 @@ Route::middleware(['auth', 'admin'])
             ->parameters(['aliados' => 'aliado'])
             ->except(['show']);
 
-        /* Destacados de pago: cobro manual por Nequi/Daviplata. */
-        Route::get('/destacados', [Admin\DestacadoController::class, 'index'])->name('destacados.index');
-        Route::post('/destacados', [Admin\DestacadoController::class, 'store'])->name('destacados.store');
-        Route::delete('/destacados/{alojamiento}', [Admin\DestacadoController::class, 'destroy'])
-            ->whereNumber('alojamiento')->name('destacados.destroy');
+        /* Campañas de pago: cobro manual por Nequi/Daviplata. */
+        Route::get('/campanas', [Admin\CampanaController::class, 'index'])->name('campanas.index');
+        Route::post('/campanas', [Admin\CampanaController::class, 'store'])->name('campanas.store');
+        Route::delete('/campanas/{alojamiento}', [Admin\CampanaController::class, 'destroy'])
+            ->whereNumber('alojamiento')->name('campanas.destroy');
+
+        /* Tarifas y datos de cobro: los cambia el administrador, no el código. */
+        Route::get('/campanas/tarifas', [Admin\TarifaController::class, 'index'])->name('tarifas.index');
+        Route::post('/campanas/tarifas', [Admin\TarifaController::class, 'store'])->name('tarifas.store');
+        Route::put('/campanas/tarifas/{tarifa}', [Admin\TarifaController::class, 'update'])
+            ->whereNumber('tarifa')->name('tarifas.update');
+        Route::delete('/campanas/tarifas/{tarifa}', [Admin\TarifaController::class, 'destroy'])
+            ->whereNumber('tarifa')->name('tarifas.destroy');
+        Route::post('/campanas/cobro', [Admin\TarifaController::class, 'guardarAjustes'])->name('cobro.guardar');
 
         Route::get('/alojamientos', [Admin\AlojamientoController::class, 'index'])->name('alojamientos.index');
 

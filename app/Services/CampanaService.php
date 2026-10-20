@@ -4,7 +4,7 @@ namespace App\Services;
 
 use App\Models\Alojamiento;
 use App\Models\Auditoria;
-use App\Models\Destacado;
+use App\Models\Campana;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
 
@@ -21,7 +21,7 @@ use Illuminate\Support\Facades\DB;
  * activar(): hoy el panel, mañana el aviso de la pasarela. Por eso el
  * registro del cobro vive aquí y no en el controlador.
  */
-class DestacadoService
+class CampanaService
 {
     public function activar(
         Alojamiento $alojamiento,
@@ -31,15 +31,15 @@ class DestacadoService
         ?string $referencia,
         ?string $nota,
         User $registradoPor,
-    ): Destacado {
+    ): Campana {
         return DB::transaction(function () use ($alojamiento, $dias, $monto, $medio, $referencia, $nota, $registradoPor) {
             // Si ya estaba destacada, los días nuevos se suman a los que le
             // quedaban: renovar antes de tiempo no puede costarle días.
-            $empieza = $alojamiento->estaDestacado() ? $alojamiento->destacado_hasta->copy() : now();
+            $empieza = $alojamiento->estaDestacado() ? $alojamiento->campana_hasta->copy() : now();
 
             $alojamiento->destacar($dias);
 
-            $cobro = $alojamiento->cobrosDeDestaque()->create([
+            $cobro = $alojamiento->cobrosDeCampana()->create([
                 'registrado_por' => $registradoPor->id,
                 'dias'           => $dias,
                 'monto'          => $monto,
@@ -47,11 +47,11 @@ class DestacadoService
                 'referencia'     => $referencia,
                 'nota'           => $nota,
                 'empieza_en'     => $empieza,
-                'termina_en'     => $alojamiento->destacado_hasta,
+                'termina_en'     => $alojamiento->campana_hasta,
             ]);
 
             Auditor::registrar(
-                Auditoria::DESTACADO_ACTIVADO,
+                Auditoria::CAMPANA_ACTIVADA,
                 sprintf(
                     'Destacó «%s» por %d día(s) · %s por %s',
                     $alojamiento->title,
@@ -65,7 +65,7 @@ class DestacadoService
                     'monto'      => $monto,
                     'medio'      => $medio,
                     'referencia' => $referencia,
-                    'hasta'      => $alojamiento->destacado_hasta?->toDateTimeString(),
+                    'hasta'      => $alojamiento->campana_hasta?->toDateTimeString(),
                 ],
                 $registradoPor,
             );
@@ -86,7 +86,7 @@ class DestacadoService
         $alojamiento->quitarDestaque();
 
         Auditor::registrar(
-            Auditoria::DESTACADO_QUITADO,
+            Auditoria::CAMPANA_TERMINADA,
             sprintf('Quitó el destaque de «%s»', $alojamiento->title),
             $alojamiento,
             array_filter(['motivo' => $motivo]),

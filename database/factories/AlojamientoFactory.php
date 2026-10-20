@@ -69,16 +69,16 @@ class AlojamientoFactory extends Factory
         ]);
     }
 
-    /** Destacada y pagada: sale de primera en el buscador. */
-    public function destacado(int $dias = 15): static
+    /** Con campaña pagada en marcha: sale de primera en el buscador. */
+    public function enCampana(int $dias = 15): static
     {
-        return $this->state(fn () => ['destacado_hasta' => now()->addDays($dias)]);
+        return $this->state(fn () => ['campana_hasta' => now()->addDays($dias)]);
     }
 
-    /** Pagó en su día, pero ya se le acabó. */
-    public function destaqueVencido(): static
+    /** Pagó en su día, pero la campaña ya terminó. */
+    public function campanaTerminada(): static
     {
-        return $this->state(fn () => ['destacado_hasta' => now()->subDay()]);
+        return $this->state(fn () => ['campana_hasta' => now()->subDay()]);
     }
 
     public function rechazada(): static

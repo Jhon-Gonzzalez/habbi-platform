@@ -65,11 +65,16 @@
             </li>
             <li>
                 @php $destacadasAhora = \App\Models\Alojamiento::destacados()->count(); @endphp
-                <a href="{{ route('admin.destacados.index') }}" class="{{ request()->routeIs('admin.destacados.*') ? 'is-active' : '' }}">
-                    <span aria-hidden="true">★</span> Destacados
+                <a href="{{ route('admin.campanas.index') }}" class="{{ request()->routeIs('admin.campanas.*') ? 'is-active' : '' }}">
+                    <span aria-hidden="true">★</span> Campañas
                     @if ($destacadasAhora)
                         <span class="hb-badge hb-badge--success" style="margin-left:auto">{{ $destacadasAhora }}</span>
                     @endif
+                </a>
+            </li>
+            <li>
+                <a href="{{ route('admin.tarifas.index') }}" class="{{ request()->routeIs('admin.tarifas.*') ? 'is-active' : '' }}">
+                    <span aria-hidden="true">$</span> Tarifas y cobro
                 </a>
             </li>
             <li>

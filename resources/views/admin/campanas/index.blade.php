@@ -1,7 +1,11 @@
 @extends('layouts.admin')
 
-@section('titulo', 'Destacados')
-@section('subtitulo', 'Publicaciones que pagaron por salir de primeras')
+@section('titulo', 'Campañas')
+@section('subtitulo', 'Publicaciones con una campaña pagada en marcha')
+
+@section('acciones')
+    <a class="hb-btn hb-btn--ghost" href="{{ route('admin.tarifas.index') }}">Tarifas y cobro</a>
+@endsection
 
 @section('contenido')
 
@@ -47,13 +51,13 @@
                                 <td>
                                     <a href="{{ route('alojamientos.show', $a) }}">{{ $a->title }}</a>
                                     <div class="hb-muted hb-small">
-                                        hasta el {{ $a->destacado_hasta->translatedFormat('d \d\e F, H:i') }}
+                                        hasta el {{ $a->campana_hasta->translatedFormat('d \d\e F, H:i') }}
                                     </div>
                                 </td>
                                 <td>{{ $a->user->name }}</td>
                                 <td><span class="hb-badge hb-badge--warning">{{ $a->diasDestacadoRestantes() }} día(s)</span></td>
                                 <td style="text-align:right">
-                                    <form method="POST" action="{{ route('admin.destacados.destroy', $a) }}"
+                                    <form method="POST" action="{{ route('admin.campanas.destroy', $a) }}"
                                           data-confirmar="«{{ $a->title }}» dejará de salir de primeras. El cobro queda en el historial. ¿Continuar?">
                                         @csrf @method('DELETE')
                                         <button class="hb-btn hb-btn--danger hb-btn--sm" type="submit">Quitar</button>
@@ -119,7 +123,7 @@
                     esto no verifica nada, solo deja constancia.
                 </p>
 
-                <form method="POST" action="{{ route('admin.destacados.store') }}">
+                <form method="POST" action="{{ route('admin.campanas.store') }}">
                     @csrf
 
                     <div class="hb-field">
@@ -140,27 +144,54 @@
                         @error('alojamiento_id') <span class="hb-error">{{ $message }}</span> @enderror
                     </div>
 
+                    <div class="hb-field">
+                        <label class="hb-label" for="tarifa_id">Tarifa</label>
+                        <select class="hb-select @error('tarifa_id') is-invalid @enderror"
+                                id="tarifa_id" name="tarifa_id">
+                            <option value="">A medida (escribo días y monto)</option>
+                            @foreach ($tarifas as $t)
+                                <option value="{{ $t->id }}" @selected(old('tarifa_id') == $t->id)>
+                                    {{ $t->nombre }} · {{ $t->dias }} días · {{ $t->precioFormateado() }}
+                                </option>
+                            @endforeach
+                        </select>
+                        <span class="hb-hint">
+                            Las tarifas se cambian en
+                            <a href="{{ route('admin.tarifas.index') }}">Tarifas y cobro</a>.
+                        </span>
+                        @error('tarifa_id') <span class="hb-error">{{ $message }}</span> @enderror
+                    </div>
+
                     <div class="hb-fields-2">
                         <div class="hb-field">
                             <label class="hb-label" for="dias">Días</label>
                             <input class="hb-input @error('dias') is-invalid @enderror" type="number"
-                                   id="dias" name="dias" value="{{ old('dias', 15) }}" min="1" max="90" required>
+                                   id="dias" name="dias" value="{{ old('dias') }}" min="1" max="365"
+                                   placeholder="de la tarifa">
                             @error('dias') <span class="hb-error">{{ $message }}</span> @enderror
                         </div>
 
                         <div class="hb-field">
                             <label class="hb-label" for="monto">Monto (COP)</label>
                             <input class="hb-input @error('monto') is-invalid @enderror" type="number"
-                                   id="monto" name="monto" value="{{ old('monto', 20000) }}"
-                                   min="0" max="1000000" step="1000" required>
+                                   id="monto" name="monto" value="{{ old('monto') }}"
+                                   min="0" max="1000000" step="1000" placeholder="de la tarifa">
                             @error('monto') <span class="hb-error">{{ $message }}</span> @enderror
                         </div>
                     </div>
 
+                    <span class="hb-hint" style="margin-bottom:1rem;display:block">
+                        Déjalos vacíos y se toman de la tarifa. Rellénalos para cobrar
+                        algo distinto: un descuento, un pago a medias o una campaña de
+                        regalo en temporada baja. Lo que escribas aquí queda copiado en
+                        el cobro, así que subir el precio después no reescribe lo que ya
+                        se pagó.
+                    </span>
+
                     <div class="hb-field">
                         <label class="hb-label" for="medio">Medio de pago</label>
                         <select class="hb-select @error('medio') is-invalid @enderror" id="medio" name="medio" required>
-                            @foreach (\App\Models\Destacado::MEDIOS as $m)
+                            @foreach (\App\Models\Campana::MEDIOS as $m)
                                 <option value="{{ $m }}" @selected(old('medio') === $m)>{{ $m }}</option>
                             @endforeach
                         </select>

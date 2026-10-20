@@ -57,8 +57,10 @@ class Auditoria extends Model
      */
     public const RESPALDO_CREADO       = 'sistema.respaldo';
 
-    public const DESTACADO_ACTIVADO    = 'destacado.activado';
-    public const DESTACADO_QUITADO     = 'destacado.quitado';
+    public const CAMPANA_ACTIVADA      = 'campana.activada';
+    public const CAMPANA_TERMINADA     = 'campana.terminada';
+    public const TARIFAS_CAMBIADAS     = 'cobro.tarifas';
+    public const COBRO_CONFIGURADO     = 'cobro.datos';
 
     public const ALIADO_GUARDADO       = 'aliado.guardado';
     public const ALIADO_BORRADO        = 'aliado.borrado';
@@ -82,8 +84,16 @@ class Auditoria extends Model
         self::ALOJAMIENTO_RECHAZADO => 'Rechazó una publicación',
         self::ALOJAMIENTO_EDITADO   => 'Editó una publicación ya aprobada',
         self::RESPALDO_CREADO       => 'Respaldó la base de datos',
-        self::DESTACADO_ACTIVADO    => 'Destacó una publicación',
-        self::DESTACADO_QUITADO     => 'Quitó un destaque',
+        self::CAMPANA_ACTIVADA      => 'Activó una campaña',
+        self::CAMPANA_TERMINADA     => 'Terminó una campaña antes de tiempo',
+        self::TARIFAS_CAMBIADAS     => 'Cambió las tarifas de campaña',
+        self::COBRO_CONFIGURADO     => 'Cambió los datos de cobro',
+
+        /* Nombres viejos. Se dejan para que las líneas que ya están
+           escritas en la auditoría sigan leyéndose: el registro no se
+           edita ni se reescribe, ni siquiera para corregir un nombre. */
+        'destacado.activado'        => 'Activó una campaña',
+        'destacado.quitado'         => 'Terminó una campaña antes de tiempo',
         self::ALIADO_GUARDADO       => 'Dio de alta o editó un aliado',
         self::ALIADO_BORRADO        => 'Eliminó un aliado',
     ];
