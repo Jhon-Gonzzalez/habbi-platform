@@ -7,7 +7,10 @@ use App\Models\Alojamiento;
 use App\Models\Rating;
 use App\Models\TelefonoVisto;
 use App\Models\User;
+use App\Services\RespaldoBaseDeDatos;
 use Illuminate\Contracts\View\View;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\File;
 
 class DashboardController extends Controller
 {
@@ -21,9 +24,15 @@ class DashboardController extends Controller
     private const TELEFONOS_SOSPECHOSOS = 20;
 
     /** Resumen general de la plataforma. */
-    public function index(): View
+    public function index(RespaldoBaseDeDatos $respaldos): View
     {
         return view('admin.index', [
+            // Cuándo se hizo la última copia de seguridad (RNF-3). Null si
+            // no hay ninguna. Que el comando exista no garantiza que corra:
+            // hace falta una línea en el cron del servidor, y lo único que
+            // demuestra que está puesta es que haya archivos recientes.
+            'ultimoRespaldo'    => $this->ultimoRespaldo($respaldos),
+
             'totalUsuarios'     => User::count(),
             'totalAdmins'       => User::where('role', User::ROLE_ADMIN)->count(),
             'totalAlojamientos' => Alojamiento::count(),
@@ -48,5 +57,14 @@ class DashboardController extends Controller
 
             'telefonosHoy'      => TelefonoVisto::where('created_at', '>=', now()->startOfDay())->count(),
         ]);
+    }
+
+    private function ultimoRespaldo(RespaldoBaseDeDatos $respaldos): ?Carbon
+    {
+        $archivos = $respaldos->archivos();
+
+        return $archivos === []
+            ? null
+            : Carbon::createFromTimestamp(File::lastModified($archivos[0]));
     }
 }

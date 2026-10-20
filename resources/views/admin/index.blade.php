@@ -20,6 +20,31 @@
         </div>
     @endif
 
+    {{-- Salud de los respaldos (RNF-3). Solo en producción: en local
+         nadie tiene el cron puesto y el aviso sería ruido. --}}
+    @if (app()->environment('production') && (! $ultimoRespaldo || $ultimoRespaldo->lt(now()->subHours(48))))
+        <div class="hb-alert hb-alert--error" style="margin-bottom:1.5rem">
+            <span class="hb-alert__icon" aria-hidden="true">!</span>
+            <span>
+                @if (! $ultimoRespaldo)
+                    <strong>No hay ninguna copia de seguridad.</strong>
+                @else
+                    <strong>La última copia de seguridad es del
+                    {{ $ultimoRespaldo->translatedFormat('d \d\e F \a \l\a\s H:i') }}</strong>
+                    ({{ $ultimoRespaldo->diffForHumans() }}).
+                @endif
+                La tarea está programada en el código, pero solo corre si el servidor
+                tiene <code>php artisan schedule:run</code> en el cron. Compruébalo con
+                <code>php artisan habbi:respaldar --listar</code>; los pasos están en
+                <code>docs/respaldos.md</code>.
+            </span>
+        </div>
+    @elseif ($ultimoRespaldo)
+        <p class="hb-muted hb-small" style="margin-bottom:1.5rem">
+            Última copia de seguridad: {{ $ultimoRespaldo->diffForHumans() }}.
+        </p>
+    @endif
+
     @if ($cosechadores->isNotEmpty())
         <div class="hb-alert hb-alert--error" style="margin-bottom:1.5rem">
             <span class="hb-alert__icon" aria-hidden="true">!</span>

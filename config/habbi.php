@@ -44,4 +44,27 @@ return [
 
     'verificar_correo' => env('HABBI_VERIFICAR_CORREO', false),
 
+    /*
+    |--------------------------------------------------------------------------
+    | Copias de seguridad (RNF-3)
+    |--------------------------------------------------------------------------
+    |
+    | El programador de tareas hace una copia cada noche y borra las que
+    | pasen de 'dias'. Catorce días es suficiente para darse cuenta de un
+    | borrado por error sin llenar el disco: la base de una plataforma de
+    | este tamaño pesa megabytes, no gigas.
+    |
+    | OJO: el respaldo se guarda en el MISMO servidor. Eso protege de un
+    | borrado por error, no de que el servidor se pierda. Para lo segundo
+    | hace falta copiar la carpeta a otro sitio; está explicado en
+    | docs/respaldos.md, y no se hace desde el código porque depende de
+    | dónde se despliegue.
+    |
+    */
+
+    'respaldos' => [
+        'dias' => (int) env('HABBI_RESPALDOS_DIAS', 14),
+        'hora' => env('HABBI_RESPALDOS_HORA', '03:20'),
+    ],
+
 ];

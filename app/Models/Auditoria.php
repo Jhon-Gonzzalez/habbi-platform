@@ -49,6 +49,14 @@ class Auditoria extends Model
     public const ALOJAMIENTO_RECHAZADO = 'alojamiento.rechazado';
     public const ALOJAMIENTO_EDITADO   = 'alojamiento.editado_tras_aprobar';
 
+    /*
+     * El único que no lo hace una persona: lo escribe el programador de
+     * tareas cada noche. Está aquí y no solo en el log del servidor para
+     * que el administrador pueda responder «¿cuándo fue el último
+     * respaldo?» desde el panel, sin entrar por SSH.
+     */
+    public const RESPALDO_CREADO       = 'sistema.respaldo';
+
     /** Nombre legible de cada acción, para la pantalla y sus filtros. */
     public const ETIQUETAS = [
         self::RESENA_BORRADA        => 'Borró una reseña',
@@ -67,6 +75,7 @@ class Auditoria extends Model
         self::ALOJAMIENTO_APROBADO  => 'Aprobó una publicación',
         self::ALOJAMIENTO_RECHAZADO => 'Rechazó una publicación',
         self::ALOJAMIENTO_EDITADO   => 'Editó una publicación ya aprobada',
+        self::RESPALDO_CREADO       => 'Respaldó la base de datos',
     ];
 
     protected $fillable = [
