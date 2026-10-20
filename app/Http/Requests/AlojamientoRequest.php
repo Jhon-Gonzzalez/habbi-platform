@@ -30,6 +30,22 @@ class AlojamientoRequest extends FormRequest
             'neighborhood' => ['nullable', 'string', 'max:120'],
             'address'      => ['nullable', 'string', 'max:255'],
 
+            /*
+             * Coordenadas: las pone el arrendador moviendo el pin en el
+             * mapa, no un servicio de geocodificación. Se validan como
+             * pareja porque una sola no sirve de nada: con media
+             * coordenada guardada, el filtro por distancia devolvería
+             * resultados sin sentido en vez de no devolver ninguno.
+             *
+             * El rango es el del planeta y no el de Montería a propósito:
+             * la plataforma nace aquí, pero nada en el código impide que
+             * se use en otra ciudad, y un límite geográfico escondido en
+             * una regla de validación es de los errores más difíciles de
+             * encontrar el día que eso pase.
+             */
+            'lat' => ['nullable', 'required_with:lng', 'numeric', 'between:-90,90'],
+            'lng' => ['nullable', 'required_with:lat', 'numeric', 'between:-180,180'],
+
             // Solo 'date': no se exige que sea futura porque al editar un
             // anuncio viejo la fecha ya pasó, y rechazarla obligaría a
             // borrarla para poder guardar cualquier otro cambio.
@@ -78,6 +94,8 @@ class AlojamientoRequest extends FormRequest
             'city'         => 'ciudad',
             'neighborhood' => 'barrio',
             'address'      => 'dirección',
+            'lat'          => 'latitud',
+            'lng'          => 'longitud',
             'disponible_desde' => 'fecha de disponibilidad',
             'cupos'            => 'plazas libres',
             'universidad_referencia' => 'universidad más cercana',
@@ -97,6 +115,8 @@ class AlojamientoRequest extends FormRequest
             'phone.regex'       => 'El teléfono solo puede contener números, espacios y los signos + ( ) -',
             'description.min'   => 'Describe el alojamiento con al menos 30 caracteres para que resulte útil.',
             'title.min'         => 'El título debe tener al menos 10 caracteres.',
+            'lat.required_with' => 'Vuelve a marcar el punto en el mapa: quedó a medias.',
+            'lng.required_with' => 'Vuelve a marcar el punto en el mapa: quedó a medias.',
         ];
     }
 
@@ -105,5 +125,16 @@ class AlojamientoRequest extends FormRequest
         $this->merge([
             'is_active' => $this->boolean('is_active', true),
         ]);
+
+        /*
+         * Si el arrendador no tocó el mapa, los campos llegan vacíos. Sin
+         * esto se guardarían como 0, que es una coordenada real (está en
+         * el golfo de Guinea) y colocaría la publicación en el Atlántico.
+         */
+        foreach (['lat', 'lng'] as $campo) {
+            if ($this->input($campo) === '') {
+                $this->merge([$campo => null]);
+            }
+        }
     }
 }

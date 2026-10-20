@@ -201,6 +201,27 @@ class MonteriaSeeder extends Seeder
         return $ruta;
     }
 
+    /**
+     * Un punto estable dentro de Montería, derivado del título.
+     *
+     * Se usa un hash y no azar para que el mismo anuncio caiga siempre en
+     * el mismo sitio: si cambiara en cada siembra, el mapa saltaría y sería
+     * imposible comprobar nada.
+     *
+     * El recuadro cubre a grandes rasgos el casco urbano de la ciudad.
+     *
+     * @return array{lat: float, lng: float}
+     */
+    private function puntoFicticio(string $semilla): array
+    {
+        $h = crc32($semilla);
+
+        return [
+            'lat' => round(8.735 + (($h % 1000) / 1000) * 0.085, 6),
+            'lng' => round(-75.905 + ((intdiv($h, 1000) % 1000) / 1000) * 0.065, 6),
+        ];
+    }
+
     private function crearAlojamiento(array $fila, User $arrendador): Alojamiento
     {
         return Alojamiento::updateOrCreate(
@@ -238,6 +259,12 @@ class MonteriaSeeder extends Seeder
                     ? Alojamiento::PENDIENTE
                     : Alojamiento::APROBADA,
                 'revisada_en'            => ($fila['pendiente'] ?? false) ? null : now(),
+
+                // Un punto dentro de Montería para que el mapa y el filtro
+                // por distancia tengan con qué trabajar. Es ficticio, como
+                // los negocios: cae en la ciudad, pero no es la ubicación
+                // real de nada ni de nadie.
+                ...$this->puntoFicticio($fila['title']),
             ]
         );
     }

@@ -24,7 +24,10 @@ class AlojamientoController extends Controller
     /** Buscador público con filtros, orden y paginación. */
     public function index(Request $request): View
     {
-        $filtros = $request->only(['q', 'type', 'guests', 'price_min', 'price_max', 'amenities', 'sort']);
+        $filtros = $request->only([
+            'q', 'type', 'guests', 'price_min', 'price_max', 'amenities', 'sort',
+            'universidad', 'km',
+        ]);
 
         $alojamientos = Alojamiento::query()
             ->disponibles()
@@ -33,7 +36,15 @@ class AlojamientoController extends Controller
             ->paginate(12)
             ->withQueryString();
 
-        return view('alojamientos.index', compact('alojamientos', 'filtros'));
+        // Los pines de la página que se está viendo. No se pintan los de
+        // toda la búsqueda: un mapa con cientos de puntos tarda, y el
+        // mapa acompaña al listado, no lo sustituye.
+        $puntos = $alojamientos->getCollection()
+            ->map(fn (Alojamiento $a) => $a->puntoMapa())
+            ->filter()
+            ->values();
+
+        return view('alojamientos.index', compact('alojamientos', 'filtros', 'puntos'));
     }
 
     /** Formulario de publicación. */

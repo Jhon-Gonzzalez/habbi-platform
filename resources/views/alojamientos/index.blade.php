@@ -56,6 +56,29 @@
                 </div>
 
                 <div class="hb-field">
+                    <label class="hb-label" for="universidad">Cerca de</label>
+                    <select class="hb-input" id="universidad" name="universidad">
+                        <option value="">Cualquier zona</option>
+                        @foreach (\App\Models\Alojamiento::universidadesConCoordenadas() as $u)
+                            <option value="{{ $u['nombre'] }}"
+                                @selected(($filtros['universidad'] ?? '') === $u['nombre'])>
+                                {{ $u['corto'] }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <div class="hb-field">
+                    <label class="hb-label" for="km">A no más de</label>
+                    <select class="hb-input" id="km" name="km">
+                        @foreach (['' => 'Sin límite', '1' => '1 km', '2' => '2 km', '3' => '3 km', '5' => '5 km', '10' => '10 km'] as $v => $t)
+                            <option value="{{ $v }}" @selected((string) ($filtros['km'] ?? '') === $v)>{{ $t }}</option>
+                        @endforeach
+                    </select>
+                    <span class="hb-hint">Distancia en línea recta, no caminando.</span>
+                </div>
+
+                <div class="hb-field">
                     <label class="hb-label" for="guests">Huéspedes mínimos</label>
                     <select class="hb-select" id="guests" name="guests">
                         <option value="">Cualquiera</option>
@@ -126,6 +149,10 @@
                 </p>
             </div>
         @else
+            {{-- Los mismos resultados en mapa (CU-04). Si ninguno tiene
+                 coordenadas, el partial no pinta nada. --}}
+            @include('partials.mapa', ['puntos' => $puntos, 'id' => 'mapa-resultados'])
+
             <div class="hb-grid">
                 @foreach ($alojamientos as $a)
                     @include('partials.listing-card', ['a' => $a])

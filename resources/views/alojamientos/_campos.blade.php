@@ -91,6 +91,48 @@
             @error('address') <span class="hb-error">{{ $message }}</span> @enderror
         </div>
 
+        {{-- Punto en el mapa (RF-4, RF-6) --}}
+        <div class="hb-field">
+            <span class="hb-label">¿Dónde queda, exactamente?</span>
+
+            {{--
+                La forma de bloque y no @php(...): Blade empareja el primer
+                @php del fichero con el siguiente @endphp que encuentre, sin
+                importar cuál lo abrió. Con la forma corta aquí, el @endphp
+                de las comodidades cerraba este bloque y se tragaba medio
+                formulario como PHP.
+            --}}
+            @php
+                $latVieja = old('lat', $a->lat ?? '');
+                $lngVieja = old('lng', $a->lng ?? '');
+            @endphp
+
+            <input type="hidden" id="lat" name="lat" value="{{ $latVieja }}">
+            <input type="hidden" id="lng" name="lng" value="{{ $lngVieja }}">
+
+            <div class="hb-selector" id="selector-mapa">
+                <div class="hb-selector__lienzo"></div>
+                <div class="hb-selector__pie">
+                    <span class="hb-hint hb-mb-0" id="selector-mapa-aviso">
+                        Toca el mapa para marcar el punto. Puedes arrastrar el pin después.
+                    </span>
+                    <button class="hb-btn hb-btn--ghost hb-btn--sm" type="button"
+                            id="selector-mapa-borrar" {{ $latVieja === '' ? 'hidden' : '' }}>
+                        Quitar el punto
+                    </button>
+                </div>
+            </div>
+
+            <span class="hb-hint">
+                Es opcional, pero sin punto tu anuncio no aparece cuando alguien
+                busca «a menos de 2 km de la universidad», que es como busca casi
+                todo el mundo. <strong>Marca la esquina o la cuadra, no la puerta</strong>:
+                es suficiente para que te encuentren y no publica dónde vives.
+            </span>
+            @error('lat') <span class="hb-error">{{ $message }}</span> @enderror
+            @error('lng') <span class="hb-error">{{ $message }}</span> @enderror
+        </div>
+
         <div class="hb-field">
             <label class="hb-label" for="cupos">¿Cuántas plazas tienes libres?</label>
             <input class="hb-input @error('cupos') is-invalid @enderror" type="number"
@@ -175,3 +217,9 @@
 
     </div>
 </div>
+
+@include('partials.leaflet')
+
+@push('scripts')
+    <script src="{{ asset('assets/js/selector-mapa.js') }}" defer></script>
+@endpush

@@ -49,12 +49,22 @@ class Alojamiento extends Model
      * La clave 'maps' es lo que se le pasa a Google Maps como destino: se usa
      * el nombre y la ciudad en vez de coordenadas porque Google los resuelve
      * mejor y el enlace sigue funcionando si el campus se muda.
+     *
+     * 'coords' es OPCIONAL y solo está en las que se pudieron verificar en
+     * una fuente pública. El filtro por distancia solo ofrece esas: poner
+     * coordenadas a ojo daría distancias falsas, y una distancia falsa es
+     * peor que no ofrecer el filtro, porque el estudiante se fía de ella.
+     *
+     * Para añadir las que faltan (UPB, UCC y UNAD en Montería): abre el
+     * campus en Google Maps, pulsa con el botón derecho sobre la entrada y
+     * copia el par de números que aparece arriba del menú.
      */
     public const UNIVERSIDADES = [
         [
             'nombre' => 'Universidad de Córdoba',
             'corto'  => 'Unicórdoba',
             'maps'   => 'Universidad de Córdoba, Carrera 6 #76-103, Montería, Córdoba, Colombia',
+            'coords' => [8.78778, -75.8578],   // Wikipedia (es y en), campus principal
         ],
         [
             'nombre' => 'Universidad Pontificia Bolivariana — Montería',
@@ -65,6 +75,7 @@ class Alojamiento extends Model
             'nombre' => 'Universidad del Sinú',
             'corto'  => 'Unisinú',
             'maps'   => 'Universidad del Sinú Elías Bechara Zainúm, Montería, Córdoba, Colombia',
+            'coords' => [8.76710, -75.885112], // Wikipedia (es) y Wikidata, campus Elías Bechara Zainúm
         ],
         [
             'nombre' => 'Universidad Cooperativa de Colombia — Montería',
@@ -163,6 +174,123 @@ class Alojamiento extends Model
             ->where('cupos', '>', 0);
     }
 
+    /**
+     * Haversine en SQL, en su forma con asin.
+     *
+     * Con acos haría falta recortar el argumento a 1 por el redondeo del
+     * coma flotante, y la función para recortarlo se llama distinto en cada
+     * base de datos (LEAST en MySQL, MIN en SQLite): la consulta dejaría de
+     * ser portable. Esta forma no lo necesita y da el mismo resultado.
+     *
+     * Espera tres parámetros, en este orden: latitud, latitud, longitud.
+     */
+    private const SQL_DISTANCIA = '(2 * 6371 * asin(sqrt('
+        . 'power(sin(radians(? - lat) / 2), 2) '
+        . '+ cos(radians(lat)) * cos(radians(?)) '
+        . '* power(sin(radians(? - lng) / 2), 2)'
+        . ')))';
+
+    /**
+     * Las que están a menos de X km de un punto, con la distancia calculada.
+     *
+     * Dos pasos a propósito:
+     *
+     * 1. Una caja alrededor del punto, con sumas y restas sobre lat/lng.
+     *    Esto SÍ usa los índices y descarta de golpe casi todo.
+     * 2. La fórmula del haversine sobre lo que queda, que da la distancia
+     *    real sobre la esfera. Sola sería exacta pero obligaría a recorrer
+     *    la tabla entera.
+     *
+     * Necesita que la base de datos traiga funciones trigonométricas:
+     * MySQL siempre las tiene, y SQLite desde la versión 3.35 (2021).
+     */
+    public function scopeCercaDe(Builder $query, float $lat, float $lng, float $km): Builder
+    {
+        // Un grado de latitud son ~111 km en cualquier sitio. Uno de
+        // longitud se estrecha al alejarse del ecuador, de ahí el coseno.
+        $margenLat = $km / 111.045;
+        $margenLng = $km / (111.045 * max(cos(deg2rad($lat)), 0.01));
+
+        return $query
+            ->whereNotNull('lat')
+            ->whereNotNull('lng')
+            ->whereBetween('lat', [$lat - $margenLat, $lat + $margenLat])
+            ->whereBetween('lng', [$lng - $margenLng, $lng + $margenLng])
+            ->selectRaw('alojamientos.*, ' . self::SQL_DISTANCIA . ' as distancia_km', [$lat, $lat, $lng])
+            // El recorte final va en WHERE y no en HAVING: SQLite rechaza un
+            // HAVING sin GROUP BY, y MySQL lo acepta. En WHERE funciona en
+            // las dos. La fórmula no se repite: es la misma constante.
+            ->whereRaw(self::SQL_DISTANCIA . ' <= ?', [$lat, $lat, $lng, $km])
+            ->orderBy('distancia_km');
+    }
+
+    /** Distancia en kilómetros hasta su universidad de referencia. */
+    public function distanciaAUniversidad(): ?float
+    {
+        $uni = $this->universidad();
+
+        if (! isset($uni['coords']) || $this->lat === null || $this->lng === null) {
+            return null;
+        }
+
+        [$ulat, $ulng] = $uni['coords'];
+
+        // Haversine, el mismo cálculo que hace la consulta.
+        $a = sin(deg2rad($ulat - $this->lat) / 2) ** 2
+            + cos(deg2rad($this->lat)) * cos(deg2rad($ulat))
+            * sin(deg2rad($ulng - $this->lng) / 2) ** 2;
+
+        return round(6371 * 2 * asin(min(1.0, sqrt($a))), 1);
+    }
+
+    /** Busca una universidad por nombre, solo entre las que tienen coordenadas. */
+    public static function buscarUniversidad(?string $nombre): ?array
+    {
+        if (! $nombre) {
+            return null;
+        }
+
+        foreach (self::universidadesConCoordenadas() as $u) {
+            if ($u['nombre'] === $nombre) {
+                return $u;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Los datos que necesita un pin del mapa, y nada más.
+     *
+     * Devuelve null si no hay coordenadas: el mapa descarta los puntos
+     * vacíos, pero es más claro no mandárselos. Se incluye solo lo que se
+     * va a pintar en la ficha emergente; la dirección exacta no, que el
+     * pin ya la señala y el detalle está a un clic.
+     */
+    public function puntoMapa(): ?array
+    {
+        if ($this->lat === null || $this->lng === null) {
+            return null;
+        }
+
+        return [
+            'lat'    => (float) $this->lat,
+            'lng'    => (float) $this->lng,
+            'titulo' => $this->title,
+            'precio' => $this->precioFormateado(),
+            'url'    => route('alojamientos.show', $this),
+        ];
+    }
+
+    /** Las universidades para las que sí se puede calcular distancia. */
+    public static function universidadesConCoordenadas(): array
+    {
+        return array_values(array_filter(
+            self::UNIVERSIDADES,
+            fn (array $u) => isset($u['coords']),
+        ));
+    }
+
     /** Las que esperan decisión del administrador. */
     public function scopePendientes(Builder $query): Builder
     {
@@ -200,6 +328,20 @@ class Alojamiento extends Model
                     $sql->whereJsonContains('amenities', $amenidad);
                 }
             });
+
+        // Distancia a una universidad concreta. Solo se aplica si la
+        // universidad elegida tiene coordenadas verificadas; con las que no
+        // las tienen, el filtro se ignora en vez de dar números inventados.
+        $cerca = self::buscarUniversidad($f['universidad'] ?? null);
+
+        if ($cerca && ! empty($f['km'])) {
+            [$lat, $lng] = $cerca['coords'];
+            $query->cercaDe($lat, $lng, (float) $f['km']);
+
+            // La distancia manda sobre cualquier otro orden: quien filtra
+            // por cercanía quiere lo más cerca primero.
+            return $query;
+        }
 
         return match ($f['sort'] ?? null) {
             'price_asc'  => $query->orderBy('price'),

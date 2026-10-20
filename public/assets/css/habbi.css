@@ -1231,3 +1231,53 @@ a.hb-avatar:hover { box-shadow: 0 0 0 3px var(--hb-primary-soft); }
 }
 
 .hb-informe .hb-inf__vacio { color: var(--hb-muted); font-style: italic; }
+
+/* ===================================================================
+   Mapa de alojamientos
+   =================================================================== */
+
+.hb-mapa-caja {
+    margin: 1.5rem 0;
+    border: 1px solid var(--hb-border);
+    border-radius: var(--hb-radius);
+    overflow: hidden;
+}
+
+.hb-mapa-lienzo {
+    height: 420px;
+    width: 100%;
+    background: var(--hb-bg);
+}
+
+@media (max-width: 640px) {
+    .hb-mapa-lienzo { height: 300px; }
+}
+
+/* Selector de coordenadas del formulario de publicación */
+
+.hb-selector {
+    border: 1px solid var(--hb-border);
+    border-radius: var(--hb-radius);
+    overflow: hidden;
+    background: var(--hb-surface);
+}
+
+.hb-selector__lienzo {
+    height: 320px;
+    background: var(--hb-bg);
+    cursor: crosshair;
+}
+
+.hb-selector__pie {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: .75rem 1rem;
+    border-top: 1px solid var(--hb-border);
+}
+
+@media (max-width: 640px) {
+    .hb-selector__lienzo { height: 260px; }
+    .hb-selector__pie { flex-direction: column; align-items: flex-start; }
+}
