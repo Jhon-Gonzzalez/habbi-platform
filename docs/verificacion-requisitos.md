@@ -7,8 +7,10 @@ Cada fila dice dónde está la evidencia: el archivo del código y, cuando
 existe, el test que lo comprueba automáticamente. Lo que no está hecho se
 dice que no está hecho.
 
-- **Commit verificado:** `1427804`
-- **Suite de pruebas:** 334 tests, 841 comprobaciones, todas en verde
+- **Commit verificado:** `9d706bf`
+- **Suite de pruebas:** 392 tests, 1022 comprobaciones, todas en verde
+- **Recorrido de pantallas:** 41 en verde (`bash deploy/recorrido.sh`)
+- **Dónde ver cada cosa funcionando:** [`docs/donde-verlo.md`](donde-verlo.md)
 
 ---
 
@@ -193,6 +195,15 @@ No estaba en el documento y hoy funciona:
   confirmarse baja solo el número de plazas libres; si llega a cero, el anuncio
   deja de salir en el buscador (`ChatService`, `ChatTest`). El contacto ya no
   se va a WhatsApp: el teléfono queda como dato secundario.
+- **Modelo de ingresos**, con dos fuentes y las dos construidas:
+  **campañas de pago** (el arrendador elige cuántos días quiere salir de
+  primero; las tarifas y los datos de cobro los cambia el administrador desde
+  el panel, sin tocar código) y **aliados**, publicidad de negocios locales
+  vendida directamente, sin redes ni rastreo de terceros
+  (`CampanaTest`, `TarifaCampanaTest`, `AliadoTest`).
+  Una campaña **no altera el orden que el estudiante pidió a mano**, y la
+  publicidad **nunca entra en la rejilla de resultados**: hay pruebas
+  dedicadas a las dos reglas.
 - **Verificación de arrendadores** con cédula y prueba del inmueble, en disco
   privado fuera de `public/`, y borrado automático al resolver la solicitud
   (`BorradoDeDocumentosTest`).
