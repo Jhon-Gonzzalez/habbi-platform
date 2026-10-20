@@ -54,7 +54,7 @@ class SelectorCoordenadasTest extends TestCase
 
         $respuesta->assertSee('selector-mapa', false);
         $respuesta->assertSee('assets/js/selector-mapa.js', false);
-        $respuesta->assertSee('leaflet.min.js', false);
+        $respuesta->assertSee('assets/vendor/leaflet/leaflet.js', false);
         $respuesta->assertSee('name="lat"', false);
         $respuesta->assertSee('name="lng"', false);
     }

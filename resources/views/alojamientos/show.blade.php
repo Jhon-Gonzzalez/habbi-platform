@@ -63,6 +63,12 @@
             </p>
         </div>
 
+        {{-- El mapa, dentro de la página (RF-6) --}}
+        @include('partials.mapa', [
+            'puntos' => array_filter([$alojamiento->puntoMapa()]),
+            'id'     => 'mapa-alojamiento',
+        ])
+
         {{-- Ubicación y ruta hasta la universidad --}}
         @if ($alojamiento->address || $alojamiento->neighborhood)
             @php($uni = $alojamiento->universidad())
@@ -72,7 +78,12 @@
                     <div>
                         <strong>¿Qué tan lejos queda de tu universidad?</strong>
                         <p class="hb-muted" style="margin:.15rem 0 0;font-size:.9rem">
-                            Te mostramos la ruta desde este alojamiento hasta {{ $uni['corto'] }}.
+                            @if ($distancia = $alojamiento->distanciaAUniversidad())
+                                Está a <strong>{{ $distancia }} km</strong> de {{ $uni['corto'] }}
+                                en línea recta. Abajo tienes la ruta a pie, que es más larga.
+                            @else
+                                Te mostramos la ruta desde este alojamiento hasta {{ $uni['corto'] }}.
+                            @endif
                         </p>
                     </div>
                 </div>
