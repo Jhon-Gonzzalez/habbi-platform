@@ -14,89 +14,129 @@
 ## Qué hace
 
 HABBI conecta a estudiantes que buscan dónde vivir con arrendadores que tienen
-habitaciones, apartaestudios o apartamentos disponibles.
+habitaciones, apartaestudios o apartamentos disponibles. Está pensada para
+Montería y la Universidad de Córdoba, aunque nada en el código la ata a esa
+ciudad.
 
 | Módulo | Qué incluye |
 |---|---|
-| **Buscador público** | Filtros por texto, precio, tipo, capacidad y comodidades. Orden por precio, fecha o calificación. Paginación con filtros persistentes. |
-| **Publicaciones** | Alta con hasta 8 fotos, edición con gestión de galería (añadir, quitar, elegir portada), pausar/reactivar y borrado con limpieza de archivos. |
-| **Reseñas** | Una calificación de 1 a 5 estrellas por usuario y alojamiento, con comentario opcional. Nadie puede reseñar su propia publicación. |
+| **Buscador** | Filtros por texto, precio, tipo, capacidad, comodidades y **distancia a la universidad**. Resultados en lista **y en un mapa con pines**. Orden por precio, fecha o calificación. |
+| **Mapa** | Leaflet y OpenStreetMap, servidos desde el propio proyecto: sin clave de API y sin depender de un CDN. El arrendador marca el punto arrastrando un pin; no hay geocodificación. |
+| **Publicaciones** | Alta con hasta 8 fotos, edición con gestión de galería, pausar/reactivar y borrado con limpieza de archivos. **Nacen en revisión**: no se ven hasta que un administrador las aprueba. |
+| **Chat interno** | Conversación por alojamiento entre estudiante y arrendador, con **cierre de acuerdo a dos manos**: lo propone uno y lo confirma el otro. Al confirmarse baja solo el número de plazas, y al llegar a cero el anuncio sale del buscador. |
+| **Reseñas** | De 1 a 5 estrellas con comentario. Una por persona y alojamiento, y nadie puede reseñar lo suyo. |
 | **Cuentas y roles** | Registro, login, recuperación de contraseña y verificación de correo. Registrarse te hace **estudiante**; para publicar hay que pasar una **verificación como arrendador** que aprueba un administrador. |
-| **Perfiles** | Foto, descripción, ciudad y universidad. El arrendador tiene además perfil público con su sello de verificado y el promedio de sus reseñas, para que el estudiante vea con quién trata. |
-| **Ruta a la universidad** | Cada publicación abre Google Maps con la ruta a pie desde el alojamiento hasta el campus (las cinco universidades de Montería). |
+| **Perfiles** | Foto, descripción, ciudad y universidad. El arrendador tiene perfil público con su sello de verificado y el promedio de sus reseñas. |
 | **Favoritos** | Guardar alojamientos con un corazón y volver a ellos en `/mis-favoritos`. |
 | **Reportes** | Avisar de anuncios falsos, estafas o precios que no corresponden. Un reporte **no** oculta la publicación: lo revisa una persona. |
-| **Panel de administración** | Métricas, CRUD de usuarios con roles, moderación de publicaciones, revisión de solicitudes de arrendador, bandeja de reportes y **registro de auditoría**. |
+| **Panel de administración** | Métricas, cola de revisión, CRUD de usuarios, solicitudes de arrendador, bandeja de reportes, **informes con gráficas y PDF** y **registro de auditoría**. |
+| **Ingresos** | **Campañas** de pago (el arrendador elige cuántos días sale de primero) y **aliados**, publicidad de negocios locales vendida directamente. Las tarifas y los datos de cobro los cambia el administrador desde el panel. |
+| **Operación** | Copia de seguridad diaria con rotación, borrado automático de los documentos de identidad al resolver una solicitud, y límites de velocidad contra el abuso. |
 
 ## Decisiones técnicas
 
 - **Sin paso de compilación en el frontend.** El CSS y el JS son archivos planos
   en `public/assets/`. No hace falta Node ni `npm run build` para desplegar,
   algo que en hosting compartido evita la mayoría de los problemas.
-- **Autorización con policies.** `AlojamientoPolicy` y `RatingPolicy` deciden
-  quién edita y quién borra; el middleware `admin` protege el panel.
-- **Consultas sin N+1.** El scope `conResenas()` usa `withAvg` + `withCount`,
-  así el listado de 12 tarjetas hace una consulta en lugar de veinticinco.
+- **Leaflet se sirve desde el repositorio,** no desde un CDN. La primera versión
+  lo cargaba de cdnjs con un hash `integrity`; el hash estaba mal, el navegador
+  rechazaba el archivo y el mapa salía como un recuadro vacío, sin ningún error
+  visible. Con el archivo dentro no hay hash que equivocar ni dominio ajeno que
+  pueda caerse.
+- **Autorización con policies.** `AlojamientoPolicy`, `RatingPolicy` y
+  `SolicitudArrendadorPolicy` deciden quién edita y quién borra; el middleware
+  `admin` protege el panel y `puede-publicar` la publicación.
+- **Consultas sin N+1.** El scope `conResenas()` usa `withAvg` + `withCount`, así
+  el listado de 12 tarjetas hace una consulta en lugar de veinticinco. La
+  portada hace 1 consulta, el buscador 3 y la ficha 7.
 - **Las fotos viven fuera del repositorio,** en `storage/app/public`, expuestas
   mediante el enlace simbólico `public/storage`.
 - **Los documentos de verificación NO son públicos.** Van al disco `private`
   (`storage/app/private`), sin enlace simbólico, y solo se sirven a través de un
-  controlador que comprueba permisos. Una cédula escaneada no puede quedar
-  accesible por URL.
+  controlador que comprueba permisos. Además **se borran solos** en cuanto el
+  administrador aprueba o rechaza: una cédula escaneada que se filtra sirve para
+  suplantar a alguien, y guardarla después de haberla comprobado solo añade
+  riesgo.
+- **El teléfono no se imprime en la página.** Hay que pedirlo, cada petición
+  queda registrada y hay un tope por hora y por día. El panel avisa si alguien
+  pide demasiados. El contacto normal es el chat, que además deja constancia de
+  lo que se acuerda.
 - **El administrador no puede ver ni poner contraseñas.** No hay campo para
-  escribir la contraseña de otro: se genera un enlace de restablecimiento que
-  caduca y solo sirve para esa cuenta. `bcrypt` es irreversible, así que ni
-  consultando la base de datos se leen.
-- **Las acciones del panel quedan auditadas.** `Auditor::registrar()` escribe en
-  `auditorias` quién hizo qué, cuándo y sobre qué. No hay ruta para borrar ni
-  editar ese registro, y copia el nombre del actor en la fila para que borrar su
-  cuenta no borre su historial.
-- **Los destinos de Google Maps son una lista cerrada.** `Alojamiento::UNIVERSIDADES`
-  se valida con `Rule::in`, así que el enlace nunca apunta a un sitio inventado.
+  escribir la de otro: se genera un enlace de restablecimiento que caduca.
+  `bcrypt` es irreversible, así que ni consultando la base se leen.
+- **Las acciones del panel quedan auditadas.** `Auditor::registrar()` escribe
+  quién hizo qué, cuándo y sobre qué. No hay ruta para borrar ni editar ese
+  registro, y copia el nombre del actor en la fila para que borrar su cuenta no
+  borre su historial.
+- **El dinero no compra el orden que el usuario pidió.** Una campaña sube la
+  publicación solo en el orden por defecto; si el estudiante ordenó por precio o
+  filtró por cercanía, manda lo que él eligió. Y la etiqueta dice «Destacado» en
+  claro. Hay pruebas dedicadas a las dos reglas.
+- **La publicidad no entra en la rejilla de resultados,** ni en la ficha, ni en
+  el chat. Tampoco hay scripts de terceros ni cookies de rastreo: los anuncios
+  salen de la base de datos de este servidor.
+- **Solo universidades con coordenadas comprobadas.** El filtro por distancia
+  ofrece únicamente Unicórdoba y Unisinú, que son las que se pudieron verificar
+  en fuentes públicas. Ponerlas a ojo daría distancias falsas, y una distancia
+  falsa es peor que no ofrecer el filtro.
 - **El `composer.lock` se resuelve para PHP 8.2,** aunque quien ejecute
-  `composer update` tenga 8.4. Lo fija `config.platform.php` en
-  `composer.json`. Sin eso, actualizar desde una máquina con 8.4 produce un
-  lock que solo se instala en 8.4, y el despliegue en un hosting con 8.2
-  falla. Lo descubrió el CI, no una suposición.
-- **Nada de peso muerto en `public/`.** Se borraron `public/plugins` (61 MB) y
-  `public/dist` (25 MB): 2.024 archivos de una plantilla de administración que
-  ninguna vista, hoja de estilo ni script referenciaba. Siguen en el historial
-  de git por si alguna vez hicieran falta.
-- **El fallo del correo no tumba el registro.** Un listener propio reemplaza al de
-  Laravel, que devuelve un error 500 justo después de crear la cuenta cuando el
-  SMTP está caído.
+  `composer update` tenga 8.4. Lo fija `config.platform.php`. Sin eso, actualizar
+  desde una máquina con 8.4 produce un lock que solo se instala en 8.4, y el
+  despliegue en un hosting con 8.2 falla. Lo descubrió el CI, no una suposición.
+- **El CI corre `composer audit`.** El proyecto llegó a estar en Laravel 10.50.3
+  con cinco vulnerabilidades conocidas, una crítica, porque nada lo comprobaba.
 
 ## Estructura
 
 ```
 app/
+├── Console/Commands/    habbi:correo · habbi:enlace · habbi:respaldar · habbi:limpiar-documentos
 ├── Http/
 │   ├── Controllers/
-│   │   ├── Admin/              Panel de administración
-│   │   ├── AlojamientoController.php
-│   │   ├── DashboardController.php
-│   │   ├── HomeController.php
-│   │   └── RatingController.php
-│   ├── Middleware/
-│   │   └── EnsureUserIsAdmin.php
-│   └── Requests/               Validación (AlojamientoRequest, RatingRequest, UsuarioRequest)
-├── Models/                     Alojamiento, Rating, User
-├── Policies/                   AlojamientoPolicy, RatingPolicy
-└── Services/
-    └── AlojamientoPhotoService.php   Subida, borrado y orden de las fotos
+│   │   ├── Admin/       Panel: usuarios, revisión, solicitudes, reportes,
+│   │   │                informes, campañas, tarifas, aliados, auditoría
+│   │   └── …            Alojamientos, chat, favoritos, perfiles, reportes,
+│   │                    teléfono, campañas, aliados, legal
+│   ├── Middleware/      EnsureUserIsAdmin · EnsureUserPuedePublicar · VerificarCorreo
+│   └── Requests/        Validación por formulario
+├── Listeners/           EnviarVerificacionDeCorreo (no tumba el registro si falla el SMTP)
+├── Models/              13 modelos: Alojamiento, User, Rating, Conversacion, Mensaje,
+│                        Campana, TarifaCampana, Aliado, Reporte, Auditoria,
+│                        SolicitudArrendador, TelefonoVisto, Ajuste
+├── Policies/            Quién edita y quién borra
+├── Services/            La lógica que no cabe en un controlador:
+│                        ChatService, CampanaService, RevisionAlojamientoService,
+│                        VerificacionArrendadorService, RespaldoBaseDeDatos,
+│                        ReporteEstadisticas, AlojamientoPhotoService,
+│                        ImagenMarcador, Auditor
+├── Support/             ArchivoEnv, Subidas, Texto (helpers sin estado)
+└── View/Composers/      MenuAdmin (los contadores del menú del panel)
 
 resources/views/
 ├── layouts/        app · auth · admin
-├── partials/       navbar · footer · flash · listing-card
-├── components/     estrellas (componente Blade)
-├── alojamientos/   index · show · create · edit · mine · _campos
-├── admin/          index · usuarios/* · alojamientos/*
-└── auth/           login · register · passwords/*
+├── partials/       navbar · footer · listing-card · mapa · aliados · leaflet
+├── components/     avatar · estrellas · sello-verificado
+├── alojamientos/   index · show · create · edit · mine · campana · _campos
+├── mensajes/       index · show          (el chat)
+├── admin/          revisión · campañas · aliados · informes · usuarios · auditoría…
+└── legal/          términos · privacidad
 
 public/assets/
-├── css/habbi.css   Sistema de diseño completo (tokens + componentes)
-├── js/habbi.js     Navbar, menús, galería, estrellas, subida de fotos
-└── img/            Logos e imágenes
+├── css/habbi.css        Sistema de diseño (tokens + componentes)
+├── js/                  habbi.js · mapa.js · selector-mapa.js
+├── vendor/leaflet/      Leaflet 1.9.4, servido desde aquí y no desde un CDN
+└── img/images/          Logo, favicon e imagen de portada
+
+docs/
+├── donde-verlo.md              Dónde ver cada requisito funcionando
+├── verificacion-requisitos.md  Contraste con el documento del proyecto
+└── respaldos.md                Copias de seguridad: qué cubren y qué no
+
+deploy/
+├── probar-local.sh      Levanta el proyecto con un comando
+├── recorrido.sh         Visita las 41 pantallas con cada rol
+├── instalar.sh          Primera instalación en el servidor
+└── actualizar.sh        Traer los cambios en el servidor
 ```
 
 ## Cómo verlo funcionando
@@ -165,8 +205,10 @@ php artisan serve
 ```
 
 El seeder crea un administrador con las credenciales de `ADMIN_EMAIL` y
-`ADMIN_PASSWORD` del `.env`, más 20 alojamientos de ejemplo en Montería que
-**no** se generan cuando `APP_ENV=production`.
+`ADMIN_PASSWORD` del `.env`, las tres tarifas de campaña de partida, y 20
+alojamientos de ejemplo en Montería que **no** se generan cuando
+`APP_ENV=production`. Las tarifas sí se crean también en producción: son
+configuración del negocio, no datos de prueba, y se cambian desde el panel.
 
 ### Sobre los datos de ejemplo
 
@@ -285,18 +327,36 @@ contra PHP 8.2 y 8.4 (los dos extremos del rango soportado). Si algo se rompe,
 aparece una X roja en el commit sin que tengas que probarlo a mano. La
 configuración está en `.github/workflows/tests.yml`.
 
-164 pruebas funcionales. Además de lo obvio (publicación, permisos, fotos,
-reseñas, renderizado de las vistas), varias existen para fijar decisiones que
-de otro modo se perderían en el próximo refactor:
+**392 pruebas, 1021 comprobaciones.** Además de lo obvio (publicación,
+permisos, fotos, reseñas, renderizado de las vistas), buena parte existen para
+fijar decisiones que de otro modo se perderían en el próximo refactor. Casi
+todas comprueban que algo **NO** pasa:
 
 - El administrador **no** puede ponerle contraseña a otro (`SeguridadAdminTest`).
-- Un documento de verificación **no** es accesible para un tercero.
+- Un documento de verificación **no** es accesible para un tercero, y **no**
+  sigue en el disco después de resolver la solicitud.
 - Reportar un anuncio **no** lo oculta.
-- La auditoría **no** guarda el token de restablecimiento.
-- **No** existe ninguna ruta para borrar la auditoría.
+- **No** existe ninguna ruta para borrar la auditoría, y la auditoría **no**
+  guarda ni el token de restablecimiento ni los números de cobro.
 - El registro se completa **aunque el correo falle** (el test apunta el SMTP a
   un host inexistente y comprueba que redirige en vez de dar un 500).
+- Una campaña pagada **no** se salta el orden que el estudiante pidió a mano:
+  ni por precio, ni por calificación, ni por cercanía.
+- La publicidad **no** aparece dentro de la rejilla de resultados, ni en la
+  ficha, ni en el chat, y **no** carga ningún script de terceros.
+- Media coordenada **no** se guarda, y un formulario vacío **no** deja el punto
+  en 0,0 (que es una coordenada real, en el golfo de Guinea).
+- Cambiar una tarifa **no** reescribe lo que alguien ya pagó.
 - Los teléfonos de ejemplo usan un prefijo sin líneas asignadas.
+
+Hay además un recorrido que entra con cada rol y visita las 41 pantallas:
+
+```bash
+bash deploy/recorrido.sh        # con el servidor levantado
+```
+
+Comprueba también que las que tienen que cerrar la puerta la cierran: un
+estudiante en el panel debe recibir 403, no 200.
 
 ## Despliegue
 
@@ -325,3 +385,17 @@ Guía completa, incluido el caso sin SSH: **[DEPLOY.md](DEPLOY.md)**.
 | `php artisan storage:link` | Enlace para que se vean las fotos |
 | `php artisan optimize` | Cachear configuración, rutas y vistas |
 | `php artisan optimize:clear` | Limpiar todas las cachés |
+| `php artisan habbi:respaldar --listar` | Ver las copias de seguridad que hay |
+| `php artisan habbi:correo --probar` | Comprobar que el envío de correo funciona |
+| `php artisan habbi:enlace correo@ejemplo.com` | Enlace de verificación de un usuario |
+| `php artisan habbi:limpiar-documentos` | Borrar documentos de solicitudes ya resueltas |
+| `composer audit` | Vulnerabilidades conocidas en las dependencias |
+
+## Documentación
+
+| Documento | Para qué |
+|---|---|
+| [`docs/donde-verlo.md`](docs/donde-verlo.md) | Dónde abrir cada requisito y qué tiene que pasar |
+| [`docs/verificacion-requisitos.md`](docs/verificacion-requisitos.md) | Contraste con el documento del proyecto |
+| [`docs/respaldos.md`](docs/respaldos.md) | Copias de seguridad: qué cubren, qué no, y cómo se restaura |
+| [`DEPLOY.md`](DEPLOY.md) | Despliegue paso a paso, con y sin SSH |
