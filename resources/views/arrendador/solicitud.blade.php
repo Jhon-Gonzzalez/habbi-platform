@@ -131,7 +131,7 @@
                         <span>
                             Autorizo a HABBI a tratar estos documentos con la única finalidad de
                             verificar mi identidad, conforme a la
-                            <a href="{{ route('legal.privacidad') }}" target="_blank">política de privacidad</a>.
+                            <a href="{{ route('legal.privacidad') }}" target="_blank" rel="noopener">política de privacidad</a>.
                             Sé que puedo pedir su eliminación en cualquier momento.
                         </span>
                     </label>

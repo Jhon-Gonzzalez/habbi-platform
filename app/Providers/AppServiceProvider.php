@@ -2,10 +2,12 @@
 
 namespace App\Providers;
 
+use App\View\Composers\MenuAdmin;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\URL;
+use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -35,6 +37,9 @@ class AppServiceProvider extends ServiceProvider
         // Paginación con las clases del sistema de diseño en lugar de Tailwind.
         Paginator::defaultView('vendor.pagination.habbi');
         Paginator::defaultSimpleView('vendor.pagination.habbi');
+
+        // Los contadores del menú del panel, fuera de la plantilla.
+        View::composer('layouts.admin', MenuAdmin::class);
 
         // @plural('huésped', $n) → «huéspedes», con reglas del español.
         Blade::directive('plural', fn (string $args) => "<?php echo \App\Support\Texto::plural({$args}); ?>");

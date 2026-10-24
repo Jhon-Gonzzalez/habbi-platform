@@ -20,6 +20,12 @@
     entera de quién entró a buscar habitación.
 --}}
 
+{{--
+    La consulta va aquí y no en un controlador a propósito, al revés que
+    los contadores del menú del panel: este bloque tiene que poder
+    soltarse en cualquier página sin tener que tocar el controlador de
+    esa página. Es una sola consulta y se incluye en un único sitio.
+--}}
 @php($aliados = \App\Models\Aliado::vigentes()->get())
 
 @if ($aliados->isNotEmpty())

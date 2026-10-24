@@ -735,8 +735,27 @@ a.hb-avatar:hover { box-shadow: 0 0 0 3px var(--hb-primary-soft); }
     top: calc(var(--hb-nav-h) + 1.5rem);
     max-height: calc(100vh - var(--hb-nav-h) - 3rem);
     overflow-y: auto;
+
+    /* Columna flexible para poder reordenar el bloque de aliados en
+       móvil sin moverlo del HTML. */
+    display: flex;
+    flex-direction: column;
 }
-@media (max-width: 980px) { .hb-filters { position: static; max-height: none; overflow: visible; } }
+@media (max-width: 980px) {
+    .hb-filters { position: static; max-height: none; overflow: visible; }
+
+    /*
+        En móvil la publicidad va la ÚLTIMA.
+        
+        En escritorio está arriba de los filtros porque ahí es la única
+        posición donde se ve (la barra es más alta que la pantalla). Pero
+        en móvil todo va en una sola columna, así que arriba significa
+        «lo primero que lee quien entra», antes incluso de los filtros y
+        de cualquier alojamiento. Eso es exactamente la publicidad
+        invasiva que este bloque evita por diseño.
+    */
+    .hb-aliados { order: 99; margin-bottom: 0; margin-top: 1.25rem; }
+}
 .hb-filters__body { padding: 1.25rem; }
 .hb-filters .hb-field:last-of-type { margin-bottom: 1rem; }
 

@@ -531,6 +531,18 @@ class Alojamiento extends Model
      * con «cannot be called statically» y dejó en rojo toda la suite de
      * administración.
      */
+    /**
+     * Quién aprobó o rechazó esta publicación.
+     *
+     * Antes la vista hacía User::find($alojamiento->revisada_por) a
+     * mano. Como relación se puede precargar con el resto y, sobre
+     * todo, la consulta deja de estar escondida en una plantilla.
+     */
+    public function revisor(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'revisada_por');
+    }
+
     public function cobrosDeCampana(): HasMany
     {
         return $this->hasMany(Campana::class)->latest('termina_en');

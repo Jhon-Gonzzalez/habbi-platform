@@ -26,7 +26,8 @@
                 <div class="hb-drop__icon" aria-hidden="true">🖼</div>
                 <strong>Arrastra tus fotos aquí o haz clic para elegirlas</strong>
                 <span class="hb-hint">Hasta 8 imágenes · JPG, PNG o WEBP · máximo 5 MB cada una</span>
-                <input type="file" name="photos[]" accept="image/jpeg,image/png,image/webp" multiple required>
+                <input type="file" name="photos[]" accept="image/jpeg,image/png,image/webp" multiple required
+                       aria-label="Fotos del alojamiento">
             </div>
 
             <div class="hb-thumbs" id="previsualizacion"></div>

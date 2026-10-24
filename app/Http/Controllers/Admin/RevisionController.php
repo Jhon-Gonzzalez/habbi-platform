@@ -40,7 +40,7 @@ class RevisionController extends Controller
     public function show(Alojamiento $alojamiento): View
     {
         return view('admin.revision.show', [
-            'alojamiento' => $alojamiento->load('user'),
+            'alojamiento' => $alojamiento->load(['user', 'revisor:id,name']),
         ]);
     }
 

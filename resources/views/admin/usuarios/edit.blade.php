@@ -15,6 +15,7 @@
                 sirve para su cuenta; tú no puedes ver ni fijar su contraseña.
             </p>
             <input class="hb-input hb-small" type="text" readonly onclick="this.select()"
+                   aria-label="Enlace de restablecimiento de contraseña"
                    value="{{ session('enlace_reset') }}">
         </div>
     </div>

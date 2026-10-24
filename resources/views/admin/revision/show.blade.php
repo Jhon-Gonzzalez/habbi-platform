@@ -104,7 +104,7 @@
                         <p class="hb-muted hb-small" style="margin-top:.6rem">
                             Revisada {{ $alojamiento->revisada_en->diffForHumans() }}
                             @if ($alojamiento->revisada_por)
-                                por {{ \App\Models\User::find($alojamiento->revisada_por)?->name ?? 'una cuenta eliminada' }}
+                                por {{ $alojamiento->revisor?->name ?? 'una cuenta eliminada' }}
                             @endif
                         </p>
                     @endif

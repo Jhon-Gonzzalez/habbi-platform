@@ -17,14 +17,16 @@
 <div class="hb-card">
     <div class="hb-card__header">
         <form method="GET" action="{{ route('admin.auditoria.index') }}" class="hb-row" style="gap:.6rem;flex-wrap:wrap">
-            <select class="hb-input hb-input--sm" name="accion" style="width:auto">
+            <select class="hb-input hb-input--sm" name="accion" style="width:auto"
+                    aria-label="Filtrar por acción">
                 <option value="">Todas las acciones</option>
                 @foreach ($acciones as $valor => $texto)
                     <option value="{{ $valor }}" @selected($accion === $valor)>{{ $texto }}</option>
                 @endforeach
             </select>
 
-            <select class="hb-input hb-input--sm" name="actor" style="width:auto">
+            <select class="hb-input hb-input--sm" name="actor" style="width:auto"
+                    aria-label="Filtrar por administrador">
                 <option value="">Cualquier administrador</option>
                 @foreach ($actores as $a)
                     <option value="{{ $a->id }}" @selected($actor === $a->id)>{{ $a->name }}</option>

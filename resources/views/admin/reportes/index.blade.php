@@ -37,7 +37,7 @@
                     <tr>
                         <td>
                             <strong>
-                                <a href="{{ route('alojamientos.show', $r->alojamiento) }}" target="_blank">
+                                <a href="{{ route('alojamientos.show', $r->alojamiento) }}" target="_blank" rel="noopener">
                                     {{ $r->alojamiento->title }}
                                 </a>
                             </strong>
@@ -77,7 +77,7 @@
                             @if ($r->estaAbierto())
                                 <form method="POST" action="{{ route('admin.reportes.resolver', $r) }}">
                                     @csrf
-                                    <input class="hb-input hb-input--sm" type="text" name="nota_interna"
+                                    <input class="hb-input hb-input--sm" type="text" name="nota_interna" aria-label="Nota interna sobre este reporte"
                                            placeholder="Nota (opcional)" maxlength="1000"
                                            style="margin-bottom:.4rem">
                                     <div class="hb-row" style="gap:.4rem">

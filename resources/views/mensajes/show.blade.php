@@ -58,6 +58,7 @@
                 <div class="hb-field hb-mb-0">
                     <textarea class="hb-textarea @error('cuerpo') is-invalid @enderror"
                               name="cuerpo" rows="3" maxlength="2000" required
+                              aria-label="Escribe tu mensaje"
                               placeholder="Escribe tu mensaje…">{{ old('cuerpo') }}</textarea>
                     @error('cuerpo') <span class="hb-error">{{ $message }}</span> @enderror
                 </div>

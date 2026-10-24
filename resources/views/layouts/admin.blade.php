@@ -36,11 +36,10 @@
                 </a>
             </li>
             <li>
-                @php $pendientes = \App\Models\SolicitudArrendador::pendientes()->count(); @endphp
                 <a href="{{ route('admin.solicitudes.index') }}" class="{{ request()->routeIs('admin.solicitudes.*') ? 'is-active' : '' }}">
                     <span aria-hidden="true">✓</span> Solicitudes
-                    @if ($pendientes)
-                        <span class="hb-badge hb-badge--danger" style="margin-left:auto">{{ $pendientes }}</span>
+                    @if ($menuSolicitudes)
+                        <span class="hb-badge hb-badge--danger" style="margin-left:auto">{{ $menuSolicitudes }}</span>
                     @endif
                 </a>
             </li>
@@ -50,11 +49,10 @@
                 </a>
             </li>
             <li>
-                @php $enRevision = \App\Models\Alojamiento::pendientes()->count(); @endphp
                 <a href="{{ route('admin.revision.index') }}" class="{{ request()->routeIs('admin.revision.*') ? 'is-active' : '' }}">
                     <span aria-hidden="true">◎</span> Revisión
-                    @if ($enRevision)
-                        <span class="hb-badge hb-badge--danger" style="margin-left:auto">{{ $enRevision }}</span>
+                    @if ($menuRevision)
+                        <span class="hb-badge hb-badge--danger" style="margin-left:auto">{{ $menuRevision }}</span>
                     @endif
                 </a>
             </li>
@@ -64,11 +62,10 @@
                 </a>
             </li>
             <li>
-                @php $enCampana = \App\Models\Alojamiento::conCampana()->count(); @endphp
                 <a href="{{ route('admin.campanas.index') }}" class="{{ request()->routeIs('admin.campanas.*') ? 'is-active' : '' }}">
                     <span aria-hidden="true">★</span> Campañas
-                    @if ($enCampana)
-                        <span class="hb-badge hb-badge--success" style="margin-left:auto">{{ $enCampana }}</span>
+                    @if ($menuCampanas)
+                        <span class="hb-badge hb-badge--success" style="margin-left:auto">{{ $menuCampanas }}</span>
                     @endif
                 </a>
             </li>
@@ -78,11 +75,10 @@
                 </a>
             </li>
             <li>
-                @php $reportesAbiertos = \App\Models\Reporte::abiertos()->count(); @endphp
                 <a href="{{ route('admin.reportes.index') }}" class="{{ request()->routeIs('admin.reportes.*') ? 'is-active' : '' }}">
                     <span aria-hidden="true">⚑</span> Reportes
-                    @if ($reportesAbiertos)
-                        <span class="hb-badge hb-badge--danger" style="margin-left:auto">{{ $reportesAbiertos }}</span>
+                    @if ($menuReportes)
+                        <span class="hb-badge hb-badge--danger" style="margin-left:auto">{{ $menuReportes }}</span>
                     @endif
                 </a>
             </li>
