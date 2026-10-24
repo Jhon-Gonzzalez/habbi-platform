@@ -110,7 +110,7 @@ class TarifaCampanaTest extends TestCase
         $this->assertSame(0, TarifaCampana::count());
         $this->assertSame(1, Campana::count());
         $this->assertSame(20000, Campana::first()->monto);
-        $this->assertTrue($a->fresh()->estaDestacado());
+        $this->assertTrue($a->fresh()->tieneCampanaActiva());
     }
 
     public function test_una_tarifa_oculta_no_se_le_ofrece_al_arrendador(): void
@@ -147,7 +147,7 @@ class TarifaCampanaTest extends TestCase
 
         $this->assertSame(5, $cobro->dias);
         $this->assertSame(0, $cobro->monto);
-        $this->assertTrue($a->fresh()->estaDestacado());
+        $this->assertTrue($a->fresh()->tieneCampanaActiva());
     }
 
     public function test_sin_tarifa_y_sin_dias_no_se_registra_nada(): void

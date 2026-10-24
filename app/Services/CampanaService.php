@@ -35,9 +35,9 @@ class CampanaService
         return DB::transaction(function () use ($alojamiento, $dias, $monto, $medio, $referencia, $nota, $registradoPor) {
             // Si ya estaba destacada, los días nuevos se suman a los que le
             // quedaban: renovar antes de tiempo no puede costarle días.
-            $empieza = $alojamiento->estaDestacado() ? $alojamiento->campana_hasta->copy() : now();
+            $empieza = $alojamiento->tieneCampanaActiva() ? $alojamiento->campana_hasta->copy() : now();
 
-            $alojamiento->destacar($dias);
+            $alojamiento->activarCampana($dias);
 
             $cobro = $alojamiento->cobrosDeCampana()->create([
                 'registrado_por' => $registradoPor->id,
@@ -83,7 +83,7 @@ class CampanaService
      */
     public function quitar(Alojamiento $alojamiento, User $actor, ?string $motivo = null): void
     {
-        $alojamiento->quitarDestaque();
+        $alojamiento->terminarCampana();
 
         Auditor::registrar(
             Auditoria::CAMPANA_TERMINADA,

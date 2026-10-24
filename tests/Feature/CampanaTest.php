@@ -104,7 +104,7 @@ class CampanaTest extends TestCase
             'title' => 'Publicada hoy sin pagar', 'created_at' => now(),
         ]);
 
-        $this->assertFalse($vencida->estaDestacado());
+        $this->assertFalse($vencida->tieneCampanaActiva());
         $this->assertSame($nueva->id, Alojamiento::disponibles()->filtrar([])->pluck('id')->first());
     }
 
@@ -115,7 +115,7 @@ class CampanaTest extends TestCase
         $a = Alojamiento::factory()->enCampana(10)->create();
         $antes = $a->campana_hasta->copy();
 
-        $a->destacar(15);
+        $a->activarCampana(15);
 
         // 10 que le quedaban + 15 nuevos, no 15 a secas.
         $this->assertEqualsWithDelta(
@@ -129,7 +129,7 @@ class CampanaTest extends TestCase
     {
         $a = Alojamiento::factory()->create();
 
-        $a->destacar(15);
+        $a->activarCampana(15);
 
         $this->assertEqualsWithDelta(now()->addDays(15)->timestamp, $a->campana_hasta->timestamp, 5);
     }
@@ -180,7 +180,7 @@ class CampanaTest extends TestCase
             ])
             ->assertRedirect();
 
-        $this->assertTrue($a->fresh()->estaDestacado());
+        $this->assertTrue($a->fresh()->tieneCampanaActiva());
 
         $cobro = Campana::first();
         $this->assertSame(20000, $cobro->monto);
@@ -205,7 +205,7 @@ class CampanaTest extends TestCase
             ])
             ->assertRedirect();
 
-        $this->assertFalse($pendiente->fresh()->estaDestacado());
+        $this->assertFalse($pendiente->fresh()->tieneCampanaActiva());
         $this->assertSame(0, Campana::count());
     }
 
@@ -224,7 +224,7 @@ class CampanaTest extends TestCase
             ->delete(route('admin.campanas.destroy', $a))
             ->assertRedirect();
 
-        $this->assertFalse($a->fresh()->estaDestacado());
+        $this->assertFalse($a->fresh()->tieneCampanaActiva());
         $this->assertSame(1, Campana::count());
         $this->assertDatabaseHas('auditorias', ['accion' => Auditoria::CAMPANA_TERMINADA]);
     }

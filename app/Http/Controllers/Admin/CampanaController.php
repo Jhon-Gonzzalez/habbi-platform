@@ -27,7 +27,7 @@ class CampanaController extends Controller
     public function index(): View
     {
         $vigentes = Alojamiento::query()
-            ->destacados()
+            ->conCampana()
             ->with('user:id,name')
             ->orderBy('campana_hasta')
             ->get();

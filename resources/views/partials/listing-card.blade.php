@@ -25,7 +25,7 @@
             <span class="hb-listing__flag">Pausado</span>
         @elseif ($a->estaArrendado())
             <span class="hb-listing__flag">Ya arrendado</span>
-        @elseif ($a->estaDestacado())
+        @elseif ($a->tieneCampanaActiva())
             <span class="hb-listing__flag hb-listing__flag--destacado" title="Este arrendador pagó para que su anuncio aparezca de primero">
                 ★ Destacado
             </span>
@@ -88,7 +88,7 @@
                      está pendiente o pausado sería cobrar por nada. --}}
                 @if ($a->esVisibleAlPublico())
                     <a class="hb-btn hb-btn--ghost hb-btn--sm" href="{{ route('alojamientos.campana', $a) }}">
-                        {{ $a->estaDestacado() ? '★ En campaña' : 'Promocionar' }}
+                        {{ $a->tieneCampanaActiva() ? '★ En campaña' : 'Promocionar' }}
                     </a>
                 @endif
 

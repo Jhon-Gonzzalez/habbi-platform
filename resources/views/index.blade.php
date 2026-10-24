@@ -68,18 +68,27 @@
         </div>
     </section>
 
-    {{-- ===== Destacados ===== --}}
-    @if ($destacados->isNotEmpty())
+    {{--
+        ===== Los mejor calificados =====
+
+        Antes esta sección se llamaba «Alojamientos destacados». Hubo que
+        cambiarlo: desde que existen las campañas de pago, «Destacado» es
+        la etiqueta de un anuncio pagado, y el estudiante no podía saber
+        si estos salían por sus reseñas o porque alguien puso plata. Que
+        esas dos cosas se llamen igual arruina justo la señal que la
+        etiqueta tiene que dar.
+    --}}
+    @if ($mejorCalificados->isNotEmpty())
         <section class="hb-section hb-section--alt">
             <div class="hb-container">
                 <div class="hb-section__head">
-                    <span class="hb-eyebrow">Mejor valorados</span>
-                    <h2>Alojamientos destacados</h2>
-                    <p>Los que más gustan a la comunidad de estudiantes.</p>
+                    <span class="hb-eyebrow">Según las reseñas</span>
+                    <h2>Los mejor calificados</h2>
+                    <p>Los que más gustan a la comunidad de estudiantes. No se puede pagar por estar aquí.</p>
                 </div>
 
                 <div class="hb-grid">
-                    @foreach ($destacados as $a)
+                    @foreach ($mejorCalificados as $a)
                         @include('partials.listing-card', ['a' => $a])
                     @endforeach
                 </div>

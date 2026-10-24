@@ -13,12 +13,12 @@
         </div>
         <div class="hb-card__body">
 
-            @if ($alojamiento->estaDestacado())
+            @if ($alojamiento->tieneCampanaActiva())
                 <div class="hb-alert hb-alert--success" style="margin-bottom:1.25rem">
                     <span class="hb-alert__icon" aria-hidden="true">★</span>
                     <span>
                         <strong>Tu campaña está activa.</strong>
-                        Le quedan {{ $alojamiento->diasDestacadoRestantes() }} día(s),
+                        Le quedan {{ $alojamiento->diasDeCampanaRestantes() }} día(s),
                         hasta el {{ $alojamiento->campana_hasta->translatedFormat('d \d\e F') }}.
                         Si renuevas antes, los días nuevos se suman a los que te quedan.
                     </span>

@@ -64,11 +64,11 @@
                 </a>
             </li>
             <li>
-                @php $destacadasAhora = \App\Models\Alojamiento::destacados()->count(); @endphp
+                @php $enCampana = \App\Models\Alojamiento::conCampana()->count(); @endphp
                 <a href="{{ route('admin.campanas.index') }}" class="{{ request()->routeIs('admin.campanas.*') ? 'is-active' : '' }}">
                     <span aria-hidden="true">★</span> Campañas
-                    @if ($destacadasAhora)
-                        <span class="hb-badge hb-badge--success" style="margin-left:auto">{{ $destacadasAhora }}</span>
+                    @if ($enCampana)
+                        <span class="hb-badge hb-badge--success" style="margin-left:auto">{{ $enCampana }}</span>
                     @endif
                 </a>
             </li>

@@ -55,7 +55,7 @@
                                     </div>
                                 </td>
                                 <td>{{ $a->user->name }}</td>
-                                <td><span class="hb-badge hb-badge--warning">{{ $a->diasDestacadoRestantes() }} día(s)</span></td>
+                                <td><span class="hb-badge hb-badge--warning">{{ $a->diasDeCampanaRestantes() }} día(s)</span></td>
                                 <td style="text-align:right">
                                     <form method="POST" action="{{ route('admin.campanas.destroy', $a) }}"
                                           data-confirmar="«{{ $a->title }}» dejará de salir de primeras. El cobro queda en el historial. ¿Continuar?">
