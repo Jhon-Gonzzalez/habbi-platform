@@ -93,7 +93,7 @@ class RevisionPublicacionTest extends TestCase
         $admin = User::factory()->admin()->create();
         $a     = Alojamiento::factory()->pendiente()->create(['title' => 'Cuarto por aprobar']);
 
-        $this->actingAs($admin)->post(route('admin.revision.aprobar', $a))->assertRedirect();
+        $this->actingAs($admin)->post(route('admin.publicaciones.aprobar', $a))->assertRedirect();
 
         $this->assertTrue($a->fresh()->estaAprobada());
         $this->get(route('alojamientos.index'))->assertSee('Cuarto por aprobar');
@@ -104,7 +104,7 @@ class RevisionPublicacionTest extends TestCase
         $a = Alojamiento::factory()->pendiente()->create();
 
         $this->actingAs(User::factory()->admin()->create())
-            ->post(route('admin.revision.rechazar', $a), ['motivo' => 'no'])
+            ->post(route('admin.publicaciones.rechazar', $a), ['motivo' => 'no'])
             ->assertSessionHasErrors('motivo');
 
         $this->assertTrue($a->fresh()->estaPendiente());
@@ -116,7 +116,7 @@ class RevisionPublicacionTest extends TestCase
         $a = Alojamiento::factory()->pendiente()->for($arrendador)->create();
 
         $this->actingAs(User::factory()->admin()->create())
-            ->post(route('admin.revision.rechazar', $a), [
+            ->post(route('admin.publicaciones.rechazar', $a), [
                 'motivo' => 'La dirección que pusiste no existe en Montería. Revísala.',
             ]);
 
@@ -129,7 +129,7 @@ class RevisionPublicacionTest extends TestCase
     public function test_un_usuario_normal_no_entra_a_la_cola_de_revision(): void
     {
         $this->actingAs(User::factory()->create())
-            ->get(route('admin.revision.index'))
+            ->get(route('admin.publicaciones.index'))
             ->assertForbidden();
     }
 
@@ -137,9 +137,9 @@ class RevisionPublicacionTest extends TestCase
     {
         $admin = User::factory()->admin()->create();
 
-        $this->actingAs($admin)->post(route('admin.revision.aprobar',
+        $this->actingAs($admin)->post(route('admin.publicaciones.aprobar',
             Alojamiento::factory()->pendiente()->create()));
-        $this->actingAs($admin)->post(route('admin.revision.rechazar',
+        $this->actingAs($admin)->post(route('admin.publicaciones.rechazar',
             Alojamiento::factory()->pendiente()->create()),
             ['motivo' => 'Las fotos son de un catálogo, no del lugar real.']);
 

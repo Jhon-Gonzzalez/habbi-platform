@@ -365,6 +365,14 @@ a.hb-avatar:hover { box-shadow: 0 0 0 3px var(--hb-primary-soft); }
   display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap;
 }
 .hb-card__header h2, .hb-card__header h3 { margin: 0; }
+
+/* Cabecera con dos grupos (pestañas y buscador) que se apilan cuando no
+   caben, en vez de apretarse hasta quedar ilegibles. */
+.hb-card__header--apilado {
+  flex-wrap: wrap;
+  gap: .75rem;
+  align-items: center;
+}
 .hb-card__footer {
   padding: 1rem 1.5rem;
   border-top: 1px solid var(--hb-border);
@@ -1560,4 +1568,103 @@ a.hb-avatar:hover { box-shadow: 0 0 0 3px var(--hb-primary-soft); }
         height: 40px !important;
         line-height: 40px !important;
     }
+}
+
+/* ===================================================================
+   Dos columnas de tarjetas en el teléfono
+
+   Con una sola columna había que pasar por cada alojamiento entero —foto
+   grande incluida— para ver el siguiente: con 18 resultados, una
+   eternidad de scroll. En dos columnas se ven cuatro de un vistazo y se
+   compara, que es lo que hace de verdad quien busca cuarto.
+
+   A cambio hay menos sitio, así que la tarjeta se aprieta: menos relleno,
+   títulos más chicos y fuera las etiquetas de comodidades, que a 180 px
+   de ancho se envuelven y ocupan más que lo que dicen.
+   =================================================================== */
+@media (max-width: 640px) {
+    .hb-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: .75rem;
+    }
+
+    .hb-listing__body { padding: .7rem .75rem .85rem; gap: .4rem; }
+
+    .hb-listing__title { font-size: .92rem; }
+
+    .hb-listing__price {
+        font-size: .85rem;
+        padding: .3rem .55rem;
+        left: .5rem;
+        bottom: .5rem;
+    }
+
+    .hb-listing__price small { display: none; }
+
+    /* La meta pasa a renglones, uno por dato. Los puntos separadores
+       se quitan: con cada dato en su línea quedaban colgando al final,
+       como si faltara algo. */
+    .hb-listing__meta {
+        font-size: .78rem;
+        gap: .1rem;
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .hb-listing__meta span:not(:last-child)::after { content: none; }
+
+    /* La fecha de disponibilidad se parte en tres renglones y descuadra
+       la tarjeta. A este ancho basta con «Desde el 24 dic». */
+    .hb-listing__meta .hb-badge {
+        font-size: .7rem;
+        padding: .15rem .45rem;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 100%;
+    }
+
+    /* A este ancho las comodidades se parten en tres líneas y dejan la
+       tarjeta desigual. El detalle del alojamiento las lista todas. */
+    .hb-listing .hb-chips { display: none; }
+
+    .hb-listing__flag { font-size: .65rem; padding: .2rem .45rem; right: .5rem; top: .5rem; }
+
+    .hb-fav__btn { width: 34px; height: 34px; }
+
+    /*
+       «Mis alojamientos» y el panel del usuario se quedan en una
+       columna: ahí cada tarjeta lleva cuatro botones (editar, promocionar,
+       pausar, eliminar) y en media pantalla no caben sin amontonarse,
+       que es justo donde se pulsa «Eliminar» sin querer.
+    */
+    .hb-grid--gestion { grid-template-columns: 1fr; gap: 1rem; }
+    .hb-grid--gestion .hb-listing__body { padding: 1.1rem 1.15rem 1.25rem; gap: .55rem; }
+    .hb-grid--gestion .hb-listing__title { font-size: 1.02rem; }
+    .hb-grid--gestion .hb-chips { display: flex; }
+    .hb-grid--gestion .hb-listing__price small { display: inline; }
+}
+
+/* Lista de «qué conviene mirar» del resumen del panel. */
+.hb-pendientes {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.hb-pendientes li {
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+    padding: .85rem 1.5rem;
+    border-bottom: 1px solid var(--hb-border);
+    font-size: .92rem;
+}
+
+.hb-pendientes li:last-child { border-bottom: 0; }
+.hb-pendientes li > span:nth-child(2) { flex: 1; }
+
+@media (max-width: 640px) {
+    .hb-pendientes li { flex-wrap: wrap; padding: .85rem 1rem; }
+    .hb-pendientes li > span:nth-child(2) { flex: 1 1 100%; order: 3; }
 }

@@ -48,7 +48,7 @@ class AuditoriaTest extends TestCase
         $admin       = User::factory()->admin()->create();
         $alojamiento = Alojamiento::factory()->create(['title' => 'Cuarto en La Granja']);
 
-        $this->actingAs($admin)->delete(route('admin.alojamientos.destroy', $alojamiento));
+        $this->actingAs($admin)->delete(route('admin.publicaciones.destroy', $alojamiento));
 
         $registro = Auditoria::sole();
         $this->assertSame(Auditoria::ALOJAMIENTO_BORRADO, $registro->accion);
@@ -62,8 +62,8 @@ class AuditoriaTest extends TestCase
         $admin       = User::factory()->admin()->create();
         $alojamiento = Alojamiento::factory()->create(['is_active' => true]);
 
-        $this->actingAs($admin)->patch(route('admin.alojamientos.toggle', $alojamiento));
-        $this->actingAs($admin)->patch(route('admin.alojamientos.toggle', $alojamiento));
+        $this->actingAs($admin)->patch(route('admin.publicaciones.toggle', $alojamiento));
+        $this->actingAs($admin)->patch(route('admin.publicaciones.toggle', $alojamiento));
 
         $acciones = Auditoria::orderBy('id')->pluck('accion')->all();
         $this->assertSame(
@@ -227,7 +227,7 @@ class AuditoriaTest extends TestCase
         $alojamiento = Alojamiento::factory()->create(['title' => 'Alojamiento despublicado']);
         $rating      = Rating::factory()->create();
 
-        $this->actingAs($admin)->patch(route('admin.alojamientos.toggle', $alojamiento));
+        $this->actingAs($admin)->patch(route('admin.publicaciones.toggle', $alojamiento));
         $this->actingAs($admin)->delete(route('ratings.destroy', $rating));
 
         // Se comprueba contra la DESCRIPCIÓN de la fila, no contra la etiqueta

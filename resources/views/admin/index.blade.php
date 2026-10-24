@@ -45,6 +45,33 @@
         </p>
     @endif
 
+    {{--
+        Trabajo pendiente, no cifras de lucimiento.
+
+        Las métricas de abajo (cuántos usuarios, cuántas publicaciones)
+        están bien para contar cómo va la plataforma, pero no le dicen a
+        nadie qué hacer al entrar. Esto sí: cada línea es un problema
+        concreto con un enlace para ir a arreglarlo.
+    --}}
+    @if (!empty($pendientes))
+        <div class="hb-card" style="margin-bottom:1.5rem">
+            <div class="hb-card__header">
+                <h2 style="font-size:1.05rem">Qué conviene mirar</h2>
+            </div>
+            <ul class="hb-pendientes">
+                @foreach ($pendientes as $aviso)
+                    <li>
+                        <span class="hb-badge {{ $aviso['grave'] ? 'hb-badge--warning' : 'hb-badge--muted' }}">
+                            {{ $aviso['numero'] }}
+                        </span>
+                        <span>{{ $aviso['texto'] }}</span>
+                        <a class="hb-btn hb-btn--ghost hb-btn--sm" href="{{ $aviso['url'] }}">Ver</a>
+                    </li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
+
     @if ($cosechadores->isNotEmpty())
         <div class="hb-alert hb-alert--error" style="margin-bottom:1.5rem">
             <span class="hb-alert__icon" aria-hidden="true">!</span>
@@ -109,7 +136,7 @@
         <section class="hb-card">
             <div class="hb-card__header">
                 <h2 style="font-size:1.05rem">Últimos alojamientos</h2>
-                <a class="hb-btn hb-btn--link" href="{{ route('admin.alojamientos.index') }}">Ver todos</a>
+                <a class="hb-btn hb-btn--link" href="{{ route('admin.publicaciones.index') }}">Ver todos</a>
             </div>
 
             <div class="hb-table-wrap">

@@ -92,7 +92,7 @@
                                     </div>
                                 </form>
                                 <a class="hb-btn hb-btn--link hb-btn--sm" style="margin-top:.4rem"
-                                   href="{{ route('admin.alojamientos.index', ['q' => $r->alojamiento->title]) }}">
+                                   href="{{ route('admin.publicaciones.index', ['q' => $r->alojamiento->title]) }}">
                                     Gestionar la publicación →
                                 </a>
                             @else

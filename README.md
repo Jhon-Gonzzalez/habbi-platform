@@ -29,7 +29,7 @@ ciudad.
 | **Perfiles** | Foto, descripción, ciudad y universidad. El arrendador tiene perfil público con su sello de verificado y el promedio de sus reseñas. |
 | **Favoritos** | Guardar alojamientos con un corazón y volver a ellos en `/mis-favoritos`. |
 | **Reportes** | Avisar de anuncios falsos, estafas o precios que no corresponden. Un reporte **no** oculta la publicación: lo revisa una persona. |
-| **Panel de administración** | Métricas, cola de revisión, CRUD de usuarios, solicitudes de arrendador, bandeja de reportes, **informes con gráficas y PDF** y **registro de auditoría**. |
+| **Panel de administración** | Avisos de lo que conviene mirar, **una sola pantalla de publicaciones** (revisar, aprobar, pausar y eliminar, con buscador y pestañas de estado), usuarios con filtro por rol, solicitudes de arrendador, bandeja de reportes, **informes con gráficas y PDF**, **exportación a CSV** y **registro de auditoría**. |
 | **Ingresos** | **Campañas** de pago (el arrendador elige cuántos días sale de primero) y **aliados**, publicidad de negocios locales vendida directamente. Las tarifas y los datos de cobro los cambia el administrador desde el panel. |
 | **Operación** | Copia de seguridad diaria con rotación, borrado automático de los documentos de identidad al resolver una solicitud, y límites de velocidad contra el abuso. |
 
@@ -93,8 +93,9 @@ app/
 ├── Console/Commands/    habbi:correo · habbi:enlace · habbi:respaldar · habbi:limpiar-documentos
 ├── Http/
 │   ├── Controllers/
-│   │   ├── Admin/       Panel: usuarios, revisión, solicitudes, reportes,
-│   │   │                informes, campañas, tarifas, aliados, auditoría
+│   │   ├── Admin/       Panel: publicaciones, usuarios, solicitudes, reportes,
+│   │   │                informes, campañas, tarifas, aliados, auditoría,
+│   │   │                exportación a CSV
 │   │   └── …            Alojamientos, chat, favoritos, perfiles, reportes,
 │   │                    teléfono, campañas, aliados, legal
 │   ├── Middleware/      EnsureUserIsAdmin · EnsureUserPuedePublicar · VerificarCorreo
@@ -118,7 +119,7 @@ resources/views/
 ├── components/     avatar · estrellas · sello-verificado
 ├── alojamientos/   index · show · create · edit · mine · campana · _campos
 ├── mensajes/       index · show          (el chat)
-├── admin/          revisión · campañas · aliados · informes · usuarios · auditoría…
+├── admin/          publicaciones · campañas · aliados · informes · usuarios · auditoría…
 └── legal/          términos · privacidad
 
 public/assets/

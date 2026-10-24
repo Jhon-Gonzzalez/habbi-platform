@@ -4,6 +4,7 @@
 @section('subtitulo', $usuarios->total() . ' ' . \App\Support\Texto::plural('usuario', $usuarios->total()) . ' registrados')
 
 @section('acciones')
+    <a class="hb-btn hb-btn--ghost" href="{{ route('admin.exportar', 'usuarios') }}">Descargar CSV</a>
     <a class="hb-btn hb-btn--primary" href="{{ route('admin.usuarios.create') }}">Nuevo usuario</a>
 @endsection
 
@@ -14,8 +15,19 @@
             <label class="hb-sr-only" for="q">Buscar usuario</label>
             <input class="hb-input" type="search" id="q" name="q" value="{{ request('q') }}"
                    placeholder="Buscar por nombre o correo" style="min-width:260px">
+            <label class="hb-sr-only" for="rol">Filtrar por rol</label>
+            <select class="hb-select" id="rol" name="rol" data-autosubmit style="width:auto">
+                <option value="">Todos los roles</option>
+                @foreach (\App\Models\User::ROLES as $valor => $texto)
+                    <option value="{{ $valor }}" @selected(request('rol') === $valor)>{{ $texto }}</option>
+                @endforeach
+                <option value="sin-verificar" @selected(request('rol') === 'sin-verificar')>
+                    Correo sin verificar
+                </option>
+            </select>
+
             <button class="hb-btn hb-btn--ghost hb-btn--sm" type="submit">Buscar</button>
-            @if (request('q'))
+            @if (request('q') || request('rol'))
                 <a class="hb-btn hb-btn--link" href="{{ route('admin.usuarios.index') }}">Limpiar</a>
             @endif
         </form>

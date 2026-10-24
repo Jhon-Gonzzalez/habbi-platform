@@ -123,7 +123,7 @@ dueño: tampoco puede calificarse a sí mismo.
 ### RF-10 · Aprobar o rechazar publicaciones
 
 **Dónde:** entra como administrador →
-<http://127.0.0.1:8000/admin/revision>
+<http://127.0.0.1:8000/admin/publicaciones>
 
 Hay dos esperando. Ábrelas: **Aprobar** la deja visible al instante;
 **Rechazar** exige un motivo de al menos 15 caracteres, que el
@@ -166,7 +166,7 @@ JavaScript.
 | CU-04 Buscar y filtrar | `/alojamientos`: lista **y** mapa, con filtro por distancia |
 | CU-05 Calificar y comentar | Final de cualquier ficha |
 | CU-06 Guardar en favoritos | El corazón, y `/mis-favoritos` |
-| CU-07 Validar publicaciones | `/admin/revision` |
+| CU-07 Validar publicaciones | `/admin/publicaciones` |
 | CU-08 Generar reportes | `/admin/informes` |
 
 ---

@@ -88,7 +88,7 @@ class AdminTest extends TestCase
         $alojamiento = Alojamiento::factory()->create(['is_active' => true]);
 
         $this->actingAs(User::factory()->admin()->create())
-            ->patch(route('admin.alojamientos.toggle', $alojamiento))
+            ->patch(route('admin.publicaciones.toggle', $alojamiento))
             ->assertRedirect();
 
         $this->assertFalse($alojamiento->fresh()->is_active);

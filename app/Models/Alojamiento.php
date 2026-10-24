@@ -578,6 +578,23 @@ class Alojamiento extends Model
         return 'Disponible desde el ' . $this->disponible_desde->translatedFormat('j \d\e F');
     }
 
+    /**
+     * Lo mismo, pero corto, para la tarjeta del listado.
+     *
+     * En el teléfono la rejilla va a dos columnas y cada tarjeta mide
+     * unos 174 px. «Disponible desde el 24 de diciembre» se parte en
+     * tres renglones y descuadra la fila entera; «Desde el 24 dic»
+     * cabe en uno y dice lo mismo.
+     */
+    public function textoDisponibilidadCorto(): string
+    {
+        if ($this->estaDisponibleYa()) {
+            return 'Disponible ya';
+        }
+
+        return 'Desde el ' . $this->disponible_desde->translatedFormat('j M');
+    }
+
     /** Solo los que se pueden ocupar antes de una fecha. */
     public function scopeDisponibleAntesDe(Builder $query, $fecha): Builder
     {

@@ -31,8 +31,11 @@
                 </a>
             </li>
             <li>
-                <a href="{{ route('admin.alojamientos.index') }}" class="{{ request()->routeIs('admin.alojamientos.*') ? 'is-active' : '' }}">
-                    <span aria-hidden="true">⌂</span> Alojamientos
+                <a href="{{ route('admin.publicaciones.index') }}" class="{{ request()->routeIs('admin.publicaciones.*') ? 'is-active' : '' }}">
+                    <span aria-hidden="true">⌂</span> Publicaciones
+                    @if ($menuRevision)
+                        <span class="hb-badge hb-badge--danger" style="margin-left:auto">{{ $menuRevision }}</span>
+                    @endif
                 </a>
             </li>
             <li>
@@ -49,29 +52,16 @@
                 </a>
             </li>
             <li>
-                <a href="{{ route('admin.revision.index') }}" class="{{ request()->routeIs('admin.revision.*') ? 'is-active' : '' }}">
-                    <span aria-hidden="true">◎</span> Revisión
-                    @if ($menuRevision)
-                        <span class="hb-badge hb-badge--danger" style="margin-left:auto">{{ $menuRevision }}</span>
-                    @endif
-                </a>
-            </li>
-            <li>
                 <a href="{{ route('admin.aliados.index') }}" class="{{ request()->routeIs('admin.aliados.*') ? 'is-active' : '' }}">
                     <span aria-hidden="true">◈</span> Aliados
                 </a>
             </li>
             <li>
-                <a href="{{ route('admin.campanas.index') }}" class="{{ request()->routeIs('admin.campanas.*') ? 'is-active' : '' }}">
+                <a href="{{ route('admin.campanas.index') }}" class="{{ request()->routeIs('admin.campanas.*', 'admin.tarifas.*', 'admin.cobro.*') ? 'is-active' : '' }}">
                     <span aria-hidden="true">★</span> Campañas
                     @if ($menuCampanas)
                         <span class="hb-badge hb-badge--success" style="margin-left:auto">{{ $menuCampanas }}</span>
                     @endif
-                </a>
-            </li>
-            <li>
-                <a href="{{ route('admin.tarifas.index') }}" class="{{ request()->routeIs('admin.tarifas.*') ? 'is-active' : '' }}">
-                    <span aria-hidden="true">$</span> Tarifas y cobro
                 </a>
             </li>
             <li>

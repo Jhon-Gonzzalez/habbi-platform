@@ -62,6 +62,14 @@ class Auditoria extends Model
     public const TARIFAS_CAMBIADAS     = 'cobro.tarifas';
     public const COBRO_CONFIGURADO     = 'cobro.datos';
 
+    /*
+     * Una exportación saca datos personales de la aplicación a un
+     * archivo que ya no controla nadie. Queda registrado quién lo hizo
+     * y cuándo, que es lo mínimo que pide la Ley 1581 sobre el
+     * tratamiento de datos.
+     */
+    public const DATOS_EXPORTADOS      = 'datos.exportados';
+
     public const ALIADO_GUARDADO       = 'aliado.guardado';
     public const ALIADO_BORRADO        = 'aliado.borrado';
 
@@ -88,6 +96,7 @@ class Auditoria extends Model
         self::CAMPANA_TERMINADA     => 'Terminó una campaña antes de tiempo',
         self::TARIFAS_CAMBIADAS     => 'Cambió las tarifas de campaña',
         self::COBRO_CONFIGURADO     => 'Cambió los datos de cobro',
+        self::DATOS_EXPORTADOS      => 'Descargó datos en CSV',
 
         /* Nombres viejos. Se dejan para que las líneas que ya están
            escritas en la auditoría sigan leyéndose: el registro no se

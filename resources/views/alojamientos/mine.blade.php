@@ -21,7 +21,7 @@
             </p>
         </div>
     @else
-        <div class="hb-grid">
+        <div class="hb-grid hb-grid--gestion">
             @foreach ($alojamientos as $a)
                 @if ($a->fueRechazada() && $a->motivo_rechazo)
                     <div class="hb-alert hb-alert--error" style="margin-bottom:.75rem">

@@ -57,7 +57,7 @@
                 </p>
             </div>
         @else
-            <div class="hb-grid">
+            <div class="hb-grid hb-grid--gestion">
                 @foreach ($alojamientos as $a)
                     @include('partials.listing-card', ['a' => $a, 'gestion' => true])
                 @endforeach

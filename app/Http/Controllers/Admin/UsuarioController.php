@@ -23,6 +23,15 @@ class UsuarioController extends Controller
                 $term = '%' . addcslashes($q, '%_\\') . '%';
                 $sql->where(fn ($w) => $w->where('name', 'like', $term)->orWhere('email', 'like', $term));
             })
+            // Filtrar por rol: con cientos de estudiantes registrados,
+            // encontrar a los seis arrendadores a ojo es imposible.
+            ->when(
+                array_key_exists((string) $request->input('rol'), User::ROLES),
+                fn ($sql) => $sql->where('role', $request->input('rol')),
+            )
+            // Y los que esperan algo: sin verificar el correo.
+            ->when($request->input('rol') === 'sin-verificar',
+                fn ($sql) => $sql->whereNull('email_verified_at'))
             ->latest()
             ->paginate(15)
             ->withQueryString();

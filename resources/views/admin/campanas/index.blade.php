@@ -4,6 +4,7 @@
 @section('subtitulo', 'Publicaciones con una campaña pagada en marcha')
 
 @section('acciones')
+    <a class="hb-btn hb-btn--ghost" href="{{ route('admin.exportar', 'campanas') }}">Descargar CSV</a>
     <a class="hb-btn hb-btn--ghost" href="{{ route('admin.tarifas.index') }}">Tarifas y cobro</a>
 @endsection
 

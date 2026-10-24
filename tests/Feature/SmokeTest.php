@@ -64,7 +64,7 @@ class SmokeTest extends TestCase
             route('admin.usuarios.create'),
             route('admin.usuarios.show', $otro),
             route('admin.usuarios.edit', $otro),
-            route('admin.alojamientos.index'),
+            route('admin.publicaciones.index'),
         ];
 
         foreach ($rutas as $url) {

@@ -222,18 +222,32 @@ Route::middleware(['auth', 'admin'])
         // La auditoría solo se consulta: no hay ruta para borrarla ni editarla.
         Route::get('/auditoria', [Admin\AuditoriaController::class, 'index'])->name('auditoria.index');
 
+        /* Descargar datos en CSV para trabajarlos fuera del panel. */
+        Route::get('/exportar/{tipo}', Admin\ExportacionController::class)
+            ->whereIn('tipo', ['publicaciones', 'usuarios', 'campanas'])
+            ->name('exportar');
+
         /* Informes de gestión con gráficas y PDF (RF-11, CU-08). */
         Route::get('/informes', [Admin\InformeController::class, 'index'])->name('informes.index');
         Route::get('/informes/pdf', [Admin\InformeController::class, 'pdf'])->name('informes.pdf');
 
-        /* Revisión de publicaciones antes de que se vean (RF-10, CU-07). */
-        Route::get('/revision', [Admin\RevisionController::class, 'index'])->name('revision.index');
-        Route::get('/revision/{alojamiento}', [Admin\RevisionController::class, 'show'])
-            ->whereNumber('alojamiento')->name('revision.show');
-        Route::post('/revision/{alojamiento}/aprobar', [Admin\RevisionController::class, 'aprobar'])
-            ->whereNumber('alojamiento')->name('revision.aprobar');
-        Route::post('/revision/{alojamiento}/rechazar', [Admin\RevisionController::class, 'rechazar'])
-            ->whereNumber('alojamiento')->name('revision.rechazar');
+        /*
+         * Publicaciones: revisión y moderación en la misma pantalla.
+         *
+         * Antes eran dos (/revision y /alojamientos) que listaban lo
+         * mismo con la mitad de las acciones cada una.
+         */
+        Route::get('/publicaciones', [Admin\PublicacionController::class, 'index'])->name('publicaciones.index');
+        Route::get('/publicaciones/{alojamiento}', [Admin\PublicacionController::class, 'show'])
+            ->whereNumber('alojamiento')->name('publicaciones.show');
+        Route::post('/publicaciones/{alojamiento}/aprobar', [Admin\PublicacionController::class, 'aprobar'])
+            ->whereNumber('alojamiento')->name('publicaciones.aprobar');
+        Route::post('/publicaciones/{alojamiento}/rechazar', [Admin\PublicacionController::class, 'rechazar'])
+            ->whereNumber('alojamiento')->name('publicaciones.rechazar');
+        Route::patch('/publicaciones/{alojamiento}/estado', [Admin\PublicacionController::class, 'toggle'])
+            ->whereNumber('alojamiento')->name('publicaciones.toggle');
+        Route::delete('/publicaciones/{alojamiento}', [Admin\PublicacionController::class, 'destroy'])
+            ->whereNumber('alojamiento')->name('publicaciones.destroy');
 
         Route::get('/reportes', [Admin\ReporteController::class, 'index'])->name('reportes.index');
         Route::post('/reportes/{reporte}/resolver', [Admin\ReporteController::class, 'resolver'])
@@ -259,13 +273,8 @@ Route::middleware(['auth', 'admin'])
             ->whereNumber('tarifa')->name('tarifas.destroy');
         Route::post('/campanas/cobro', [Admin\TarifaController::class, 'guardarAjustes'])->name('cobro.guardar');
 
-        Route::get('/alojamientos', [Admin\AlojamientoController::class, 'index'])->name('alojamientos.index');
-
-        Route::patch('/alojamientos/{alojamiento}/estado', [Admin\AlojamientoController::class, 'toggle'])
-            ->whereNumber('alojamiento')
-            ->name('alojamientos.toggle');
-
-        Route::delete('/alojamientos/{alojamiento}', [Admin\AlojamientoController::class, 'destroy'])
-            ->whereNumber('alojamiento')
-            ->name('alojamientos.destroy');
+        /* Las direcciones viejas siguen funcionando: pueden estar
+           guardadas en un marcador o pegadas en un correo. */
+        Route::redirect('/revision', '/admin/publicaciones');
+        Route::redirect('/alojamientos', '/admin/publicaciones?estado=todas');
     });

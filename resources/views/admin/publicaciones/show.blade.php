@@ -75,7 +75,7 @@
                         texto y que el precio sea creíble para la zona.
                     </p>
 
-                    <form method="POST" action="{{ route('admin.revision.aprobar', $alojamiento) }}"
+                    <form method="POST" action="{{ route('admin.publicaciones.aprobar', $alojamiento) }}"
                           data-confirmar="Al aprobar, «{{ $alojamiento->title }}» aparecerá en el buscador. ¿Continuar?">
                         @csrf
                         <button class="hb-btn hb-btn--success hb-btn--block" type="submit">Aprobar</button>
@@ -83,7 +83,7 @@
 
                     <hr style="border:0;border-top:1px solid var(--hb-border);margin:1.25rem 0">
 
-                    <form method="POST" action="{{ route('admin.revision.rechazar', $alojamiento) }}">
+                    <form method="POST" action="{{ route('admin.publicaciones.rechazar', $alojamiento) }}">
                         @csrf
                         <div class="hb-field">
                             <label class="hb-label" for="motivo">Motivo del rechazo</label>
@@ -113,7 +113,7 @@
         @endif
 
         <p style="margin-top:1rem">
-            <a class="hb-btn hb-btn--ghost hb-btn--sm" href="{{ route('admin.revision.index') }}">← Volver a la cola</a>
+            <a class="hb-btn hb-btn--ghost hb-btn--sm" href="{{ route('admin.publicaciones.index') }}">← Volver a la cola</a>
         </p>
     </aside>
 </div>
