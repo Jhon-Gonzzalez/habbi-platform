@@ -265,7 +265,40 @@
     });
   }
 
+  /* ======================================================================
+     Filtros plegados en el teléfono
+
+     El panel viene abierto desde el servidor y aquí se pliega si la
+     pantalla es pequeña. Al revés —cerrado y abrirlo por JS— quien
+     tenga el JavaScript bloqueado se quedaría sin poder filtrar; así,
+     el peor caso es que se vea abierto, que es lo que había antes.
+
+     Si el usuario YA filtró algo, se deja abierto aunque sea móvil:
+     esconderle lo que acaba de aplicar le haría pensar que no se guardó.
+     ====================================================================== */
+  function initFiltros() {
+    var filtros = document.getElementById('filtros');
+    if (!filtros) return;
+
+    var movil = window.matchMedia('(max-width: 980px)');
+
+    function ajustar() {
+      if (movil.matches && !filtros.hasAttribute('data-con-filtros')) {
+        filtros.removeAttribute('open');
+      } else if (!movil.matches) {
+        filtros.setAttribute('open', '');
+      }
+    }
+
+    ajustar();
+
+    /* Si se gira el teléfono o se cambia el tamaño de la ventana, el
+       panel tiene que volver a estar abierto en escritorio. */
+    movil.addEventListener('change', ajustar);
+  }
+
   document.addEventListener('DOMContentLoaded', function () {
+    initFiltros();
     initNavbar();
     initTelefono();
     initUserMenu();

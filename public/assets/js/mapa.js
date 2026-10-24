@@ -24,6 +24,14 @@
     try { return localStorage.getItem(clave) === '1'; } catch (e) { return false; }
   }
 
+  function hayPreferencia(clave) {
+    try { return localStorage.getItem(clave) !== null; } catch (e) { return false; }
+  }
+
+  function esMovil() {
+    return window.matchMedia('(max-width: 980px)').matches;
+  }
+
   function iniciar() {
     if (typeof L === 'undefined') return;
 
@@ -43,7 +51,18 @@
     /* El tamaño guardado se aplica ANTES de crear el mapa: así Leaflet
        mide el contenedor ya con su alto definitivo y no hay que
        recolocarlo nada más nacer. */
-    var cerrado = recordado(CLAVE_CERRADO);
+    /*
+     * En el teléfono el mapa nace plegado, y en escritorio abierto.
+     *
+     * En una pantalla de 390 px, un mapa de 200 px de alto empuja el
+     * primer alojamiento fuera de la vista y se ve poco. Vale más
+     * enseñar los resultados y dejar el mapa a un toque, que es lo que
+     * dice la barra: «12 alojamientos en el mapa».
+     *
+     * Solo si el usuario no ha elegido ya: en cuanto toca «Ver el mapa»
+     * o «Ocultar», manda su elección, también en móvil.
+     */
+    var cerrado = hayPreferencia(CLAVE_CERRADO) ? recordado(CLAVE_CERRADO) : esMovil();
     var grande  = recordado(CLAVE_GRANDE);
 
     if (cerrado) caja.setAttribute('data-cerrado', '');

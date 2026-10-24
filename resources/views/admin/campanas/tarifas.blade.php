@@ -28,6 +28,7 @@
                     </p>
                 </div>
             @else
+                <div class="hb-table-wrap">
                 <table class="hb-table">
                     <thead>
                         <tr>
@@ -87,6 +88,7 @@
                         @endforeach
                     </tbody>
                 </table>
+                </div>
 
                 <div class="hb-card__footer">
                     <p class="hb-hint hb-mb-0">

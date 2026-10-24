@@ -36,6 +36,7 @@
                     <p class="hb-muted hb-mb-0">Ninguna publicación está destacada en este momento.</p>
                 </div>
             @else
+                <div class="hb-table-wrap">
                 <table class="hb-table">
                     <thead>
                         <tr>
@@ -67,6 +68,7 @@
                         @endforeach
                     </tbody>
                 </table>
+                </div>
             @endif
         </div>
 
@@ -82,6 +84,7 @@
                     <p class="hb-muted hb-mb-0">Todavía no has registrado ningún cobro.</p>
                 </div>
             @else
+                <div class="hb-table-wrap">
                 <table class="hb-table">
                     <thead>
                         <tr>
@@ -106,6 +109,7 @@
                         @endforeach
                     </tbody>
                 </table>
+                </div>
                 <div class="hb-card__footer">{{ $cobros->links() }}</div>
             @endif
         </div>

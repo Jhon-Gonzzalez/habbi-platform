@@ -31,7 +31,8 @@
         </p>
 
         <h2 style="font-size:1.15rem;margin-top:2rem">2. Qué datos recogemos</h2>
-        <table class="hb-table" style="margin:1rem 0">
+        <div class="hb-table-wrap" style="margin:1rem 0">
+        <table class="hb-table">
             <thead><tr><th>Dato</th><th>Para qué</th><th>Quién lo ve</th></tr></thead>
             <tbody>
                 <tr><td>Nombre y correo</td><td>Identificarte y comunicarnos contigo</td><td>Tú y el equipo de HABBI</td></tr>
@@ -43,6 +44,7 @@
                 <tr><td>Publicaciones y reseñas</td><td>El servicio en sí</td><td>Cualquier visitante</td></tr>
             </tbody>
         </table>
+        </div>
 
         <h2 style="font-size:1.15rem;margin-top:2rem">3. Los documentos de verificación</h2>
         <p>

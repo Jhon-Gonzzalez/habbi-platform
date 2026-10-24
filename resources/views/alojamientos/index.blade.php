@@ -26,13 +26,42 @@
              se le puede cobrar a nadie. --}}
         @include('partials.aliados')
 
-        <div class="hb-card">
-            <div class="hb-card__header">
-                <h2 style="font-size:1.05rem">Filtros</h2>
-                @if (array_filter($filtros))
-                    <a class="hb-btn hb-btn--link" href="{{ route('alojamientos.index') }}">Limpiar</a>
-                @endif
-            </div>
+        @php($filtrosPuestos = count(array_filter($filtros, fn ($v) => $v !== null && $v !== '' && $v !== [])))
+
+        {{--
+            <details> y no un panel con JavaScript.
+
+            En el teléfono, el panel de filtros abierto mide casi 1.400 px:
+            había que bajar casi tres pantallas para ver el primer
+            alojamiento, en el aparato desde el que entra la mayoría. Aquí
+            nace plegado en móvil y abierto en escritorio.
+
+            Viene con «open» puesto desde el servidor y es el JavaScript el
+            que lo pliega en pantallas pequeñas. Al revés —cerrado y que el
+            JS lo abra— quien tenga el JavaScript bloqueado se quedaría sin
+            poder filtrar. Así, si algo falla, el peor caso es lo que había
+            hasta ahora.
+        --}}
+        <details class="hb-card hb-filtros" id="filtros" open
+                 @if ($filtrosPuestos) data-con-filtros @endif>
+            <summary class="hb-card__header hb-filtros__resumen">
+                <span class="hb-filtros__titulo">
+                    <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">
+                        <path fill="currentColor" d="M3 5h18l-7 8v6l-4 2v-8z"/>
+                    </svg>
+                    Filtros
+                    @if ($filtrosPuestos)
+                        <span class="hb-badge hb-badge--primary">{{ $filtrosPuestos }}</span>
+                    @endif
+                </span>
+                <span class="hb-filtros__flecha" aria-hidden="true">▾</span>
+            </summary>
+
+            @if ($filtrosPuestos)
+                <p class="hb-filtros__limpiar">
+                    <a class="hb-btn hb-btn--link" href="{{ route('alojamientos.index') }}">Quitar los filtros</a>
+                </p>
+            @endif
 
             <form class="hb-filters__body" method="GET" action="{{ route('alojamientos.index') }}">
 
@@ -116,7 +145,7 @@
                 <input type="hidden" name="sort" value="{{ $filtros['sort'] ?? '' }}">
                 <button class="hb-btn hb-btn--primary hb-btn--block" type="submit">Aplicar filtros</button>
             </form>
-        </div>
+        </details>
 
     </aside>
 

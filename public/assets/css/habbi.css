@@ -672,6 +672,19 @@ a.hb-avatar:hover { box-shadow: 0 0 0 3px var(--hb-primary-soft); }
 .hb-pagehead p  { color: rgba(255,255,255,.82); margin: 0; max-width: 60ch; }
 .hb-pagehead__inner { display: flex; align-items: center; justify-content: space-between; gap: 1.5rem; flex-wrap: wrap; }
 
+/*
+    En el teléfono la cabecera medía 328 px: un tercio de la pantalla
+    para repetir el título de la página antes de enseñar nada. Se recorta
+    el relleno y el tamaño del título, y el botón pasa a ocupar el ancho,
+    que en móvil se toca mejor que uno pequeño a la derecha.
+*/
+@media (max-width: 640px) {
+    .hb-pagehead { padding-block: 1.5rem; }
+    .hb-pagehead h1 { font-size: 1.6rem; }
+    .hb-pagehead__inner { gap: 1rem; }
+    .hb-pagehead__inner > .hb-btn { width: 100%; }
+}
+
 /* ---------- 14. Estadísticas ---------- */
 .hb-stats { display: grid; gap: 1rem; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); }
 .hb-stat {
@@ -718,7 +731,7 @@ a.hb-avatar:hover { box-shadow: 0 0 0 3px var(--hb-primary-soft); }
 
 /* ---------- 16. Layout con barra lateral (buscador) ---------- */
 .hb-layout { display: grid; grid-template-columns: 300px 1fr; gap: 2rem; align-items: start; }
-@media (max-width: 980px) { .hb-layout { grid-template-columns: 1fr; } }
+@media (max-width: 980px) { .hb-layout { grid-template-columns: 1fr; gap: 1rem; } }
 
 /*
     La barra lateral se queda fija al bajar, y con su propio scroll.
@@ -764,6 +777,14 @@ a.hb-avatar:hover { box-shadow: 0 0 0 3px var(--hb-primary-soft); }
   gap: 1rem; flex-wrap: wrap; margin-bottom: 1.5rem;
 }
 .hb-results__bar .hb-select { width: auto; min-width: 200px; }
+
+@media (max-width: 640px) {
+    /* El desplegable de orden, a todo el ancho: a medias se ve como un
+       error de maquetación, y con el dedo se acierta peor. */
+    .hb-results__bar { gap: .6rem; margin-bottom: 1rem; }
+    .hb-results__bar form,
+    .hb-results__bar .hb-select { width: 100%; min-width: 0; }
+}
 
 /* ---------- 17. Detalle de alojamiento ---------- */
 .hb-detail { display: grid; grid-template-columns: 1fr 360px; gap: 2rem; align-items: start; }
@@ -1446,4 +1467,97 @@ a.hb-avatar:hover { box-shadow: 0 0 0 3px var(--hb-primary-soft); }
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+}
+
+/* ===================================================================
+   Filtros plegables
+
+   En escritorio el panel está siempre abierto y el resumen no se ve: es
+   una barra lateral y cabe de sobra. En el teléfono nace plegado, que es
+   lo que devuelve los resultados a la primera pantalla.
+   =================================================================== */
+
+.hb-filtros__resumen {
+    cursor: pointer;
+    list-style: none;
+    user-select: none;
+    /* Zona táctil cómoda: 44 px es lo que recomiendan Apple y Google. */
+    min-height: 44px;
+}
+
+/* Safari pinta su propio triángulo si no se le quita así. */
+.hb-filtros__resumen::-webkit-details-marker { display: none; }
+
+.hb-filtros__titulo {
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: var(--hb-navy);
+}
+
+.hb-filtros__flecha {
+    color: var(--hb-muted);
+    transition: transform .15s ease;
+}
+
+.hb-filtros[open] .hb-filtros__flecha { transform: rotate(180deg); }
+
+.hb-filtros__limpiar {
+    margin: 0;
+    padding: .6rem 1.25rem 0;
+}
+
+@media (min-width: 981px) {
+    /* En escritorio no hay nada que plegar: el resumen se queda como
+       cabecera, pero sin cursor de «pulsa aquí» ni flecha. */
+    .hb-filtros__resumen { cursor: default; }
+    .hb-filtros__flecha { display: none; }
+}
+
+@media (max-width: 980px) {
+    /* Plegado, la tarjeta es solo la cabecera: sin borde inferior
+       colgando ni hueco debajo. */
+    .hb-filtros:not([open]) .hb-filtros__resumen { border-bottom: 0; }
+}
+
+/* El bloque de aliados, más compacto en el teléfono: ahí cada píxel que
+   ocupa es un píxel que aleja el primer alojamiento. */
+@media (max-width: 980px) {
+    .hb-aliados { padding: .75rem; }
+    .hb-aliados__titulo { margin-bottom: .6rem; }
+    .hb-aliado { padding: .45rem; gap: .6rem; }
+    .hb-aliado__logo { width: 36px; height: 36px; }
+}
+
+/* ===================================================================
+   Zonas táctiles
+
+   Apple y Google recomiendan 44 px de alto para cualquier cosa que se
+   toque con el dedo. Los botones del sistema de diseño medían 32, que
+   con un dedo gordo o en movimiento se falla más de lo que parece.
+   Solo en pantallas táctiles: con ratón, 32 px está bien y botones de
+   44 px en escritorio se ven desproporcionados.
+   =================================================================== */
+@media (hover: none) and (pointer: coarse) {
+    .hb-btn,
+    .hb-btn--sm {
+        min-height: 44px;
+    }
+
+    /* Los enlaces sueltos del pie y de las listas, con sitio para el
+       dedo sin separarlos visualmente. */
+    .hb-footer a,
+    .hb-mapa__otras a {
+        display: inline-block;
+        padding-block: .35rem;
+    }
+
+    /* Los controles de zoom de Leaflet vienen a 30 px. */
+    .leaflet-control-zoom a {
+        width: 40px !important;
+        height: 40px !important;
+        line-height: 40px !important;
+    }
 }
