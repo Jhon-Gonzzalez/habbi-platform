@@ -45,8 +45,13 @@ class RespaldoTest extends TestCase
     }
 
     /**
-     * Crea una base SQLite de verdad, en disco, con una tabla dentro, y
-     * apunta la conexión por defecto a ella.
+     * Registra una base SQLite de verdad, en disco, con datos dentro.
+     *
+     * NO cambia la conexión por defecto de la aplicación: se le pasa el
+     * nombre al servicio y ya está. Cambiar la conexión por defecto a
+     * mitad de un test se lleva por delante todo lo demás —el Auditor,
+     * las factorías, RefreshDatabase— y en Laravel 12 llega a corromper
+     * la base en memoria de la suite entera.
      */
     private function baseEnDisco(): void
     {
@@ -55,42 +60,22 @@ class RespaldoTest extends TestCase
         $pdo->exec("INSERT INTO alojamientos (title) VALUES ('Habitación en La Granja')");
         $pdo = null;
 
-        Config::set('database.default', 'respaldo_pruebas');
-        Config::set('database.connections.respaldo_pruebas', [
-            'driver'   => 'sqlite',
-            'database' => $this->baseDeDatos,
-            'prefix'   => '',
-        ]);
+        $this->registrarConexion('sqlite', $this->baseDeDatos);
     }
 
-    /**
-     * Como la anterior, pero con el esquema real migrado dentro.
-     *
-     * Hace falta cuando la prueba toca la auditoría: al cambiar la
-     * conexión por defecto, el Auditor escribe en ESTA base, y si no
-     * tiene la tabla la línea se pierde en silencio (el Auditor no lanza
-     * excepciones a propósito) y la prueba pasaría sin comprobar nada.
-     */
-    private function baseMigrada(): void
+    private function registrarConexion(string $motor, ?string $base = null): void
     {
-        Config::set('database.default', 'respaldo_pruebas');
         Config::set('database.connections.respaldo_pruebas', [
-            'driver'   => 'sqlite',
-            'database' => $this->baseDeDatos,
+            'driver'   => $motor,
+            'database' => $base,
             'prefix'   => '',
         ]);
-
-        File::put($this->baseDeDatos, '');
-
-        $this->artisan('migrate', [
-            '--database' => 'respaldo_pruebas',
-            '--force'    => true,
-        ])->assertSuccessful();
     }
 
+    /** El servicio, apuntando a la base de prueba y no a la de la suite. */
     private function servicio(): RespaldoBaseDeDatos
     {
-        return new RespaldoBaseDeDatos($this->carpeta);
+        return new RespaldoBaseDeDatos($this->carpeta, 'respaldo_pruebas');
     }
 
     /* ===================== Crear ===================== */
@@ -148,12 +133,7 @@ class RespaldoTest extends TestCase
 
     public function test_una_base_en_memoria_avisa_en_vez_de_crear_un_archivo_vacio(): void
     {
-        Config::set('database.default', 'memoria');
-        Config::set('database.connections.memoria', [
-            'driver'   => 'sqlite',
-            'database' => ':memory:',
-            'prefix'   => '',
-        ]);
+        $this->registrarConexion('sqlite', ':memory:');
 
         $this->expectException(RuntimeException::class);
         $this->expectExceptionMessage('no hay nada que respaldar');
@@ -163,8 +143,7 @@ class RespaldoTest extends TestCase
 
     public function test_un_motor_no_soportado_avisa_claramente(): void
     {
-        Config::set('database.default', 'raro');
-        Config::set('database.connections.raro', ['driver' => 'pgsql']);
+        $this->registrarConexion('pgsql');
 
         $this->expectException(RuntimeException::class);
         $this->expectExceptionMessage('pgsql');
@@ -243,7 +222,7 @@ class RespaldoTest extends TestCase
 
     public function test_el_comando_respalda_rota_y_lo_anota_en_la_auditoria(): void
     {
-        $this->baseMigrada();
+        $this->baseEnDisco();
         $this->app->instance(RespaldoBaseDeDatos::class, $this->servicio());
 
         File::makeDirectory($this->carpeta, 0700, true);
@@ -269,8 +248,7 @@ class RespaldoTest extends TestCase
     {
         $this->app->instance(RespaldoBaseDeDatos::class, $this->servicio());
 
-        Config::set('database.default', 'raro');
-        Config::set('database.connections.raro', ['driver' => 'informix']);
+        $this->registrarConexion('informix');
 
         $this->artisan('habbi:respaldar')->assertFailed();
 

@@ -13,7 +13,8 @@ class SubidaFotosTest extends TestCase
 {
     use RefreshDatabase;
 
-    /** @dataProvider tamanos */
+    #[\PHPUnit\Framework\Attributes\DataProvider('tamanos')]
+
     public function test_convierte_la_notacion_de_php_a_bytes(string $valor, int $esperado): void
     {
         $this->assertSame($esperado, Subidas::aBytes($valor));

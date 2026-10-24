@@ -27,8 +27,26 @@ use Symfony\Component\Process\Process;
  */
 class RespaldoBaseDeDatos
 {
-    public function __construct(private readonly ?string $carpeta = null)
+    /**
+     * @param  string|null  $carpeta   Dónde guardar. Por defecto, storage/app/respaldos.
+     * @param  string|null  $conexion  Qué base respaldar. Por defecto, la de la aplicación.
+     *
+     * La conexión es un parámetro y no una lectura directa de la
+     * configuración para que se pueda respaldar una base distinta de la
+     * que la aplicación está usando. Eso hace falta de verdad en las
+     * pruebas: cambiar la conexión por defecto a mitad de un test
+     * arrastra con ella a todo lo demás, y en Laravel 12 eso llega a
+     * corromper la base en memoria.
+     */
+    public function __construct(
+        private readonly ?string $carpeta = null,
+        private readonly ?string $conexion = null,
+    ) {
+    }
+
+    private function conexion(): string
     {
+        return $this->conexion ?? config('database.default');
     }
 
     /** Dónde se guardan. Fuera de public/: el volcado lleva datos personales. */
@@ -50,7 +68,7 @@ class RespaldoBaseDeDatos
             File::makeDirectory($carpeta, 0700, true);
         }
 
-        $conexion = config('database.default');
+        $conexion = $this->conexion();
         $motor    = config("database.connections.{$conexion}.driver");
         $sello    = ($momento ?? now())->format('Y-m-d_His');
 

@@ -35,4 +35,24 @@ class EventServiceProvider extends ServiceProvider
     {
         return false;
     }
+
+    /**
+     * No se registra el listener de verificación que trae Laravel.
+     *
+     * Desde Laravel 11, el framework engancha SendEmailVerificationNotification
+     * al evento Registered por su cuenta, además del que declaremos aquí. Con
+     * los dos activos pasaban dos cosas malas: se enviaban DOS correos de
+     * verificación, y el de serie —que no atrapa excepciones— devolvía un 500
+     * justo después de crear la cuenta si el SMTP estaba caído, dejando a la
+     * persona ante una pantalla de error sin saber si quedó registrada.
+     *
+     * EnviarVerificacionDeCorreo hace lo mismo pero sin tumbar el registro,
+     * así que aquí se desactiva el de serie a propósito. Sobrescribir este
+     * método es la única forma de evitarlo: el framework solo se abstiene si
+     * la clase ya figura en $listen, lo que lo volvería a activar.
+     */
+    protected function configureEmailVerification(): void
+    {
+        // Vacío queriendo. Lo nuestro está en $listen.
+    }
 }

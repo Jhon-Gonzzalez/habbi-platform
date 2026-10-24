@@ -7,7 +7,7 @@ use PHPUnit\Framework\TestCase;
 
 class TextoTest extends TestCase
 {
-    /** @dataProvider casos */
+    #[\PHPUnit\Framework\Attributes\DataProvider('casos')]
     public function test_pluraliza_en_espanol(string $palabra, int $cantidad, string $esperado): void
     {
         $this->assertSame($esperado, Texto::plural($palabra, $cantidad));

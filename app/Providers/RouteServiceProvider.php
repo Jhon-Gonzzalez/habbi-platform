@@ -24,17 +24,14 @@ class RouteServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        RateLimiter::for('api', function (Request $request) {
-            return Limit::perMinute(60)->by($request->user()?->id ?: $request->ip());
-        });
-
         $this->limitesContraElAbuso();
 
+        /*
+         * Solo rutas web. El grupo «api» y su limitador se fueron junto
+         * con Sanctum: HABBI no expone ninguna API, y lo único que había
+         * era la ruta de ejemplo que trae Laravel.
+         */
         $this->routes(function () {
-            Route::middleware('api')
-                ->prefix('api')
-                ->group(base_path('routes/api.php'));
-
             Route::middleware('web')
                 ->group(base_path('routes/web.php'));
         });

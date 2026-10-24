@@ -46,9 +46,8 @@ class ArchivoEnvTest extends TestCase
     /**
      * Una contraseña de aplicación puede traer cualquier cosa. Si no se
      * escapan, el .env queda corrupto y la aplicación deja de arrancar.
-     *
-     * @dataProvider valoresDificiles
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('valoresDificiles')]
     public function test_guarda_valores_con_caracteres_que_rompen_el_env(string $valor): void
     {
         $this->env()->escribir('MAIL_PASSWORD', $valor);
