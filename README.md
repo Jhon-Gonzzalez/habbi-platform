@@ -6,7 +6,7 @@
 
 <p align="center">
   Buscar, publicar y calificar alojamiento cerca de la universidad.<br>
-  <strong>Laravel 10 · PHP 8.2–8.4 · MySQL o SQLite · Blade</strong>
+  <strong>Laravel 12 · PHP 8.2–8.4 · MySQL o SQLite · Blade</strong>
 </p>
 
 ---
