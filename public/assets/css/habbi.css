@@ -727,6 +727,10 @@ a.hb-avatar:hover { box-shadow: 0 0 0 3px var(--hb-primary-soft); }
 .hb-stat__value { font-size: 1.6rem; font-weight: 700; color: var(--hb-navy); line-height: 1.1; }
 .hb-stat__label { font-size: .82rem; color: var(--hb-muted); }
 
+/* Separa elementos apilados dentro de una misma tarjeta, como las
+   solicitudes de campaña en el panel. */
+.hb-border-top { border-top: 1px solid var(--hb-border); }
+
 /* ---------- Planes de campaña ---------- */
 /* Antes reutilizaban .hb-stat, que es un componente HORIZONTAL (icono a la
    izquierda, texto a la derecha). Con cuatro hijos sueltos dentro, el flex

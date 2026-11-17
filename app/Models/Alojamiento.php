@@ -543,6 +543,18 @@ class Alojamiento extends Model
         return $this->belongsTo(User::class, 'revisada_por');
     }
 
+    /**
+     * Lo que el arrendador ha pedido, aprobado o no.
+     *
+     * Distinta de cobrosDeCampana(): aquella es el registro contable de lo
+     * que ya se cobró; esta es la bandeja de peticiones, incluidas las que
+     * se rechazaron.
+     */
+    public function solicitudesDeCampana()
+    {
+        return $this->hasMany(SolicitudCampana::class);
+    }
+
     public function cobrosDeCampana(): HasMany
     {
         return $this->hasMany(Campana::class)->latest('termina_en');

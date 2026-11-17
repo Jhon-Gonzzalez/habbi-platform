@@ -186,6 +186,15 @@ Route::get('/alojamientos/{alojamiento}/campana', [CampanaController::class, 'sh
     ->whereNumber('alojamiento')
     ->name('alojamientos.campana');
 
+Route::post('/alojamientos/{alojamiento}/campana', [CampanaController::class, 'store'])
+    ->whereNumber('alojamiento')
+    ->name('alojamientos.campana.solicitar');
+
+/* El comprobante de pago: fuera de public/, solo para su dueño y el admin. */
+Route::get('/campanas/solicitudes/{solicitud}/comprobante', [CampanaController::class, 'comprobante'])
+    ->whereNumber('solicitud')
+    ->name('campanas.comprobante');
+
 /*
 |--------------------------------------------------------------------------
 | Panel de administración
@@ -261,6 +270,11 @@ Route::middleware(['auth', 'admin'])
         /* Campañas de pago: cobro manual por Nequi/Daviplata. */
         Route::get('/campanas', [Admin\CampanaController::class, 'index'])->name('campanas.index');
         Route::post('/campanas', [Admin\CampanaController::class, 'store'])->name('campanas.store');
+        Route::post('/campanas/solicitudes/{solicitud}/aprobar', [Admin\CampanaController::class, 'aprobar'])
+            ->whereNumber('solicitud')->name('campanas.aprobar');
+        Route::post('/campanas/solicitudes/{solicitud}/rechazar', [Admin\CampanaController::class, 'rechazar'])
+            ->whereNumber('solicitud')->name('campanas.rechazar');
+
         Route::delete('/campanas/{alojamiento}', [Admin\CampanaController::class, 'destroy'])
             ->whereNumber('alojamiento')->name('campanas.destroy');
 

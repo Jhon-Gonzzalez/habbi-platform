@@ -59,6 +59,8 @@ class Auditoria extends Model
 
     public const CAMPANA_ACTIVADA      = 'campana.activada';
     public const CAMPANA_TERMINADA     = 'campana.terminada';
+    public const CAMPANA_SOLICITADA    = 'campana.solicitada';
+    public const CAMPANA_RECHAZADA     = 'campana.solicitud_rechazada';
     public const TARIFAS_CAMBIADAS     = 'cobro.tarifas';
     public const COBRO_CONFIGURADO     = 'cobro.datos';
 

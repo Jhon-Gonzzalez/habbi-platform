@@ -195,6 +195,14 @@ class TarifaCampanaTest extends TestCase
 
         $this->assertSame('300 555 1234', Ajuste::obtener(Ajuste::COBRO_NEQUI));
 
+        // Hace falta al menos una tarifa: los datos de pago viven en el
+        // formulario de solicitud, y sin planes que pedir no hay formulario
+        // ni nada que pagar.
+        TarifaCampana::create([
+            'nombre' => 'Una semana', 'dias' => 7, 'precio' => 12000,
+            'activa' => true, 'destacada' => false, 'orden' => 1,
+        ]);
+
         $a = Alojamiento::factory()->create();
 
         $this->actingAs($a->user)

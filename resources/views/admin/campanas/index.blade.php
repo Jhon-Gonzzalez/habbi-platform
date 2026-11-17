@@ -28,6 +28,65 @@
 <div class="hb-admin-grid">
 
     <div>
+        {{-- Solicitudes pendientes. Van primero: es lo único de esta
+             pantalla con una persona esperando al otro lado. --}}
+        @if ($solicitudes->isNotEmpty())
+            <div class="hb-card" style="margin-bottom:1.5rem">
+                <div class="hb-card__header">
+                    <h2 style="font-size:1.05rem">
+                        Solicitudes por verificar
+                        <span class="hb-badge hb-badge--warning">{{ $solicitudes->count() }}</span>
+                    </h2>
+                </div>
+
+                @foreach ($solicitudes as $s)
+                    <div class="hb-card__body" @class(['hb-border-top' => ! $loop->first])>
+                        <p class="hb-mb-0">
+                            <strong>{{ $s->alojamiento->title }}</strong><br>
+                            <span class="hb-muted hb-small">
+                                {{ $s->solicitante?->name ?? 'Cuenta eliminada' }} ·
+                                {{ $s->nombre_tarifa }} · {{ $s->dias }} días ·
+                                <strong>{{ $s->montoFormateado() }}</strong> por {{ $s->medio }}
+                                @if ($s->referencia) · ref. {{ $s->referencia }} @endif
+                                · {{ $s->created_at->diffForHumans() }}
+                            </span>
+                        </p>
+
+                        @if ($s->nota)
+                            <p class="hb-muted hb-small" style="margin:.5rem 0 0">«{{ $s->nota }}»</p>
+                        @endif
+
+                        <div class="hb-row" style="gap:.5rem;margin-top:.75rem;flex-wrap:wrap">
+                            @if ($s->comprobante)
+                                <a class="hb-btn hb-btn--ghost hb-btn--sm" target="_blank" rel="noopener"
+                                   href="{{ route('campanas.comprobante', $s) }}">Ver comprobante</a>
+                            @else
+                                <span class="hb-badge hb-badge--muted">Sin comprobante</span>
+                            @endif
+
+                            <form method="POST" action="{{ route('admin.campanas.aprobar', $s) }}">
+                                @csrf
+                                <button class="hb-btn hb-btn--primary hb-btn--sm" type="submit">
+                                    Pago verificado · activar
+                                </button>
+                            </form>
+                        </div>
+
+                        <details style="margin-top:.6rem">
+                            <summary class="hb-muted hb-small">Rechazar</summary>
+                            <form method="POST" action="{{ route('admin.campanas.rechazar', $s) }}"
+                                  class="hb-row" style="gap:.5rem;margin-top:.5rem;align-items:flex-start">
+                                @csrf
+                                <input class="hb-input" name="respuesta" maxlength="500" required
+                                       placeholder="Motivo: el arrendador lo va a leer" style="flex:1">
+                                <button class="hb-btn hb-btn--ghost hb-btn--sm" type="submit">Rechazar</button>
+                            </form>
+                        </details>
+                    </div>
+                @endforeach
+            </div>
+        @endif
+
         {{-- Vigentes --}}
         <div class="hb-card">
             <div class="hb-card__header"><h2 style="font-size:1.05rem">Destacadas ahora mismo</h2></div>

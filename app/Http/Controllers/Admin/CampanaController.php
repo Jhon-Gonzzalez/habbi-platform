@@ -4,8 +4,11 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Alojamiento;
+use App\Models\Auditoria;
 use App\Models\Campana;
+use App\Models\SolicitudCampana;
 use App\Models\TarifaCampana;
+use App\Services\Auditor;
 use App\Services\CampanaService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
@@ -48,6 +51,14 @@ class CampanaController extends Controller
 
         return view('admin.campanas.index', [
             'tarifas'      => TarifaCampana::activas()->get(),
+            // Lo que los arrendadores han pedido y está esperando a que
+            // alguien compruebe el pago. Va primero en la pantalla: es lo
+            // único con una persona esperando al otro lado.
+            'solicitudes'  => SolicitudCampana::query()
+                ->pendientes()
+                ->with(['alojamiento:id,title,user_id', 'solicitante:id,name'])
+                ->oldest()
+                ->get(),
             'vigentes'     => $vigentes,
             'cobros'       => $cobros,
             'delMes'       => (int) $delMes,
@@ -142,6 +153,90 @@ class CampanaController extends Controller
             $cobro->montoFormateado(),
             $cobro->medio,
         ));
+    }
+
+    /**
+     * Aprueba una solicitud: comprueba el pago y activa la campaña.
+     *
+     * Los días y el monto salen de la SOLICITUD, no de la tarifa actual:
+     * si el precio subió desde que la pidió, se le cobra lo que se le
+     * dijo entonces.
+     */
+    public function aprobar(Request $request, SolicitudCampana $solicitud): RedirectResponse
+    {
+        if (! $solicitud->estaPendiente()) {
+            return back()->with('error', 'Esa solicitud ya estaba resuelta.');
+        }
+
+        $alojamiento = $solicitud->alojamiento;
+
+        if (! $alojamiento->esVisibleAlPublico()) {
+            return back()->with('error', sprintf(
+                '«%s» no está visible en el buscador (%s), así que destacarla no haría nada.',
+                $alojamiento->title,
+                $alojamiento->nombreEstado(),
+            ));
+        }
+
+        $cobro = $this->destacados->activar(
+            alojamiento:   $alojamiento,
+            dias:          $solicitud->dias,
+            monto:         $solicitud->monto,
+            medio:         $solicitud->medio,
+            referencia:    $solicitud->referencia,
+            nota:          $solicitud->nota,
+            registradoPor: $request->user(),
+        );
+
+        $solicitud->update([
+            'estado'       => SolicitudCampana::APROBADA,
+            'resuelta_por' => $request->user()->id,
+            'resuelta_en'  => now(),
+        ]);
+
+        return back()->with('success', sprintf(
+            '«%s» queda destacada hasta el %s. Cobro registrado: %s por %s.',
+            $alojamiento->title,
+            $cobro->termina_en->translatedFormat('d \d\e F'),
+            $cobro->montoFormateado(),
+            $cobro->medio,
+        ));
+    }
+
+    /** Rechaza la solicitud. No se cobra nada ni se activa nada. */
+    public function rechazar(Request $request, SolicitudCampana $solicitud): RedirectResponse
+    {
+        if (! $solicitud->estaPendiente()) {
+            return back()->with('error', 'Esa solicitud ya estaba resuelta.');
+        }
+
+        // El motivo es obligatorio: una solicitud rechazada sin explicación
+        // deja al arrendador escribiendo para preguntar qué pasó.
+        $datos = $request->validate(
+            ['respuesta' => ['required', 'string', 'min:5', 'max:500']],
+            ['respuesta.required' => 'Escriba el motivo: el arrendador lo va a leer.'],
+            ['respuesta' => 'motivo'],
+        );
+
+        $solicitud->update([
+            'estado'       => SolicitudCampana::RECHAZADA,
+            'respuesta'    => $datos['respuesta'],
+            'resuelta_por' => $request->user()->id,
+            'resuelta_en'  => now(),
+        ]);
+
+        Auditor::registrar(
+            Auditoria::CAMPANA_RECHAZADA,
+            sprintf(
+                'Rechazó la campaña «%s» de «%s»: %s',
+                $solicitud->nombre_tarifa,
+                $solicitud->alojamiento->title,
+                $datos['respuesta'],
+            ),
+            $solicitud->alojamiento,
+        );
+
+        return back()->with('success', 'Solicitud rechazada. El arrendador verá el motivo.');
     }
 
     public function destroy(Request $request, Alojamiento $alojamiento): RedirectResponse
