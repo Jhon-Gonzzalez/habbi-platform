@@ -222,4 +222,8 @@
 
 @push('scripts')
     <script src="{{ asset('assets/js/selector-mapa.js') }}" defer></script>
+    {{-- Reduce las fotos antes de subirlas: sin esto se mandan hasta 40 MB
+         por publicación desde el celular. El servidor las recomprime igual,
+         pero eso llega tarde para quien está esperando a que suba. --}}
+    <script src="{{ asset('assets/js/comprimir-fotos.js') }}" defer></script>
 @endpush

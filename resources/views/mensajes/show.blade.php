@@ -40,7 +40,13 @@
                 @else
                     <div class="hb-chat__linea {{ $m->user_id === $yo->id ? 'is-mio' : '' }}">
                         <div class="hb-chat__burbuja">
-                            {{ $m->cuerpo }}
+                            {{-- El cuerpo va en su propio elemento y SIN saltos de
+                                 línea dentro de la etiqueta: lleva white-space:
+                                 pre-wrap para respetar los saltos que escriba la
+                                 persona, y eso dibuja también la sangría del
+                                 Blade. Con el texto suelto aquí, un «hola» salía
+                                 en una burbuja de tres líneas de alto. --}}
+                            <p class="hb-chat__texto">{{ $m->cuerpo }}</p>
                             <time>{{ $m->created_at->format('d/m H:i') }}</time>
                         </div>
                     </div>

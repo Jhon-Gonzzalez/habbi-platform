@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Models\Alojamiento;
+use App\Services\ImagenOptimizada;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Storage;
 
@@ -31,12 +32,6 @@ class FotosDemo extends Command
                             {--forzar : Reemplazar también las fotos de los que ya tienen}';
 
     protected $description = 'Reparte fotos de licencia libre entre los alojamientos de ejemplo';
-
-    /** Ancho máximo. Más que esto no aporta nada en pantalla y sí pesa. */
-    private const ANCHO_MAX = 1600;
-
-    /** Calidad JPEG. 82 es el punto donde deja de notarse la pérdida. */
-    private const CALIDAD = 82;
 
     private const DESTINO = 'alojamientos/demo';
 
@@ -168,28 +163,13 @@ class FotosDemo extends Command
     /** Devuelve el JPEG ya redimensionado, o null si GD no pudo con él. */
     private function recomprimir(string $ruta): ?string
     {
-        $imagen = @imagecreatefromstring((string) file_get_contents($ruta));
+        $jpeg = (new ImagenOptimizada)->comprimir((string) file_get_contents($ruta));
 
-        if ($imagen === false) {
+        if ($jpeg === null) {
             $this->warn('  GD no pudo leer: ' . basename($ruta));
-
-            return null;
         }
 
-        if (imagesx($imagen) > self::ANCHO_MAX) {
-            $reducida = imagescale($imagen, self::ANCHO_MAX);
-
-            if ($reducida !== false) {
-                imagedestroy($imagen);
-                $imagen = $reducida;
-            }
-        }
-
-        ob_start();
-        imagejpeg($imagen, null, self::CALIDAD);
-        imagedestroy($imagen);
-
-        return (string) ob_get_clean();
+        return $jpeg;
     }
 
     /**

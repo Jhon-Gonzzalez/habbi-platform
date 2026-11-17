@@ -15,6 +15,8 @@ class AlojamientoPhotoService
     private const DIRECTORIO = 'alojamientos';
     private const DISCO      = 'public';
 
+    public function __construct(private readonly ImagenOptimizada $optimizador = new ImagenOptimizada) {}
+
     /**
      * Guarda los archivos recibidos y devuelve sus rutas relativas.
      *
@@ -26,12 +28,40 @@ class AlojamientoPhotoService
         $rutas = [];
 
         foreach ($archivos as $archivo) {
-            if ($archivo instanceof UploadedFile && $archivo->isValid()) {
-                $rutas[] = $archivo->store(self::DIRECTORIO, self::DISCO);
+            if (! $archivo instanceof UploadedFile || ! $archivo->isValid()) {
+                continue;
             }
+
+            $rutas[] = $this->guardarUna($archivo);
         }
 
         return $rutas;
+    }
+
+    /**
+     * Guarda una foto, reducida y recomprimida.
+     *
+     * Un celular saca fotos de 4000px y 5 MB. El coste de guardarlas tal
+     * cual no lo paga quien sube, que lo hace una vez: lo paga cada
+     * estudiante que abre la publicación desde Montería con datos móviles.
+     *
+     * Si GD no puede con el archivo se guarda el original. Vale más una
+     * foto pesada que una publicación sin fotos: la validación ya comprobó
+     * que es una imagen de un tipo admitido.
+     */
+    private function guardarUna(UploadedFile $archivo): string
+    {
+        $optimizada = $this->optimizador->comprimir((string) file_get_contents($archivo->getRealPath()));
+
+        if ($optimizada === null) {
+            return $archivo->store(self::DIRECTORIO, self::DISCO);
+        }
+
+        $ruta = self::DIRECTORIO . '/' . $archivo->hashName('') . '.jpg';
+
+        Storage::disk(self::DISCO)->put($ruta, $optimizada);
+
+        return $ruta;
     }
 
     /**

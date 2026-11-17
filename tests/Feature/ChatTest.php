@@ -45,6 +45,39 @@ class ChatTest extends TestCase
         ]);
     }
 
+    public function test_la_burbuja_no_dibuja_la_sangria_de_la_plantilla(): void
+    {
+        /*
+         * La burbuja lleva white-space: pre-wrap para respetar los saltos de
+         * línea que escriba la persona. Con el texto suelto dentro del div,
+         * eso dibujaba TAMBIÉN los saltos y los espacios de sangría del
+         * Blade: un «hola» salía empujado a la derecha, en una burbuja de
+         * tres líneas de alto. Por eso el cuerpo va en su propio elemento,
+         * escrito sin espacios dentro de la etiqueta.
+         */
+        [$alojamiento, $arrendador, $estudiante] = $this->escenario();
+
+        $conversacion = app(ChatService::class)->abrir($alojamiento, $estudiante);
+        app(ChatService::class)->enviar($conversacion, $estudiante, 'hola');
+
+        $html = $this->actingAs($estudiante)
+            ->get(route('mensajes.show', $conversacion))
+            ->assertOk()
+            ->getContent();
+
+        $this->assertMatchesRegularExpression(
+            '/<p class="hb-chat__texto">hola<\/p>/',
+            $html,
+            'El cuerpo debe ir pegado a su etiqueta, sin saltos ni sangría dentro.',
+        );
+
+        $this->assertDoesNotMatchRegularExpression(
+            '/class="hb-chat__burbuja">\s*\n\s+hola/',
+            $html,
+            'Hay sangría dentro de la burbuja: pre-wrap la va a dibujar.',
+        );
+    }
+
     public function test_escribir_dos_veces_no_abre_dos_hilos(): void
     {
         // Si cada mensaje abriera un hilo, la bandeja del arrendador sería

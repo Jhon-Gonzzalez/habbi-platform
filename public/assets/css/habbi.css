@@ -1195,10 +1195,18 @@ a.hb-avatar:hover { box-shadow: 0 0 0 3px var(--hb-primary-soft); }
 
 .hb-chat__burbuja {
     max-width: 78%;
-    padding: .7rem .9rem;
+    min-width: 0;
+    padding: .55rem .8rem;
     border-radius: var(--hb-radius);
     background: var(--hb-bg);
     border: 1px solid var(--hb-border);
+}
+
+/* El pre-wrap vive aquí y no en la burbuja. En la burbuja dibujaba también
+   los saltos de línea y la sangría de la plantilla, y un «hola» ocupaba
+   tres líneas de alto con el texto empujado a la derecha. */
+.hb-chat__texto {
+    margin: 0;
     white-space: pre-wrap;
     overflow-wrap: anywhere;
 }
@@ -1210,8 +1218,10 @@ a.hb-avatar:hover { box-shadow: 0 0 0 3px var(--hb-primary-soft); }
 
 .hb-chat__burbuja time {
     display: block;
-    margin-top: .3rem;
-    font-size: .72rem;
+    margin-top: .15rem;
+    font-size: .68rem;
+    line-height: 1.2;
+    text-align: right;
     color: var(--hb-muted);
 }
 

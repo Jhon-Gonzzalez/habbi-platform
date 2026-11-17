@@ -322,6 +322,12 @@ ok "Migraciones aplicadas"
 "$PHP" artisan db:seed --class=AdminSeeder --force --no-interaction 2>&1 | tail -2
 ok "Cuenta de administrador lista"
 
+# Las tarifas de campaña son configuración del negocio, no datos de prueba:
+# sin ellas la pantalla de promocionar no tiene ningún plan que ofrecer y el
+# arrendador se encuentra una página vacía. El seeder es idempotente.
+"$PHP" artisan db:seed --class=TarifaSeeder --force --no-interaction 2>&1 | tail -2
+ok "Tarifas de campaña listas"
+
 # ============================================================
 paso "8/9 · Fotos y permisos"
 # ============================================================
