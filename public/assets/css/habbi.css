@@ -437,8 +437,15 @@ a.hb-avatar:hover { box-shadow: 0 0 0 3px var(--hb-primary-soft); }
 .hb-listing__title a:hover { color: var(--hb-primary-dark); }
 .hb-listing__meta { font-size: .85rem; color: var(--hb-muted); display: flex; flex-wrap: wrap; gap: .35rem; }
 .hb-listing__meta span:not(:last-child)::after { content: '·'; margin-left: .35rem; color: var(--hb-muted-light); }
-.hb-listing__actions { margin-top: auto; padding-top: .5rem; display: flex; gap: .5rem; }
-.hb-listing__actions .hb-btn { flex: 1; }
+/* Con tres acciones (Editar · Promocionar · Pausar) los botones no caben
+   en el ancho de una tarjeta y el último se salía por el borde. Con wrap
+   bajan a la línea siguiente; min-width:0 deja que se encojan antes. */
+.hb-listing__actions {
+  margin-top: auto; padding-top: .5rem;
+  display: flex; flex-wrap: wrap; gap: .5rem;
+}
+.hb-listing__actions .hb-btn { flex: 1 1 auto; min-width: 0; }
+.hb-listing__actions form { flex: 1 1 8rem; }
 
 /* ---------- 7. Chips, badges, estrellas ---------- */
 .hb-chips { display: flex; flex-wrap: wrap; gap: .35rem; }
@@ -711,6 +718,36 @@ a.hb-avatar:hover { box-shadow: 0 0 0 3px var(--hb-primary-soft); }
 }
 .hb-stat__value { font-size: 1.6rem; font-weight: 700; color: var(--hb-navy); line-height: 1.1; }
 .hb-stat__label { font-size: .82rem; color: var(--hb-muted); }
+
+/* ---------- Planes de campaña ---------- */
+/* Antes reutilizaban .hb-stat, que es un componente HORIZONTAL (icono a la
+   izquierda, texto a la derecha). Con cuatro hijos sueltos dentro, el flex
+   los ponía en fila y el precio por día se salía de la tarjeta. */
+.hb-planes {
+  display: grid; gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+}
+.hb-plan {
+  display: flex; flex-direction: column; gap: .3rem;
+  background: var(--hb-surface);
+  border: 1px solid var(--hb-border);
+  border-radius: var(--hb-radius);
+  padding: 1.1rem 1.25rem;
+}
+.hb-plan--destacado {
+  border-color: var(--hb-primary);
+  background: var(--hb-primary-soft);
+}
+.hb-plan__nombre {
+  display: flex; flex-wrap: wrap; align-items: center; gap: .4rem;
+  font-size: .82rem; color: var(--hb-muted);
+}
+.hb-plan--destacado .hb-plan__nombre { color: var(--hb-primary-dark); }
+.hb-plan__precio {
+  font-size: 1.6rem; font-weight: 700;
+  color: var(--hb-navy); line-height: 1.15;
+}
+.hb-plan__detalle { font-size: .78rem; color: var(--hb-muted); }
 
 /* ---------- 15. Footer ---------- */
 .hb-footer {

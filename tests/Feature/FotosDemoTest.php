@@ -172,6 +172,99 @@ class FotosDemoTest extends TestCase
         $this->assertSame(20, Alojamiento::count());
     }
 
+    /* ===================== Optimizar lo ya subido ===================== */
+
+    /** Deja una foto enorme guardada en el disco, como las de antes del arreglo. */
+    private function conFotoPesada(int $ancho = 2400): Alojamiento
+    {
+        $img = imagecreatetruecolor($ancho, (int) ($ancho * 0.66));
+
+        /*
+         * Hace falta ruido: un lienzo de color plano se comprime a unos
+         * pocos KB y el comando lo dejaría en paz por no ganar nada, con lo
+         * que la prueba no probaría nada. Pintar píxel a píxel es lo bastante
+         * aleatorio con pocas pasadas, y mucho más rápido que miles de
+         * rectángulos: la prueba baja de 9 segundos a menos de uno.
+         */
+        $alto = (int) ($ancho * 0.66);
+
+        for ($y = 0; $y < $alto; $y += 2) {
+            for ($x = 0; $x < $ancho; $x += 2) {
+                imagesetpixel($img, $x, $y, imagecolorallocate($img, ($x * 7) % 256, ($y * 13) % 256, ($x + $y) % 256));
+            }
+        }
+
+        ob_start();
+        imagejpeg($img, null, 100);
+        imagedestroy($img);
+
+        Storage::disk('public')->put('alojamientos/pesada.jpg', (string) ob_get_clean());
+
+        $alojamiento = $this->alojamiento();
+        $alojamiento->forceFill([
+            'photos'     => ['alojamientos/pesada.jpg'],
+            'cover_path' => 'alojamientos/pesada.jpg',
+        ])->save();
+
+        return $alojamiento;
+    }
+
+    public function test_reduce_las_fotos_que_ya_estaban_subidas(): void
+    {
+        Storage::fake('public');
+        $alojamiento = $this->conFotoPesada();
+        $antes = strlen(Storage::disk('public')->get('alojamientos/pesada.jpg'));
+
+        $this->artisan('habbi:optimizar-fotos')->assertSuccessful();
+
+        $ruta = $alojamiento->refresh()->photos[0];
+
+        $this->assertNotSame('alojamientos/pesada.jpg', $ruta, 'Debió guardarse en una ruta nueva con .jpg.');
+        $this->assertLessThan($antes, strlen(Storage::disk('public')->get($ruta)));
+        $this->assertSame(1600, getimagesizefromstring(Storage::disk('public')->get($ruta))[0]);
+    }
+
+    public function test_al_optimizar_la_portada_se_actualiza(): void
+    {
+        // Si la portada sigue apuntando al archivo viejo, que se borra, la
+        // publicación se queda sin imagen en el buscador.
+        Storage::fake('public');
+        $alojamiento = $this->conFotoPesada();
+
+        $this->artisan('habbi:optimizar-fotos')->assertSuccessful();
+
+        $alojamiento->refresh();
+
+        $this->assertSame($alojamiento->photos[0], $alojamiento->cover_path);
+        Storage::disk('public')->assertExists($alojamiento->cover_path);
+        Storage::disk('public')->assertMissing('alojamientos/pesada.jpg');
+    }
+
+    public function test_probar_no_toca_nada(): void
+    {
+        Storage::fake('public');
+        $alojamiento = $this->conFotoPesada();
+
+        $this->artisan('habbi:optimizar-fotos', ['--probar' => true])->assertSuccessful();
+
+        $this->assertSame(['alojamientos/pesada.jpg'], $alojamiento->refresh()->photos);
+        Storage::disk('public')->assertExists('alojamientos/pesada.jpg');
+    }
+
+    public function test_pasarlo_dos_veces_no_vuelve_a_recomprimir(): void
+    {
+        // Recomprimir un JPEG una y otra vez solo le quita calidad.
+        Storage::fake('public');
+        $alojamiento = $this->conFotoPesada();
+
+        $this->artisan('habbi:optimizar-fotos')->assertSuccessful();
+        $ruta = $alojamiento->refresh()->photos[0];
+
+        $this->artisan('habbi:optimizar-fotos')->assertSuccessful();
+
+        $this->assertSame($ruta, $alojamiento->refresh()->photos[0], 'No debió tocarla otra vez.');
+    }
+
     public function test_el_tono_del_avatar_es_estable_y_valido(): void
     {
         // Si el tono cambiara entre peticiones, el mismo usuario saldría de

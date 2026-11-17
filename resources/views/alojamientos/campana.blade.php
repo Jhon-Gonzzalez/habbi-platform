@@ -53,22 +53,21 @@
                     Todavía no hay tarifas publicadas. Escríbenos y te decimos.
                 </p>
             @else
-                <div class="hb-stats">
+                <div class="hb-planes">
                     @foreach ($tarifas as $tarifa)
-                        <div class="hb-stat">
-                            <div class="hb-stat__label">
-                                {{ $tarifa->nombre }}
+                        <div class="hb-plan {{ $tarifa->destacada ? 'hb-plan--destacado' : '' }}">
+                            <div class="hb-plan__nombre">
+                                <span>{{ $tarifa->nombre }}</span>
                                 @if ($tarifa->destacada)
                                     <span class="hb-badge hb-badge--success">{{ $tarifa->nota ?: 'La más pedida' }}</span>
                                 @endif
                             </div>
-                            <div class="hb-stat__value">{{ $tarifa->precioFormateado() }}</div>
-                            <div class="hb-muted hb-small">
-                                {{ $tarifa->dias }} días
-                                · ${{ number_format($tarifa->precioPorDia(), 0, ',', '.') }} al día
+                            <div class="hb-plan__precio">{{ $tarifa->precioFormateado() }}</div>
+                            <div class="hb-plan__detalle">
+                                {{ $tarifa->dias }} días · ${{ number_format($tarifa->precioPorDia(), 0, ',', '.') }} al día
                             </div>
                             @if ($tarifa->nota && ! $tarifa->destacada)
-                                <div class="hb-muted hb-small">{{ $tarifa->nota }}</div>
+                                <div class="hb-plan__detalle">{{ $tarifa->nota }}</div>
                             @endif
                         </div>
                     @endforeach
