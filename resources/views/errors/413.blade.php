@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Las fotos pesan demasiado · HABBI</title>
     <link rel="icon" href="{{ asset('assets/img/images/Icono.png') }}" type="image/png">
-    <link rel="stylesheet" href="{{ asset('assets/css/habbi.css') }}">
+    <link rel="stylesheet" href="@recurso('assets/css/habbi.css')">
 </head>
 <body>
 <main class="hb-container hb-page" style="max-width:640px">

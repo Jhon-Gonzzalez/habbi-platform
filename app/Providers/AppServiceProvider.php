@@ -41,6 +41,11 @@ class AppServiceProvider extends ServiceProvider
         // Los contadores del menú del panel, fuera de la plantilla.
         View::composer('layouts.admin', MenuAdmin::class);
 
+        // @recurso('assets/css/habbi.css') → la URL con ?v=<fecha>, para
+        // que un cambio de diseño llegue también a quien ya visitó la
+        // página y tiene la hoja de estilos vieja guardada.
+        Blade::directive('recurso', fn (string $args) => "<?php echo \App\Support\Recurso::url({$args}); ?>");
+
         // @plural('huésped', $n) → «huéspedes», con reglas del español.
         Blade::directive('plural', fn (string $args) => "<?php echo \App\Support\Texto::plural({$args}); ?>");
     }

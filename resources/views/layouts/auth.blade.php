@@ -7,7 +7,7 @@
     <title>@yield('titulo') · HABBI</title>
 
     <link rel="icon" href="{{ asset('assets/img/images/Icono.png') }}" type="image/png">
-    <link rel="stylesheet" href="{{ asset('assets/css/habbi.css') }}">
+    <link rel="stylesheet" href="@recurso('assets/css/habbi.css')">
 </head>
 <body>
 <div class="hb-auth">
@@ -38,6 +38,6 @@
     </section>
 
 </div>
-<script src="{{ asset('assets/js/habbi.js') }}" defer></script>
+<script src="@recurso('assets/js/habbi.js')" defer></script>
 </body>
 </html>

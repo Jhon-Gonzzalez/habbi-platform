@@ -41,6 +41,6 @@
     </div>
 
     @push('scripts')
-        <script src="{{ asset('assets/js/mapa.js') }}" defer></script>
+        <script src="@recurso('assets/js/mapa.js')" defer></script>
     @endpush
 @endif
