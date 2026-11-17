@@ -46,7 +46,26 @@
                                  persona, y eso dibuja también la sangría del
                                  Blade. Con el texto suelto aquí, un «hola» salía
                                  en una burbuja de tres líneas de alto. --}}
-                            <p class="hb-chat__texto">{{ $m->cuerpo }}</p>
+                            @if ($m->cuerpo !== '')
+                                <p class="hb-chat__texto">{{ $m->cuerpo }}</p>
+                            @endif
+
+                            @if ($m->tieneAdjunto())
+                                @if ($m->adjuntoEsImagen())
+                                    <a class="hb-chat__adjunto" target="_blank" rel="noopener"
+                                       href="{{ route('mensajes.adjunto', [$conversacion, $m]) }}">
+                                        <img src="{{ route('mensajes.adjunto', [$conversacion, $m]) }}"
+                                             alt="Foto enviada por {{ $m->user_id === $yo->id ? 'usted' : ($otro?->name ?? 'la otra persona') }}"
+                                             loading="lazy">
+                                    </a>
+                                @else
+                                    <a class="hb-chat__archivo" target="_blank" rel="noopener"
+                                       href="{{ route('mensajes.adjunto', [$conversacion, $m]) }}">
+                                        📎 {{ \Illuminate\Support\Str::limit($m->adjunto_nombre, 32) }}
+                                    </a>
+                                @endif
+                            @endif
+
                             <time>{{ $m->created_at->format('d/m H:i') }}</time>
                         </div>
                     </div>
@@ -59,15 +78,28 @@
         </div>
 
         <div class="hb-card__footer">
-            <form method="POST" action="{{ route('mensajes.enviar', $conversacion) }}">
+            <form method="POST" action="{{ route('mensajes.enviar', $conversacion) }}"
+                  enctype="multipart/form-data">
                 @csrf
                 <div class="hb-field hb-mb-0">
+                    {{-- Sin «required»: mandar solo una foto del cuarto es un
+                         mensaje válido. Lo comprueba el servidor, que exige
+                         texto O archivo. --}}
                     <textarea class="hb-textarea @error('cuerpo') is-invalid @enderror"
-                              name="cuerpo" rows="3" maxlength="2000" required
+                              name="cuerpo" rows="3" maxlength="2000"
                               aria-label="Escriba su mensaje"
                               placeholder="Escriba su mensaje…">{{ old('cuerpo') }}</textarea>
                     @error('cuerpo') <span class="hb-error">{{ $message }}</span> @enderror
                 </div>
+
+                <div class="hb-field hb-mb-0" style="margin-top:.6rem">
+                    <label class="hb-label hb-small" for="adjunto">Adjuntar una foto o un PDF</label>
+                    <input class="hb-input" id="adjunto" name="adjunto" type="file"
+                           accept="image/jpeg,image/png,image/webp,application/pdf">
+                    <span class="hb-hint">Hasta 5 MB. Solo lo ven ustedes dos.</span>
+                    @error('adjunto') <span class="hb-error">{{ $message }}</span> @enderror
+                </div>
+
                 <div class="hb-row hb-row--between" style="margin-top:.75rem">
                     <span class="hb-hint hb-mb-0">
                         Acuerde ver el lugar en persona antes de pagar nada.

@@ -1274,6 +1274,25 @@ a.hb-avatar:hover { box-shadow: 0 0 0 3px var(--hb-primary-soft); }
     color: var(--hb-muted);
 }
 
+/* Lo que se manda adjunto dentro de una burbuja. */
+.hb-chat__adjunto { display: block; margin: .35rem 0 .15rem; }
+.hb-chat__adjunto img {
+    display: block;
+    max-width: 100%;
+    max-height: 260px;
+    border-radius: var(--hb-radius-sm);
+}
+.hb-chat__archivo {
+    display: inline-block;
+    margin: .35rem 0 .15rem;
+    padding: .4rem .6rem;
+    border: 1px solid var(--hb-border);
+    border-radius: var(--hb-radius-sm);
+    background: var(--hb-surface);
+    font-size: .82rem;
+    text-decoration: none;
+}
+
 /* Avisos escritos por la plataforma, no por una persona. */
 .hb-chat__aviso {
     align-self: center;

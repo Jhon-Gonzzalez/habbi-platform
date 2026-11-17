@@ -127,6 +127,11 @@ Route::middleware('auth')->group(function () {
     Route::post('/mensajes/{conversacion}', [ConversacionController::class, 'enviar'])
         ->middleware('throttle:mensajes')->whereNumber('conversacion')->name('mensajes.enviar');
 
+/* El adjunto de un mensaje: fuera de public/, solo para los dos del hilo. */
+Route::get('/mensajes/{conversacion}/adjunto/{mensaje}', [ConversacionController::class, 'adjunto'])
+    ->whereNumber(['conversacion', 'mensaje'])
+    ->name('mensajes.adjunto');
+
     Route::post('/alojamientos/{alojamiento}/escribir', [ConversacionController::class, 'abrir'])
         ->middleware('throttle:mensajes')->whereNumber('alojamiento')->name('mensajes.abrir');
 

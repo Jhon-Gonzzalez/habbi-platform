@@ -6,6 +6,9 @@ use App\Models\Alojamiento;
 use App\Models\Conversacion;
 use App\Models\Mensaje;
 use App\Models\User;
+use App\Services\ImagenOptimizada;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -30,18 +33,65 @@ class ChatService
         );
     }
 
-    public function enviar(Conversacion $conversacion, User $autor, string $cuerpo): Mensaje
-    {
-        return DB::transaction(function () use ($conversacion, $autor, $cuerpo) {
-            $mensaje = $conversacion->mensajes()->create([
+    /**
+     * Manda un mensaje, con un adjunto opcional.
+     *
+     * El archivo va al disco «private», fuera de public/: una conversación
+     * es privada y un adjunto en una URL pública la abriría a cualquiera
+     * que la adivine. Las imágenes se recomprimen antes de guardarse, que
+     * una foto de celular son 5 MB y aquí se mandan a pares.
+     */
+    public function enviar(
+        Conversacion $conversacion,
+        User $autor,
+        string $cuerpo,
+        ?UploadedFile $adjunto = null,
+    ): Mensaje {
+        return DB::transaction(function () use ($conversacion, $autor, $cuerpo, $adjunto) {
+            $mensaje = $conversacion->mensajes()->create(array_merge([
                 'user_id' => $autor->id,
                 'cuerpo'  => $cuerpo,
-            ]);
+            ], $adjunto ? $this->guardarAdjunto($adjunto) : []));
 
             $conversacion->forceFill(['ultimo_mensaje_en' => now()])->save();
 
             return $mensaje;
         });
+    }
+
+    /**
+     * Guarda el archivo y devuelve las columnas que lo describen.
+     *
+     * @return array{adjunto: string, adjunto_nombre: string, adjunto_tipo: string}
+     */
+    private function guardarAdjunto(UploadedFile $archivo): array
+    {
+        $esImagen = str_starts_with((string) $archivo->getMimeType(), 'image/');
+
+        if ($esImagen) {
+            $optimizada = (new ImagenOptimizada)->comprimir(
+                (string) file_get_contents($archivo->getRealPath())
+            );
+
+            if ($optimizada !== null) {
+                $ruta = 'chat/' . $archivo->hashName('') . '.jpg';
+                Storage::disk('private')->put($ruta, $optimizada);
+
+                return [
+                    'adjunto'        => $ruta,
+                    'adjunto_nombre' => $archivo->getClientOriginalName(),
+                    'adjunto_tipo'   => 'image/jpeg',
+                ];
+            }
+        }
+
+        // PDF, o una imagen que GD no supo leer: se guarda tal cual. Vale
+        // más un adjunto pesado que un mensaje que no se puede mandar.
+        return [
+            'adjunto'        => $archivo->store('chat', 'private'),
+            'adjunto_nombre' => $archivo->getClientOriginalName(),
+            'adjunto_tipo'   => (string) ($archivo->getMimeType() ?: 'application/octet-stream'),
+        ];
     }
 
     /** Un aviso escrito por la plataforma, no por ninguna de las dos partes. */

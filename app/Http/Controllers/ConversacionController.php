@@ -4,10 +4,13 @@ namespace App\Http\Controllers;
 
 use App\Models\Alojamiento;
 use App\Models\Conversacion;
+use App\Models\Mensaje;
 use App\Services\ChatService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
+use Illuminate\Support\Facades\Storage;
 
 /** Mensajería entre estudiantes y arrendadores. */
 class ConversacionController extends Controller
@@ -59,13 +62,34 @@ class ConversacionController extends Controller
     {
         $this->autorizar($request, $conversacion);
 
+        /*
+         * El cuerpo deja de ser obligatorio SI viene un archivo: mandar una
+         * foto del cuarto sin escribir nada es un mensaje perfectamente
+         * válido, y obligar a poner «mira» no aporta nada.
+         */
         $datos = $request->validate(
-            ['cuerpo' => ['required', 'string', 'min:2', 'max:2000']],
-            ['cuerpo.required' => 'Escribe algo antes de enviar.'],
-            ['cuerpo' => 'mensaje'],
+            [
+                'cuerpo'  => ['required_without:adjunto', 'nullable', 'string', 'min:2', 'max:2000'],
+                'adjunto' => [
+                    'nullable', 'file',
+                    'mimes:' . implode(',', Mensaje::TIPOS_ADJUNTO),
+                    'max:5120',
+                ],
+            ],
+            [
+                'cuerpo.required_without' => 'Escriba algo o adjunte un archivo.',
+                'adjunto.mimes'           => 'Se admiten fotos (JPG, PNG, WEBP) y PDF.',
+                'adjunto.max'             => 'El archivo no puede pasar de 5 MB.',
+            ],
+            ['cuerpo' => 'mensaje', 'adjunto' => 'archivo'],
         );
 
-        $this->chat->enviar($conversacion, $request->user(), $datos['cuerpo']);
+        $this->chat->enviar(
+            $conversacion,
+            $request->user(),
+            $datos['cuerpo'] ?? '',
+            $request->file('adjunto'),
+        );
 
         return redirect()->route('mensajes.show', $conversacion);
     }
@@ -127,6 +151,27 @@ class ConversacionController extends Controller
      * una conversación privada no es material de moderación mientras nadie
      * la reporte.
      */
+    /**
+     * Entrega el adjunto de un mensaje a los DOS participantes y a nadie más.
+     *
+     * Usa la misma comprobación que leer el hilo, a propósito: un
+     * administrador no puede leer conversaciones ajenas, así que tampoco
+     * puede abrir lo que se mandaron por dentro.
+     */
+    public function adjunto(Request $request, Conversacion $conversacion, Mensaje $mensaje): BinaryFileResponse
+    {
+        $this->autorizar($request, $conversacion);
+
+        abort_unless($mensaje->conversacion_id === $conversacion->id, 404);
+        abort_unless($mensaje->tieneAdjunto(), 404);
+        abort_unless(Storage::disk('private')->exists($mensaje->adjunto), 404);
+
+        return response()->file(
+            Storage::disk('private')->path($mensaje->adjunto),
+            ['Content-Disposition' => 'inline; filename="' . addslashes($mensaje->adjunto_nombre) . '"'],
+        );
+    }
+
     private function autorizar(Request $request, Conversacion $conversacion): void
     {
         abort_unless($conversacion->participa($request->user()), 403);

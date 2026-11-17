@@ -12,7 +12,24 @@ class Mensaje extends Model
 
     protected $table = 'mensajes';
 
-    protected $fillable = ['conversacion_id', 'user_id', 'cuerpo', 'es_del_sistema', 'leido_en'];
+    protected $fillable = [
+        'conversacion_id', 'user_id', 'cuerpo', 'es_del_sistema', 'leido_en',
+        'adjunto', 'adjunto_nombre', 'adjunto_tipo',
+    ];
+
+    /** Lo que se acepta: fotos del espacio y comprobantes en PDF. */
+    public const TIPOS_ADJUNTO = ['jpg', 'jpeg', 'png', 'webp', 'pdf'];
+
+    public function tieneAdjunto(): bool
+    {
+        return $this->adjunto !== null;
+    }
+
+    /** Si es imagen se pinta; si no, se ofrece como enlace de descarga. */
+    public function adjuntoEsImagen(): bool
+    {
+        return str_starts_with((string) $this->adjunto_tipo, 'image/');
+    }
 
     protected $casts = [
         'es_del_sistema' => 'boolean',

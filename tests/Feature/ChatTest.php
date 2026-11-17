@@ -5,6 +5,9 @@ namespace Tests\Feature;
 use App\Models\Alojamiento;
 use App\Models\Conversacion;
 use App\Models\User;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Http\UploadedFile;
+use App\Models\Mensaje;
 use App\Services\ChatService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -111,6 +114,134 @@ class ChatTest extends TestCase
             ['¿Sigue disponible?', 'Sí, puedes verlo mañana.'],
             $conv->fresh()->mensajes->pluck('cuerpo')->all(),
         );
+    }
+
+    /* ===================== Adjuntos ===================== */
+
+    /** @return array{0: \App\Models\Conversacion, 1: User, 2: User, 3: Mensaje} */
+    private function conFoto(): array
+    {
+        Storage::fake('private');
+
+        [$alojamiento, $arrendador, $estudiante] = $this->escenario();
+
+        $this->actingAs($estudiante)->post(route('mensajes.abrir', $alojamiento));
+        $conversacion = \App\Models\Conversacion::sole();
+
+        $this->actingAs($estudiante)->post(route('mensajes.enviar', $conversacion), [
+            'cuerpo'  => 'Le mando la foto del recibo',
+            'adjunto' => UploadedFile::fake()->image('recibo.jpg', 2400, 1600),
+        ]);
+
+        return [$conversacion, $arrendador, $estudiante, Mensaje::latest('id')->first()];
+    }
+
+    public function test_se_puede_mandar_una_foto(): void
+    {
+        [, , , $mensaje] = $this->conFoto();
+
+        $this->assertTrue($mensaje->tieneAdjunto());
+        $this->assertTrue($mensaje->adjuntoEsImagen());
+        Storage::disk('private')->assertExists($mensaje->adjunto);
+    }
+
+    public function test_la_foto_se_recomprime_al_guardarla(): void
+    {
+        // Una foto de celular son 4000px y 5 MB, y aquí se mandan a pares.
+        [, , , $mensaje] = $this->conFoto();
+
+        $tamanos = getimagesizefromstring(Storage::disk('private')->get($mensaje->adjunto));
+
+        $this->assertSame(1600, $tamanos[0]);
+    }
+
+    public function test_una_foto_sola_sin_texto_es_un_mensaje_valido(): void
+    {
+        // Mandar la foto del cuarto sin escribir nada tiene todo el sentido;
+        // obligar a poner «mira» no aporta nada.
+        Storage::fake('private');
+        [$alojamiento, , $estudiante] = $this->escenario();
+
+        $this->actingAs($estudiante)->post(route('mensajes.abrir', $alojamiento));
+        $conversacion = \App\Models\Conversacion::sole();
+
+        $this->actingAs($estudiante)
+            ->post(route('mensajes.enviar', $conversacion),
+                ['adjunto' => UploadedFile::fake()->image('cuarto.jpg')])
+            ->assertRedirect();
+
+        $this->assertTrue(Mensaje::latest('id')->first()->tieneAdjunto());
+    }
+
+    public function test_sin_texto_ni_archivo_no_se_manda_nada(): void
+    {
+        Storage::fake('private');
+        [$alojamiento, , $estudiante] = $this->escenario();
+
+        $this->actingAs($estudiante)->post(route('mensajes.abrir', $alojamiento));
+        $conversacion = \App\Models\Conversacion::sole();
+
+        $this->actingAs($estudiante)
+            ->post(route('mensajes.enviar', $conversacion), [])
+            ->assertSessionHasErrors('cuerpo');
+    }
+
+    public function test_no_se_admite_cualquier_archivo(): void
+    {
+        Storage::fake('private');
+        [$alojamiento, , $estudiante] = $this->escenario();
+
+        $this->actingAs($estudiante)->post(route('mensajes.abrir', $alojamiento));
+        $conversacion = \App\Models\Conversacion::sole();
+
+        $this->actingAs($estudiante)
+            ->post(route('mensajes.enviar', $conversacion), [
+                'cuerpo'  => 'mira esto',
+                'adjunto' => UploadedFile::fake()->create('script.php', 10, 'application/x-php'),
+            ])
+            ->assertSessionHasErrors('adjunto');
+    }
+
+    public function test_el_adjunto_lo_ven_los_dos_del_hilo(): void
+    {
+        [$conversacion, $arrendador, $estudiante, $mensaje] = $this->conFoto();
+
+        $this->actingAs($estudiante)
+            ->get(route('mensajes.adjunto', [$conversacion, $mensaje]))->assertOk();
+
+        $this->actingAs($arrendador)
+            ->get(route('mensajes.adjunto', [$conversacion, $mensaje]))->assertOk();
+    }
+
+    public function test_ni_siquiera_un_administrador_abre_un_adjunto_ajeno(): void
+    {
+        /*
+         * Misma regla que para leer el hilo. Si un administrador no puede
+         * leer lo que se escriben, tampoco puede abrir lo que se mandan:
+         * sería la misma conversación por otra puerta.
+         */
+        [$conversacion, , , $mensaje] = $this->conFoto();
+
+        $this->actingAs(User::factory()->admin()->create())
+            ->get(route('mensajes.adjunto', [$conversacion, $mensaje]))
+            ->assertForbidden();
+    }
+
+    public function test_un_tercero_no_abre_un_adjunto(): void
+    {
+        [$conversacion, , , $mensaje] = $this->conFoto();
+
+        $this->actingAs(User::factory()->create())
+            ->get(route('mensajes.adjunto', [$conversacion, $mensaje]))
+            ->assertForbidden();
+    }
+
+    public function test_el_adjunto_no_queda_en_una_url_publica(): void
+    {
+        [, , , $mensaje] = $this->conFoto();
+
+        $this->assertStringStartsWith('chat/', $mensaje->adjunto);
+        $this->assertFalse(file_exists(public_path('storage/' . $mensaje->adjunto)));
     }
 
     public function test_un_tercero_no_puede_leer_la_conversacion(): void
