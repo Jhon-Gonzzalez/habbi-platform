@@ -389,6 +389,14 @@ a.hb-avatar:hover { box-shadow: 0 0 0 3px var(--hb-primary-soft); }
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
 }
 
+/* Cuatro en una sola fila. Se usa en la portada, donde se enseñan solo
+   los cuatro mejor calificados y repartirlos en dos filas de tres dejaba
+   la segunda coja. Solo manda en pantalla ancha: por debajo siguen las
+   reglas normales, y en el móvil las dos columnas de siempre. */
+@media (min-width: 1024px) {
+  .hb-grid--cuatro { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1.15rem; }
+}
+
 .hb-listing {
   position: relative; /* ancla el corazón de favoritos */
   background: var(--hb-surface);

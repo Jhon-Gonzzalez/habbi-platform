@@ -1,22 +1,22 @@
 @extends('layouts.app', ['navTransparente' => true])
 
 @section('titulo', 'Vivienda estudiantil')
-@section('descripcion', 'Encuentra habitaciones, apartaestudios y apartamentos cerca de tu universidad. Reseñas reales, filtros por precio y contacto directo con el arrendador.')
+@section('descripcion', 'Encuentre habitaciones, apartaestudios y apartamentos cerca de su universidad. Reseñas reales, filtros por precio y contacto directo con el arrendador.')
 
 @section('contenido_completo')
 
     {{-- ===== Hero ===== --}}
     <section class="hb-hero">
         <div class="hb-container">
-            <h1>Encuentra tu alojamiento ideal en tu ciudad</h1>
+            <h1>Encuentre su alojamiento ideal en su ciudad</h1>
             <p class="hb-hero__lead">
-                Explora alojamientos verificados: filtra por precio, servicios y barrio,
-                revisa opiniones de otros estudiantes y contacta al arrendador en un clic.
+                Explore alojamientos verificados: filtre por precio, servicios y barrio,
+                revise opiniones de otros estudiantes y contacte al arrendador en un clic.
             </p>
 
             <form class="hb-searchbar" method="GET" action="{{ route('alojamientos.index') }}" role="search">
                 <label class="hb-sr-only" for="heroQ">Ciudad o barrio</label>
-                <input id="heroQ" type="search" name="q" placeholder="¿En qué ciudad o barrio buscas?">
+                <input id="heroQ" type="search" name="q" placeholder="¿En qué ciudad o barrio busca?">
 
                 <label class="hb-sr-only" for="heroType">Tipo de alojamiento</label>
                 <select id="heroType" name="type">
@@ -36,7 +36,7 @@
         <div class="hb-container">
             <div class="hb-section__head">
                 <span class="hb-eyebrow">Qué ofrece HABBI</span>
-                <h2>Todo lo que necesitas para decidir bien</h2>
+                <h2>Todo lo que necesita para decidir bien</h2>
                 <p>Nada de anuncios sin información. Cada publicación trae fotos, precio claro, comodidades y opiniones de quienes ya vivieron ahí.</p>
             </div>
 
@@ -62,7 +62,7 @@
                 <article class="hb-feature">
                     <div class="hb-feature__icon" aria-hidden="true">＋</div>
                     <h3>Publicar es gratis</h3>
-                    <p>Sube hasta 8 fotos, define el precio por mes o por noche y administra tus publicaciones cuando quieras.</p>
+                    <p>Suba hasta 8 fotos, defina el precio por mes o por noche y administre sus publicaciones cuando quiera.</p>
                 </article>
             </div>
         </div>
@@ -87,7 +87,7 @@
                     <p>Los que más gustan a la comunidad de estudiantes. No se puede pagar por estar aquí.</p>
                 </div>
 
-                <div class="hb-grid">
+                <div class="hb-grid hb-grid--cuatro">
                     @foreach ($mejorCalificados as $a)
                         @include('partials.listing-card', ['a' => $a])
                     @endforeach
@@ -110,15 +110,15 @@
 
             <div class="hb-steps">
                 <article class="hb-step">
-                    <h3>Busca y filtra</h3>
-                    <p>Escribe tu ciudad o barrio y ajusta precio, tipo y comodidades hasta quedarte con lo que de verdad te sirve.</p>
+                    <h3>Busque y filtre</h3>
+                    <p>Escriba su ciudad o barrio y ajuste precio, tipo y comodidades hasta quedarse con lo que de verdad le sirve.</p>
                 </article>
                 <article class="hb-step">
                     <h3>Compara con reseñas</h3>
-                    <p>Mira las fotos, lee las opiniones de otros estudiantes y revisa la calificación promedio.</p>
+                    <p>Mire las fotos, lee las opiniones de otros estudiantes y revise la calificación promedio.</p>
                 </article>
                 <article class="hb-step">
-                    <h3>Contacta al arrendador</h3>
+                    <h3>Contacte al arrendador</h3>
                     <p>Escríbele por el chat y cierren el acuerdo ahí mismo. Queda constancia de lo hablado.</p>
                 </article>
             </div>
@@ -129,7 +129,7 @@
     <section class="hb-section hb-section--alt">
         <div class="hb-container">
             <div class="hb-cta">
-                <h2>¿Tienes una habitación o apartamento libre?</h2>
+                <h2>¿Tiene una habitación o apartamento libre?</h2>
                 <p>Publícalo gratis en HABBI y llega a estudiantes que buscan exactamente lo que ofreces.</p>
                 <a class="hb-btn hb-btn--white" href="{{ route('alojamientos.create') }}">Publicar mi alojamiento</a>
             </div>

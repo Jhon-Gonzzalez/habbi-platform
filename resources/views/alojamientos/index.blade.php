@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('titulo', 'Buscar alojamiento')
-@section('descripcion', 'Explora alojamientos estudiantiles verificados y filtra por precio, tipo, barrio y comodidades.')
+@section('descripcion', 'Explore alojamientos estudiantiles verificados y filtre por precio, tipo, barrio y comodidades.')
 
 @section('cabecera')
     <div>
@@ -183,7 +183,7 @@
             <div class="hb-empty">
                 <div class="hb-empty__icon" aria-hidden="true">⌕</div>
                 <h3>No encontramos alojamientos con esos filtros</h3>
-                <p>Prueba a ampliar el rango de precio, quitar alguna comodidad o buscar en otra ciudad.</p>
+                <p>Pruebe a ampliar el rango de precio, quitar alguna comodidad o buscar en otra ciudad.</p>
                 <p style="margin-top:1.25rem">
                     <a class="hb-btn hb-btn--ghost" href="{{ route('alojamientos.index') }}">Ver todos</a>
                 </p>

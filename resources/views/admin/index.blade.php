@@ -13,9 +13,9 @@
             <span>
                 <strong>La verificación de correo está apagada.</strong>
                 Cualquiera puede registrarse con un correo inventado, las veces que
-                quiera, y usarlo para reseñar o reportar. Para encenderla, pon
+                quiera, y usarlo para reseñar o reportar. Para encenderla, ponga
                 <code>HABBI_VERIFICAR_CORREO=true</code> en el <code>.env</code> y
-                comprueba el envío con <code>php artisan habbi:correo</code>.
+                compruebe el envío con <code>php artisan habbi:correo</code>.
             </span>
         </div>
     @endif
@@ -91,7 +91,7 @@
                         </li>
                     @endforeach
                 </ul>
-                Una persona buscando cuarto mira diez o quince. Si la cuenta es
+                Una persona buscando cuarto mire diez o quince. Si la cuenta es
                 nueva y pidió decenas, probablemente esté recogiendo contactos.
             </span>
         </div>

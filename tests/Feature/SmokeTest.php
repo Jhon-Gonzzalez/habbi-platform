@@ -88,6 +88,6 @@ class SmokeTest extends TestCase
         $this->get(route('alojamientos.show', $alojamiento))
             ->assertOk()
             ->assertDontSee('3009998877')
-            ->assertSee('Inicia sesi', false);
+            ->assertSee('Inicie sesi', false);
     }
 }

@@ -28,7 +28,7 @@
 
             <p class="hb-muted">Volvemos en unos minutos. Estamos actualizando HABBI.</p>
 
-            <p class="hb-muted hb-small">Si llevas mucho rato viendo esto, escríbenos.</p>
+            <p class="hb-muted hb-small">Si llevas mucho rato viendo esto, escríbanos.</p>
 
             <div class="hb-row hb-center" style="gap:.6rem;margin-top:1.5rem">
                 <a class="hb-btn hb-btn--primary" href="/">Ir al inicio</a>

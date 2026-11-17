@@ -81,7 +81,7 @@
                     <span class="hb-hint" style="margin-top:.5rem">
                         Los documentos se borran al resolver la solicitud. Se piden para
                         comprobar una cosa concreta y, comprobada, guardarlos solo añade
-                        riesgo: una cédula escaneada que se filtra sirve para suplantar a
+                        riesgo: una cédula escaneada que se filtre sirve para suplantar a
                         alguien. Queda constancia de quién revisó y cuándo en la auditoría.
                     </span>
                 @endif
@@ -97,7 +97,7 @@
                 <div class="hb-card__body">
 
                     <p class="hb-small hb-muted">
-                        Comprueba que el nombre del documento coincide con el de la cuenta
+                        Compruebe que el nombre del documento coincide con el de la cuenta
                         y que la dirección de la prueba es de Montería.
                     </p>
 
@@ -116,7 +116,7 @@
                             <textarea class="hb-textarea @error('motivo') is-invalid @enderror" id="motivo"
                                       name="motivo" rows="4" minlength="15" maxlength="500"
                                       placeholder="Ej: La foto de la cédula está borrosa y no se lee el número.">{{ old('motivo') }}</textarea>
-                            <span class="hb-hint">La persona lo va a leer. Sé concreto para que pueda corregirlo.</span>
+                            <span class="hb-hint">La persona lo va a leer. Sea concreto para que pueda corregirlo.</span>
                             @error('motivo') <span class="hb-error">{{ $message }}</span> @enderror
                         </div>
                         <button class="hb-btn hb-btn--danger hb-btn--block" type="submit">Rechazar</button>

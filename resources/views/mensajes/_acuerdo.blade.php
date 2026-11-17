@@ -1,8 +1,8 @@
 {{--
     El estado del acuerdo. Espera $conversacion, $yo y $alojamiento.
 
-    La regla clave: propone uno, confirma el OTRO. Por eso quien propuso ve
-    «esperando» y la otra parte ve el botón de confirmar.
+    La regla clave: propone uno, confirma el OTRO. Por eso quien propuso vaya
+    «esperando» y la otra parte vaya el botón de confirmar.
 --}}
 
 @if ($conversacion->acuerdoConfirmado())
@@ -64,7 +64,7 @@
         <p class="hb-muted hb-small" style="margin-top:.75rem">
             Lo propone uno y lo confirma el otro. Al confirmarse, la publicación
             baja las plazas automáticamente y deja de salir en el buscador si se
-            queda sin ninguna. Así nadie escribe por algo que ya se arrendó.
+            queda sin ninguna. Así nadie escriba por algo que ya se arrendó.
         </p>
 
         <form method="POST" action="{{ route('mensajes.acuerdo.proponer', $conversacion) }}"
@@ -92,7 +92,7 @@
         <div>
             <strong>Esta publicación ya no tiene plazas libres</strong>
             <p class="hb-mb-0 hb-small">
-                Puedes seguir escribiendo, pero el arrendador tendría que
+                Puede seguir escribiendo, pero el arrendador tendría que
                 reabrirla para poder cerrar un acuerdo.
             </p>
         </div>

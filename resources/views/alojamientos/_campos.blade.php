@@ -10,7 +10,7 @@
             <input class="hb-input @error('title') is-invalid @enderror" type="text" id="title" name="title"
                    value="{{ old('title', $a->title ?? '') }}" maxlength="255" required
                    placeholder="Ej: Habitación amoblada a 5 min de la universidad">
-            <span class="hb-hint">Sé concreto: tipo de espacio, zona y algo que lo distinga.</span>
+            <span class="hb-hint">Sea concreto: tipo de espacio, zona y algo que lo distinga.</span>
             @error('title') <span class="hb-error">{{ $message }}</span> @enderror
         </div>
 
@@ -18,7 +18,7 @@
             <div class="hb-field">
                 <label class="hb-label" for="type">Tipo de alojamiento <span class="hb-req">*</span></label>
                 <select class="hb-select @error('type') is-invalid @enderror" id="type" name="type" required>
-                    <option value="">Selecciona…</option>
+                    <option value="">Seleccione…</option>
                     @foreach (\App\Models\Alojamiento::TIPOS as $tipo)
                         <option value="{{ $tipo }}" @selected(old('type', $a->type ?? '') === $tipo)>{{ $tipo }}</option>
                     @endforeach
@@ -114,7 +114,7 @@
                 <div class="hb-selector__lienzo"></div>
                 <div class="hb-selector__pie">
                     <span class="hb-hint hb-mb-0" id="selector-mapa-aviso">
-                        Toca el mapa para marcar el punto. Puedes arrastrar el pin después.
+                        Toque el mapa para marcar el punto. Puede arrastrar el pin después.
                     </span>
                     <button class="hb-btn hb-btn--ghost hb-btn--sm" type="button"
                             id="selector-mapa-borrar" {{ $latVieja === '' ? 'hidden' : '' }}>
@@ -124,22 +124,22 @@
             </div>
 
             <span class="hb-hint">
-                Es opcional, pero sin punto tu anuncio no aparece cuando alguien
+                Es opcional, pero sin punto su anuncio no aparece cuando alguien
                 busca «a menos de 2 km de la universidad», que es como busca casi
-                todo el mundo. <strong>Marca la esquina o la cuadra, no la puerta</strong>:
-                es suficiente para que te encuentren y no publica dónde vives.
+                todo el mundo. <strong>Marque la esquina o la cuadra, no la puerta</strong>:
+                es suficiente para que lo encuentren y no publique dónde vive.
             </span>
             @error('lat') <span class="hb-error">{{ $message }}</span> @enderror
             @error('lng') <span class="hb-error">{{ $message }}</span> @enderror
         </div>
 
         <div class="hb-field">
-            <label class="hb-label" for="cupos">¿Cuántas plazas tienes libres?</label>
+            <label class="hb-label" for="cupos">¿Cuántas plazas tiene libres?</label>
             <input class="hb-input @error('cupos') is-invalid @enderror" type="number"
                    id="cupos" name="cupos" value="{{ old('cupos', $a->cupos ?? 1) }}"
                    min="1" max="50" required>
             <span class="hb-hint">
-                Normalmente 1: la habitación o el apartamento entero. Pon más solo si
+                Normalmente 1: la habitación o el apartamento entero. Ponga más solo si
                 arriendas varias plazas iguales con este mismo anuncio. Cuando se cierre
                 un acuerdo por el chat, esta cifra baja sola, y al llegar a cero el
                 anuncio deja de salir en el buscador.
@@ -154,7 +154,7 @@
                    value="{{ old('disponible_desde', isset($a->disponible_desde) ? $a->disponible_desde?->format('Y-m-d') : '') }}">
             <span class="hb-hint">
                 Déjalo vacío si se puede entrar ya. Ponlo si el inquilino actual
-                se va en una fecha concreta: así nadie te escribe para enero
+                se va en una fecha concreta: así nadie le escriba para enero
                 cuando el cuarto se desocupa en junio.
             </span>
             @error('disponible_desde') <span class="hb-error">{{ $message }}</span> @enderror
@@ -172,7 +172,7 @@
                 @endforeach
             </select>
             <span class="hb-hint">
-                Con esto los estudiantes pueden ver la ruta en Google Maps desde tu alojamiento hasta su universidad.
+                Con esto los estudiantes pueden ver la ruta en Google Maps desde su alojamiento hasta su universidad.
             </span>
             @error('universidad_referencia') <span class="hb-error">{{ $message }}</span> @enderror
         </div>
@@ -188,7 +188,7 @@
             <label class="hb-label" for="description">Descripción <span class="hb-req">*</span></label>
             <textarea class="hb-textarea @error('description') is-invalid @enderror" id="description"
                       name="description" required minlength="30" maxlength="5000"
-                      placeholder="Cuenta cómo es el espacio, qué incluye el precio, las normas de convivencia y qué hay cerca.">{{ old('description', $a->description ?? '') }}</textarea>
+                      placeholder="Cuente cómo es el espacio, qué incluye el precio, las normas de convivencia y qué hay cerca.">{{ old('description', $a->description ?? '') }}</textarea>
             @error('description') <span class="hb-error">{{ $message }}</span> @enderror
         </div>
 

@@ -5,7 +5,7 @@
 @section('cabecera')
     <div>
         <h1>Hola, {{ Str::before($usuario->name, ' ') }}</h1>
-        <p>Este es el resumen de tu actividad en HABBI.</p>
+        <p>Este es el resumen de su actividad en HABBI.</p>
     </div>
     <a class="hb-btn hb-btn--white" href="{{ route('alojamientos.create') }}">Publicar alojamiento</a>
 @endsection
@@ -41,7 +41,7 @@
     {{-- Últimas publicaciones --}}
     <section style="margin-top:2.5rem">
         <div class="hb-row hb-row--between" style="margin-bottom:1.25rem">
-            <h2 style="font-size:1.25rem;margin:0">Tus publicaciones recientes</h2>
+            <h2 style="font-size:1.25rem;margin:0">Sus publicaciones recientes</h2>
             @if ($alojamientos->isNotEmpty())
                 <a class="hb-btn hb-btn--link" href="{{ route('alojamientos.mine') }}">Ver todas</a>
             @endif
@@ -50,7 +50,7 @@
         @if ($alojamientos->isEmpty())
             <div class="hb-empty">
                 <div class="hb-empty__icon" aria-hidden="true">⌂</div>
-                <h3>Aún no tienes publicaciones</h3>
+                <h3>Aún no tiene publicaciones</h3>
                 <p>Cuando publiques un alojamiento aparecerá aquí con sus reseñas y su estado.</p>
                 <p style="margin-top:1.5rem">
                     <a class="hb-btn hb-btn--primary" href="{{ route('alojamientos.create') }}">Publicar ahora</a>

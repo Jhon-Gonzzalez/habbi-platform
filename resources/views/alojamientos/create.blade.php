@@ -5,7 +5,7 @@
 @section('cabecera')
     <div>
         <h1>Publicar alojamiento</h1>
-        <p>Rellena los datos y publícalo gratis. Podrás editarlo o pausarlo cuando quieras.</p>
+        <p>Rellene los datos y publíquelo gratis. Podrá editarlo o pausarlo cuando quiera.</p>
     </div>
 @endsection
 
@@ -24,7 +24,7 @@
             <div class="hb-drop @error('photos') is-invalid @enderror" data-uploader="#previsualizacion"
                  data-max-bytes="{{ \App\Support\Subidas::maxPost() }}">
                 <div class="hb-drop__icon" aria-hidden="true">🖼</div>
-                <strong>Arrastra tus fotos aquí o haz clic para elegirlas</strong>
+                <strong>Arrastre sus fotos aquí o haga clic para elegirlas</strong>
                 <span class="hb-hint">Hasta 8 imágenes · JPG, PNG o WEBP · máximo 5 MB cada una</span>
                 <input type="file" name="photos[]" accept="image/jpeg,image/png,image/webp" multiple required
                        aria-label="Fotos del alojamiento">
@@ -32,7 +32,7 @@
 
             <div class="hb-thumbs" id="previsualizacion"></div>
 
-            <span class="hb-hint" style="margin-top:.75rem">La primera foto será la portada de tu publicación.</span>
+            <span class="hb-hint" style="margin-top:.75rem">La primera foto será la portada de su publicación.</span>
 
             @error('photos')   <span class="hb-error">{{ $message }}</span> @enderror
             @error('photos.*') <span class="hb-error">{{ $message }}</span> @enderror

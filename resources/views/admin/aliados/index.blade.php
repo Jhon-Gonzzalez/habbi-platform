@@ -96,7 +96,7 @@
 
         <div class="hb-card__footer">
             <p class="hb-hint hb-mb-0">
-                <strong>Los clics son tu argumento para renovar.</strong> «Te mandamos
+                <strong>Los clics son su argumento para renovar.</strong> «Le enviamos
                 37 personas este mes» se puede discutir; «confía en mí» no. Se cuenta
                 el clic, no quién lo hizo: ni usuario, ni IP, ni cookie.
             </p>

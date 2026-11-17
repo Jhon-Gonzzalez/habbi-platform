@@ -160,7 +160,7 @@ class ImagenYCompartirTest extends TestCase
         $this->actingAs(User::factory()->create())
             ->get(route('admin.index'))
             ->assertForbidden()
-            ->assertSee('Esta parte no es para ti');
+            ->assertSee('Esta parte no es para usted');
     }
 
     public function test_un_alojamiento_que_no_existe_da_el_404_bonito(): void

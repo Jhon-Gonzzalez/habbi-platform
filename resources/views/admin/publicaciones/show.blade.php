@@ -49,7 +49,7 @@
 
     <aside>
         <div class="hb-card">
-            <div class="hb-card__header"><h2 style="font-size:1.05rem">Quién publica</h2></div>
+            <div class="hb-card__header"><h2 style="font-size:1.05rem">Quién publique</h2></div>
             <div class="hb-card__body">
                 <strong>{{ $alojamiento->user->name }}</strong>
                 <div class="hb-muted hb-small">
@@ -71,7 +71,7 @@
                 <div class="hb-card__header"><h2 style="font-size:1.05rem">Decisión</h2></div>
                 <div class="hb-card__body">
                     <p class="hb-small hb-muted">
-                        Comprueba que la dirección exista, que las fotos correspondan al
+                        Compruebe que la dirección exista, que las fotos correspondan al
                         texto y que el precio sea creíble para la zona.
                     </p>
 

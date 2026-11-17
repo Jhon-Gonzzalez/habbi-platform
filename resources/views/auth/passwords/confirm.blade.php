@@ -3,7 +3,7 @@
 @section('titulo', 'Confirmar contraseña')
 
 @section('formulario')
-    <h1>Confirma tu contraseña</h1>
+    <h1>Confirme su contraseña</h1>
     <p class="hb-muted">Por seguridad, vuelve a introducirla para continuar.</p>
 
     <form method="POST" action="{{ route('password.confirm') }}" style="margin-top:2rem">

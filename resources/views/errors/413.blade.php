@@ -33,7 +33,7 @@
                 <div>
                     <strong>Cómo solucionarlo:</strong>
                     <ul>
-                        <li>Sube menos fotos de una vez: publica con 2 o 3 y añade el resto editando.</li>
+                        <li>Suba menos fotos de una vez: publique con 2 o 3 y añade el resto editando.</li>
                         <li>Reduce el tamaño de las imágenes antes de subirlas.</li>
                         <li>Cada archivo debe pesar menos de
                             <strong>{{ \App\Support\Subidas::formatear(\App\Support\Subidas::maxArchivo()) }}</strong>.</li>
@@ -46,7 +46,7 @@
             </p>
 
             <p class="hb-small hb-muted hb-mb-0" style="margin-top:1rem">
-                Nada se perdió: tu publicación no llegó a crearse.
+                Nada se perdió: su publicación no llegó a crearse.
             </p>
 
         </div>

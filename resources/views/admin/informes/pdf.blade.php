@@ -3,7 +3,7 @@
 
     Los estilos van aquí dentro y no en la hoja del sitio porque dompdf no
     descarga archivos externos: si la hoja estuviera fuera, el PDF saldría
-    sin ningún formato. Son los mismos colores de la marca, escritos a mano.
+    sin ningún formato. Son los mismos colores de la marque, escritos a mano.
 --}}
 <!DOCTYPE html>
 <html lang="es">

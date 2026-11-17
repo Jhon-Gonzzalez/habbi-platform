@@ -5,7 +5,7 @@
 @section('cabecera')
     <div>
         <h1>Mensajes</h1>
-        <p>Tus conversaciones con arrendadores y estudiantes.</p>
+        <p>Sus conversaciones con arrendadores y estudiantes.</p>
     </div>
 @endsection
 
@@ -14,7 +14,7 @@
 @if ($conversaciones->isEmpty())
     <div class="hb-empty">
         <div class="hb-empty__icon" aria-hidden="true">✉</div>
-        <h3>Todavía no tienes conversaciones</h3>
+        <h3>Todavía no tiene conversaciones</h3>
         <p>
             Cuando escribas a un arrendador desde la ficha de un alojamiento,
             la conversación aparecerá aquí.

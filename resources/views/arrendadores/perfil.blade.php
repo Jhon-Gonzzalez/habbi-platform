@@ -43,7 +43,7 @@
                     recorrer los perfiles en vez de los anuncios para llevarse
                     los contactos, sin que quedara registro ni tope.
 
-                    Se contacta desde cualquiera de sus publicaciones, que es
+                    Se contacte desde cualquiera de sus publicaciones, que es
                     donde el chat tiene sentido: una conversación va siempre
                     sobre un alojamiento concreto.
                 --}}
@@ -54,7 +54,7 @@
                     </p>
                 @else
                     <p class="hb-small hb-muted" style="margin-top:1.25rem">
-                        <a href="{{ route('login') }}">Inicia sesión</a> para ver sus datos de contacto.
+                        <a href="{{ route('login') }}">Inicie sesión</a> para ver sus datos de contacto.
                     </p>
                 @endauth
             </div>

@@ -16,7 +16,7 @@
     en el frontend.
 
     Leaflet 1.9.4, descargado del paquete oficial de npm y comprobado
-    contra el sha512 que publica el registro. Licencia BSD de 2
+    contra el sha512 que publique el registro. Licencia BSD de 2
     cláusulas, en vendor/leaflet/LICENSE.
 --}}
 @once

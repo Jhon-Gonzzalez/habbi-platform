@@ -27,7 +27,7 @@
             <label class="hb-label" for="phone">Teléfono <span class="hb-muted">(opcional)</span></label>
             <input class="hb-input @error('phone') is-invalid @enderror" type="tel" id="phone" name="phone"
                    value="{{ old('phone') }}" autocomplete="tel" placeholder="+57 300 000 0000">
-            <span class="hb-hint">Lo usaremos para autocompletar tus publicaciones.</span>
+            <span class="hb-hint">Lo usaremos para autocompletar sus publicaciones.</span>
             @error('phone') <span class="hb-error">{{ $message }}</span> @enderror
         </div>
 
@@ -49,6 +49,6 @@
     </form>
 
     <p class="hb-center hb-small" style="margin-top:1.75rem">
-        ¿Ya tienes cuenta? <a href="{{ route('login') }}">Inicia sesión</a>
+        ¿Ya tiene cuenta? <a href="{{ route('login') }}">Inicie sesión</a>
     </p>
 @endsection

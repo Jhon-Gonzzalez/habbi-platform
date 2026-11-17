@@ -5,7 +5,7 @@
 @section('cabecera')
     <div>
         <h1>Conviértete en arrendador</h1>
-        <p>Verificamos a quien publica para que los estudiantes sepan con quién tratan.</p>
+        <p>Verificamos a quien publique para que los estudiantes sepan con quién tratan.</p>
     </div>
 @endsection
 
@@ -17,8 +17,8 @@
         <div class="hb-card">
             <div class="hb-card__body hb-center">
                 <div style="font-size:2.5rem;line-height:1" aria-hidden="true">✓</div>
-                <h2 style="margin-top:.75rem">Ya eres arrendador verificado</h2>
-                <p class="hb-muted">Tu perfil muestra el sello y puedes publicar cuando quieras.</p>
+                <h2 style="margin-top:.75rem">Ya es arrendador verificado</h2>
+                <p class="hb-muted">Su perfil muestra el sello y puede publicar cuando quiera.</p>
                 <div class="hb-row hb-center" style="justify-content:center;margin-top:1.5rem">
                     <a class="hb-btn hb-btn--primary" href="{{ route('alojamientos.create') }}">Publicar alojamiento</a>
                     <a class="hb-btn hb-btn--ghost" href="{{ route('arrendadores.perfil', $usuario) }}">Ver mi perfil público</a>
@@ -31,12 +31,12 @@
         <div class="hb-card">
             <div class="hb-card__body hb-center">
                 <div style="font-size:2.5rem;line-height:1" aria-hidden="true">⏳</div>
-                <h2 style="margin-top:.75rem">Tu solicitud está en revisión</h2>
+                <h2 style="margin-top:.75rem">Su solicitud está en revisión</h2>
                 <p class="hb-muted">
                     La enviaste {{ $solicitud->created_at->diffForHumans() }}.
                     Revisamos los documentos a mano, así que puede tardar un día hábil.
                 </p>
-                <p class="hb-small hb-muted">Te avisaremos por correo en cuanto haya respuesta.</p>
+                <p class="hb-small hb-muted">Le avisaremos por correo en cuanto haya respuesta.</p>
             </div>
         </div>
 
@@ -46,7 +46,7 @@
             <div class="hb-alert hb-alert--error">
                 <span class="hb-alert__icon">!</span>
                 <div>
-                    <strong>Tu solicitud anterior fue rechazada</strong>
+                    <strong>Su solicitud anterior fue rechazada</strong>
                     <p style="margin:.4rem 0 0">{{ $solicitud->motivo_rechazo }}</p>
                     <p class="hb-small hb-mb-0" style="margin-top:.4rem">
                         Corrige lo indicado y vuelve a enviarla: no hay límite de intentos.
@@ -61,11 +61,11 @@
             </div>
             <div class="hb-card__body">
                 <p class="hb-muted hb-mb-0">
-                    Un estudiante que llega a tu publicación no tiene forma de saber si
-                    eres real. Verificar tu identidad y que el inmueble existe es lo que
-                    convierte tu anuncio en algo en lo que se puede confiar. Los documentos
-                    los ve <strong>únicamente el equipo de HABBI</strong>, nunca se publican
-                    y puedes pedir que los borremos cuando quieras.
+                    Un estudiante que llega a su publicación no tiene forma de saber si
+                    es real. Verificar su identidad y que el inmueble existe es lo que
+                    convierte su anuncio en algo en lo que se puede confiar. Los documentos
+                    los vaya <strong>únicamente el equipo de HABBI</strong>, nunca se publican
+                    y puede pedir que los borremos cuando quiera.
                 </p>
             </div>
         </div>
@@ -88,7 +88,7 @@
                     </div>
 
                     <div class="hb-field hb-mb-0">
-                        <label class="hb-label" for="mensaje">Cuéntanos sobre lo que vas a arrendar <span class="hb-req">*</span></label>
+                        <label class="hb-label" for="mensaje">Cuéntenos sobre lo que va a arrendar <span class="hb-req">*</span></label>
                         <textarea class="hb-textarea @error('mensaje') is-invalid @enderror" id="mensaje"
                                   name="mensaje" required minlength="40" maxlength="1000"
                                   placeholder="Ej: Tengo tres habitaciones en una casa del barrio La Granja, a diez minutos de Unicórdoba. Llevo cuatro años arrendando a estudiantes.">{{ old('mensaje') }}</textarea>

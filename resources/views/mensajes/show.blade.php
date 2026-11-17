@@ -53,7 +53,7 @@
                 @endif
             @empty
                 <p class="hb-muted hb-center hb-mb-0" style="padding:1.5rem 0">
-                    Rompe el hielo: pregunta si sigue disponible, desde cuándo, y qué incluye el precio.
+                    Rompa el hielo: pregunta si sigue disponible, desde cuándo, y qué incluye el precio.
                 </p>
             @endforelse
         </div>
@@ -64,13 +64,13 @@
                 <div class="hb-field hb-mb-0">
                     <textarea class="hb-textarea @error('cuerpo') is-invalid @enderror"
                               name="cuerpo" rows="3" maxlength="2000" required
-                              aria-label="Escribe tu mensaje"
-                              placeholder="Escribe tu mensaje…">{{ old('cuerpo') }}</textarea>
+                              aria-label="Escriba su mensaje"
+                              placeholder="Escriba su mensaje…">{{ old('cuerpo') }}</textarea>
                     @error('cuerpo') <span class="hb-error">{{ $message }}</span> @enderror
                 </div>
                 <div class="hb-row hb-row--between" style="margin-top:.75rem">
                     <span class="hb-hint hb-mb-0">
-                        Acuerda ver el lugar en persona antes de pagar nada.
+                        Acuerde ver el lugar en persona antes de pagar nada.
                     </span>
                     <button class="hb-btn hb-btn--primary" type="submit">Enviar</button>
                 </div>

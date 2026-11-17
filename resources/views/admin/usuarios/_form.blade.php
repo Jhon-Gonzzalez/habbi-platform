@@ -36,7 +36,7 @@
             @endforeach
         </select>
         <span class="hb-hint">
-            Estudiante: busca y reseña. Arrendador: además publica.
+            Estudiante: busca y reseña. Arrendador: además publique.
             Administrador: modera todo. Lo normal es que un arrendador llegue
             por la solicitud verificada, no por aquí.
         </span>

@@ -21,28 +21,28 @@
             acuerdo al que lleguen las partes.
         </p>
 
-        <h2 style="font-size:1.15rem;margin-top:2rem">2. Tu cuenta</h2>
+        <h2 style="font-size:1.15rem;margin-top:2rem">2. Su cuenta</h2>
         <ul>
             <li>Los datos que registres deben ser verdaderos.</li>
-            <li>Eres responsable de lo que ocurra con tu cuenta. No la compartas.</li>
+            <li>Es responsable de lo que ocurra con su cuenta. No la comparta.</li>
             <li>Una persona, una cuenta.</li>
         </ul>
 
         <h2 style="font-size:1.15rem;margin-top:2rem">3. Publicar</h2>
-        <p>Para publicar hay que verificarse como arrendador. Al publicar te comprometes a que:</p>
+        <p>Para publicar hay que verificarse como arrendador. Al publicar se compromete a que:</p>
         <ul>
             <li>El alojamiento <strong>existe</strong> y está disponible.</li>
             <li>Las fotos <strong>son del inmueble real</strong>, no de otro ni de catálogo.</li>
-            <li>El precio y las condiciones son los que de verdad vas a cobrar.</li>
-            <li>Tienes derecho a arrendarlo.</li>
+            <li>El precio y las condiciones son los que de verdad va a cobrar.</li>
+            <li>Tiene derecho a arrendarlo.</li>
         </ul>
         <p>Publicar algo falso es motivo de retirada inmediata y de pérdida de la verificación.</p>
 
         <h2 style="font-size:1.15rem;margin-top:2rem">4. Las reseñas</h2>
         <ul>
-            <li>Solo puedes reseñar alojamientos que no sean tuyos.</li>
+            <li>Solo puede reseñar alojamientos que no sean tuyos.</li>
             <li>Una reseña por persona y alojamiento.</li>
-            <li>Escribe sobre tu experiencia real. Nada de insultos ni datos personales de terceros.</li>
+            <li>Escriba sobre su experiencia real. Nada de insultos ni datos personales de terceros.</li>
             <li>Retiramos las reseñas que incumplan esto, pero <strong>no por ser negativas</strong>: una mala experiencia contada con respeto se queda.</li>
         </ul>
 
@@ -64,8 +64,8 @@
 
         <h2 style="font-size:1.15rem;margin-top:2rem">7. Cierre de cuentas</h2>
         <p>
-            Podemos suspender una cuenta que incumpla estos términos. Tú puedes
-            cerrar la tuya cuando quieras.
+            Podemos suspender una cuenta que incumpla estos términos. Usted puede
+            cerrar la tuya cuando quiera.
         </p>
 
     </div>

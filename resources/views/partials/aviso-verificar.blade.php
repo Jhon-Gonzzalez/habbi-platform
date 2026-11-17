@@ -5,7 +5,7 @@
         <div class="hb-verificar">
             <div class="hb-container hb-verificar__inner">
                 <span>
-                    Falta verificar tu correo. Lo necesitas para dejar reseñas,
+                    Falta verificar su correo. Lo necesita para dejar reseñas,
                     reportar publicaciones y pedir ser arrendador.
                 </span>
                 <form method="POST" action="{{ route('verification.resend') }}">

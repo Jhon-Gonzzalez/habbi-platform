@@ -14,7 +14,7 @@
         <div class="hb-card">
             <div class="hb-card__header">
                 <h2 style="font-size:1.05rem">Tarifas</h2>
-                <span class="hb-badge hb-badge--muted">Las cambias tú, sin tocar código</span>
+                <span class="hb-badge hb-badge--muted">Las cambia usted, sin tocar código</span>
             </div>
 
             @if ($tarifas->isEmpty())
@@ -92,7 +92,7 @@
 
                 <div class="hb-card__footer">
                     <p class="hb-hint hb-mb-0">
-                        Cambiar o borrar una tarifa <strong>no toca las campañas ya
+                        Cambiar o borrar una tarifa <strong>no toque las campañas ya
                         cobradas</strong>: el monto y los días quedaron copiados en
                         cada cobro. Un precio nuevo no puede reescribir lo que alguien
                         ya pagó.
@@ -141,7 +141,7 @@
                         <textarea class="hb-textarea" id="cobro_instrucciones" name="cobro_instrucciones"
                                   rows="4" maxlength="600">{{ old('cobro_instrucciones', $ajustes[\App\Models\Ajuste::COBRO_INSTRUCCIONES] ?? '') }}</textarea>
                         <span class="hb-hint">
-                            Si pones algo aquí, reemplaza los tres pasos que ve el arrendador.
+                            Si pones algo aquí, reemplaza los tres pasos que vaya el arrendador.
                             Déjalo vacío para usar los de siempre.
                         </span>
                     </div>
@@ -150,7 +150,7 @@
                 </form>
 
                 <span class="hb-hint" style="margin-top:1rem">
-                    Estos números los ve cualquier arrendador con una publicación
+                    Estos números los vaya cualquier arrendador con una publicación
                     aprobada. En la auditoría queda <strong>que alguien los cambió y
                     cuándo</strong>, pero no los números: copiarlos ahí solo los
                     duplicaría en un sitio más.
@@ -171,8 +171,8 @@
                 </form>
 
                 <span class="hb-hint" style="margin-top:1rem">
-                    El arrendador elige el tiempo que quiere estar, y según eso paga.
-                    Puedes tener tantas opciones como quieras: una de fin de semana
+                    El arrendador elija el tiempo que quiere estar, y según eso paga.
+                    Puede tener tantas opciones como quiera: una de fin de semana
                     para quien tiene prisa, una de temporada para enero.
                 </span>
             </div>

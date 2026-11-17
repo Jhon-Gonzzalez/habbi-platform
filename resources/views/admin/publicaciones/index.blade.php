@@ -15,7 +15,7 @@
 
         {{-- Pestañas de estado. Antes esto estaba repartido entre dos
              pantallas del menú: aquí están todas las publicaciones y lo
-             único que cambia es por cuál se filtra. --}}
+             único que cambia es por cuál se filtre. --}}
         <div class="hb-row" style="flex-wrap:wrap">
             @foreach (\App\Models\Alojamiento::ESTADOS as $clave => $texto)
                 <a class="hb-btn hb-btn--sm {{ $estado === $clave ? 'hb-btn--primary' : 'hb-btn--ghost' }}"

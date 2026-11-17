@@ -66,7 +66,7 @@
             <div class="hb-drop" data-uploader="#previsualizacionNuevas"
                  data-max-bytes="{{ \App\Support\Subidas::maxPost() }}">
                 <div class="hb-drop__icon" aria-hidden="true">🖼</div>
-                <strong>Arrastra fotos nuevas o haz clic para elegirlas</strong>
+                <strong>Arrastre fotos nuevas o haga clic para elegirlas</strong>
                 <span class="hb-hint">JPG, PNG o WEBP · máximo 5 MB cada una</span>
                 <input type="file" name="new_photos[]" accept="image/jpeg,image/png,image/webp" multiple
                        aria-label="Fotos nuevas para añadir">

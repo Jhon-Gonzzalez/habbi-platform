@@ -285,7 +285,7 @@ class CampanaTest extends TestCase
         $this->actingAs($a->user)
             ->get(route('alojamientos.campana', $a))
             ->assertOk()
-            ->assertSee('garantiza arrendar', false)
-            ->assertSee('manda lo que él eligió', false);
+            ->assertSee('garantiza el arriendo', false)
+            ->assertSee('prevalece el criterio que él haya elegido', false);
     }
 }

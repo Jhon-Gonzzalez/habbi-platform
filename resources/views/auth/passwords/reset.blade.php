@@ -4,7 +4,7 @@
 
 @section('formulario')
     <h1>Nueva contraseña</h1>
-    <p class="hb-muted">Elige una contraseña que no uses en otro sitio.</p>
+    <p class="hb-muted">Elija una contraseña que no uses en otro sitio.</p>
 
     <form method="POST" action="{{ route('password.update') }}" style="margin-top:2rem">
         @csrf

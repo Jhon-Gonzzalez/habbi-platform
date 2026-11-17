@@ -129,7 +129,7 @@ class VerificacionCorreoTest extends TestCase
         $this->actingAs($this->sinVerificar())
             ->get(route('alojamientos.index'))
             ->assertOk()
-            ->assertSee('Falta verificar tu correo');
+            ->assertSee('Falta verificar su correo');
     }
 
     public function test_el_aviso_desaparece_al_verificar(): void
@@ -139,7 +139,7 @@ class VerificacionCorreoTest extends TestCase
         $this->actingAs(User::factory()->create())
             ->get(route('alojamientos.index'))
             ->assertOk()
-            ->assertDontSee('Falta verificar tu correo');
+            ->assertDontSee('Falta verificar su correo');
     }
 
     public function test_la_pantalla_de_verificacion_explica_que_se_desbloquea(): void
@@ -147,7 +147,7 @@ class VerificacionCorreoTest extends TestCase
         $this->actingAs($this->sinVerificar())
             ->get(route('verification.notice'))
             ->assertOk()
-            ->assertSee('Verifica tu correo');
+            ->assertSee('Verifique su correo');
     }
 
     /* ===================== Salida de emergencia del admin ===================== */
@@ -259,7 +259,7 @@ class VerificacionCorreoTest extends TestCase
         $this->actingAs($this->sinVerificar())
             ->get(route('alojamientos.index'))
             ->assertOk()
-            ->assertDontSee('Falta verificar tu correo');
+            ->assertDontSee('Falta verificar su correo');
     }
 
     public function test_el_interruptor_no_borra_nada_y_se_puede_volver_a_encender(): void

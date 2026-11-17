@@ -12,7 +12,7 @@
 
             <p class="hb-muted">
                 Pasó demasiado tiempo con la página abierta y, por seguridad,
-                dejó de ser válida. No se guardó nada. Vuelve atrás, recarga y
+                dejó de ser válida. No se guardó nada. Vuelva atrás, recargue y
                 envíalo otra vez.
             </p>
 

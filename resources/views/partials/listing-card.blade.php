@@ -84,7 +84,7 @@
             @if ($gestion)
                 <a class="hb-btn hb-btn--ghost hb-btn--sm" href="{{ route('alojamientos.edit', $a) }}">Editar</a>
 
-                {{-- Solo se ofrece una campaña para lo que de verdad se ve
+                {{-- Solo se ofrece una campaña para lo que de verdad se vaya
                      en el buscador: cobrar por subir de posición algo que
                      está pendiente o pausado sería cobrar por nada. --}}
                 @if ($a->esVisibleAlPublico())
@@ -101,7 +101,7 @@
                 </form>
 
                 <form method="POST" action="{{ route('alojamientos.destroy', $a) }}" style="flex:1"
-                      data-confirmar="¿Seguro que quieres eliminar «{{ $a->title }}»? Esta acción no se puede deshacer.">
+                      data-confirmar="¿Seguro que quiere eliminar «{{ $a->title }}»? Esta acción no se puede deshacer.">
                     @csrf @method('DELETE')
                     <button class="hb-btn hb-btn--danger hb-btn--sm hb-btn--block" type="submit">Eliminar</button>
                 </form>

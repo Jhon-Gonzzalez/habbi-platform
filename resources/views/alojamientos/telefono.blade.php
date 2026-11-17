@@ -30,12 +30,12 @@
                href="tel:{{ $alojamiento->telefonoLimpio() }}">Llamar</a>
 
             <p class="hb-hint" style="margin-top:.75rem">
-                Por el chat queda constancia de lo que se acuerda y la publicación
+                Por el chat queda constancia de lo que se acuerde y la publicación
                 se actualiza sola al cerrar el trato. Por teléfono, no.
             </p>
 
             <p class="hb-muted hb-small" style="margin-top:1.25rem">
-                Escribe desde tu propio número y acuerda ver el lugar en persona
+                Escriba desde su propio número y acuerde ver el lugar en persona
                 antes de pagar nada. <strong>Nunca envíes dinero por adelantado</strong>
                 a alguien que no conoces, ni siquiera como «reserva».
             </p>

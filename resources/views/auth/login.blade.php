@@ -4,7 +4,7 @@
 
 @section('formulario')
     <h1>Iniciar sesión</h1>
-    <p class="hb-muted">Entra para publicar, calificar y contactar arrendadores.</p>
+    <p class="hb-muted">Entre para publicar, calificar y contactar arrendadores.</p>
 
     <form method="POST" action="{{ route('login') }}" style="margin-top:2rem">
         @csrf
@@ -30,7 +30,7 @@
             </label>
 
             @if (Route::has('password.request'))
-                <a class="hb-small" href="{{ route('password.request') }}">¿Olvidaste tu contraseña?</a>
+                <a class="hb-small" href="{{ route('password.request') }}">¿Olvidaste su contraseña?</a>
             @endif
         </div>
 
@@ -38,6 +38,6 @@
     </form>
 
     <p class="hb-center hb-small" style="margin-top:1.75rem">
-        ¿No tienes cuenta? <a href="{{ route('register') }}">Créala gratis</a>
+        ¿No tiene cuenta? <a href="{{ route('register') }}">Créela gratis</a>
     </p>
 @endsection

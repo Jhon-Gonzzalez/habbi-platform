@@ -19,7 +19,7 @@
     <div class="hb-alert hb-alert--error" role="alert">
         <span class="hb-alert__icon">!</span>
         <div>
-            <strong>Revisa los siguientes campos:</strong>
+            <strong>Revise los siguientes campos:</strong>
             <ul>
                 @foreach ($errors->all() as $error)
                     <li>{{ $error }}</li>

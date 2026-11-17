@@ -45,7 +45,7 @@ class SubidaFotosTest extends TestCase
 
         $this->assertStringContainsString('Las fotos pesan demasiado', $html);
         $this->assertStringContainsString('Volver e intentarlo de nuevo', $html);
-        $this->assertStringContainsString('tu publicación no llegó a crearse', $html);
+        $this->assertStringContainsString('su publicación no llegó a crearse', $html);
     }
 
     public function test_el_formulario_de_publicar_anuncia_el_limite_al_navegador(): void

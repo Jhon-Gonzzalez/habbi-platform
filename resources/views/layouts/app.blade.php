@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta name="theme-color" content="#2091F9">
-    <meta name="description" content="@yield('descripcion', 'HABBI: encuentra y publica alojamiento estudiantil verificado, con reseñas reales y contacto directo.')">
+    <meta name="description" content="@yield('descripcion', 'HABBI: encuentre y publique alojamiento estudiantil verificado, con reseñas reales y contacto directo.')">
 
     <title>@yield('titulo', 'Inicio') · HABBI</title>
 
@@ -13,14 +13,14 @@
 
          En Colombia los enlaces se mandan por WhatsApp, y sin esto llega
          la URL pelada, sin foto ni título. Las etiquetas og: las leen
-         WhatsApp, Facebook, Telegram y LinkedIn; las twitter: las usa X.
+         WhatsApp, Facebook, Telegram y LinkedIn; las twitter: las use X.
 
          La imagen tiene que ser PNG o JPEG: ninguno de ellos previsualiza
          SVG, y tiene que ser una URL absoluta. --}}
     @php
         $hbTitulo = trim($__env->yieldContent('titulo', 'Inicio')) . ' · HABBI';
         $hbDesc   = trim($__env->yieldContent('descripcion',
-            'HABBI: encuentra y publica alojamiento estudiantil verificado, con reseñas reales y contacto directo.'));
+            'HABBI: encuentre y publique alojamiento estudiantil verificado, con reseñas reales y contacto directo.'));
         $hbImagen = trim($__env->yieldContent('imagen', asset('assets/img/images/principal.jpg')));
     @endphp
 

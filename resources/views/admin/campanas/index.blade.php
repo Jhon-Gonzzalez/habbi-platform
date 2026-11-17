@@ -123,8 +123,8 @@
             <div class="hb-card__body">
 
                 <p class="hb-small hb-muted">
-                    El arrendador paga por Nequi, Daviplata o en efectivo y tú lo anotas
-                    aquí. <strong>Comprueba que el dinero llegó</strong> antes de activar:
+                    El arrendador paga por Nequi, Daviplata o en efectivo y usted lo anotas
+                    aquí. <strong>Compruebe que el dinero llegó</strong> antes de activar:
                     esto no verifica nada, solo deja constancia.
                 </p>
 
@@ -135,7 +135,7 @@
                         <label class="hb-label" for="alojamiento_id">Publicación</label>
                         <select class="hb-select @error('alojamiento_id') is-invalid @enderror"
                                 id="alojamiento_id" name="alojamiento_id" required>
-                            <option value="">Elige una…</option>
+                            <option value="">Elija una…</option>
                             @foreach ($candidatas as $a)
                                 <option value="{{ $a->id }}" @selected(old('alojamiento_id') == $a->id)>
                                     {{ \Illuminate\Support\Str::limit($a->title, 45) }} · {{ $a->user->name }}
@@ -144,7 +144,7 @@
                         </select>
                         <span class="hb-hint">
                             Solo salen las que están visibles en el buscador. Una publicación
-                            pendiente o pausada no se puede destacar: no se ve.
+                            pendiente o pausada no se puede destacar: no se vaya.
                         </span>
                         @error('alojamiento_id') <span class="hb-error">{{ $message }}</span> @enderror
                     </div>

@@ -1,25 +1,25 @@
 @extends('layouts.auth')
 
-@section('titulo', 'Verifica tu correo')
+@section('titulo', 'Verifique su correo')
 
 @section('formulario')
-    <h1>Verifica tu correo</h1>
+    <h1>Verifique su correo</h1>
     <p class="hb-muted">
-        Te enviamos un enlace a <strong>{{ auth()->user()->email }}</strong>.
+        Le enviamos un enlace a <strong>{{ auth()->user()->email }}</strong>.
         Ábrelo para confirmar que el correo es tuyo.
     </p>
 
     @if (session('resent'))
         <div class="hb-alert hb-alert--success" style="margin-top:1.5rem">
             <span class="hb-alert__icon" aria-hidden="true">✓</span>
-            <span>Te acabamos de enviar otro enlace. Revisa también la carpeta de spam.</span>
+            <span>Le acabamos de enviar otro enlace. Revise también la carpeta de spam.</span>
         </div>
     @endif
 
     <div class="hb-alert hb-alert--info" style="margin-top:1.5rem">
         <span class="hb-alert__icon" aria-hidden="true">i</span>
         <span>
-            Mientras tanto puedes buscar alojamientos y guardar favoritos con normalidad.
+            Mientras tanto puede buscar alojamientos y guardar favoritos con normalidad.
             El correo verificado solo hace falta para dejar reseñas, reportar publicaciones
             y pedir ser arrendador.
         </span>

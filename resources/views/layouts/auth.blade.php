@@ -14,14 +14,14 @@
 
     <aside class="hb-auth__aside">
         @include('partials.logo', ['tono' => 'claro'])
-        <h2>Tu próximo hogar de estudiante está a un clic</h2>
-        <p>Miles de habitaciones, apartaestudios y apartamentos cerca de tu universidad.</p>
+        <h2>Su próximo hogar de estudiante está a un clic</h2>
+        <p>Miles de habitaciones, apartaestudios y apartamentos cerca de su universidad.</p>
 
         <ul class="hb-auth__points">
             <li><span>✓</span> Reseñas verificadas de otros estudiantes</li>
             <li><span>✓</span> Filtros por precio, barrio y comodidades</li>
             <li><span>✓</span> Contacto directo con el arrendador</li>
-            <li><span>✓</span> Publica tu alojamiento gratis</li>
+            <li><span>✓</span> Publique su alojamiento gratis</li>
         </ul>
     </aside>
 

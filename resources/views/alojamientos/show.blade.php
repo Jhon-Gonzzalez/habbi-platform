@@ -20,7 +20,7 @@
 @unless ($alojamiento->is_active)
     <div class="hb-alert hb-alert--info">
         <span class="hb-alert__icon">i</span>
-        <div>Esta publicación está <strong>pausada</strong>: solo tú puedes verla, no aparece en las búsquedas.</div>
+        <div>Esta publicación está <strong>pausada</strong>: solo usted puede verla, no aparece en las búsquedas.</div>
     </div>
 @endunless
 
@@ -76,13 +76,13 @@
                 <div class="hb-mapa__info">
                     <span class="hb-mapa__icono" aria-hidden="true">📍</span>
                     <div>
-                        <strong>¿Qué tan lejos queda de tu universidad?</strong>
+                        <strong>¿Qué tan lejos queda de su universidad?</strong>
                         <p class="hb-muted" style="margin:.15rem 0 0;font-size:.9rem">
                             @if ($distancia = $alojamiento->distanciaAUniversidad())
                                 Está a <strong>{{ $distancia }} km</strong> de {{ $uni['corto'] }}
-                                en línea recta. Abajo tienes la ruta a pie, que es más larga.
+                                en línea recta. Abajo tiene la ruta a pie, que es más larga.
                             @else
-                                Te mostramos la ruta desde este alojamiento hasta {{ $uni['corto'] }}.
+                                Le mostramos la ruta desde este alojamiento hasta {{ $uni['corto'] }}.
                             @endif
                         </p>
                     </div>
@@ -184,7 +184,7 @@
                 @if ($puedeVotar)
                     <div class="hb-card__body" style="border-bottom:1px solid var(--hb-border)">
                         <h3 style="font-size:1rem">
-                            {{ $miResena ? 'Actualiza tu reseña' : '¿Ya viviste aquí? Cuéntanos' }}
+                            {{ $miResena ? 'Actualiza su reseña' : '¿Ya vivió aquí? Cuéntenos' }}
                         </h3>
 
                         <form method="POST" action="{{ route('ratings.store', $alojamiento) }}">
@@ -200,7 +200,7 @@
                                         </button>
                                     @endfor
                                 </div>
-                                <span class="hb-muted hb-small" id="ratingLabel">Selecciona una calificación</span>
+                                <span class="hb-muted hb-small" id="ratingLabel">Seleccione una calificación</span>
                             </div>
 
                             <input type="hidden" name="rating" id="ratingValue" value="{{ old('rating', $miResena->rating ?? 0) }}">
@@ -209,7 +209,7 @@
                                 <label class="hb-label hb-sr-only" for="comment">Comentario</label>
                                 <textarea class="hb-textarea @error('comment') is-invalid @enderror"
                                           id="comment" name="comment" rows="3"
-                                          placeholder="¿Cómo fue tu experiencia? (opcional)">{{ old('comment', $miResena->comment ?? '') }}</textarea>
+                                          placeholder="¿Cómo fue su experiencia? (opcional)">{{ old('comment', $miResena->comment ?? '') }}</textarea>
                                 @error('comment') <span class="hb-error">{{ $message }}</span> @enderror
                             </div>
 
@@ -228,20 +228,20 @@
                         @if ($miResena)
                             <form id="eliminarResena{{ $miResena->id }}" method="POST"
                                   action="{{ route('ratings.destroy', $miResena) }}"
-                                  data-confirmar="¿Eliminar tu reseña?">
+                                  data-confirmar="¿Eliminar su reseña?">
                                 @csrf @method('DELETE')
                             </form>
                         @endif
                     </div>
                 @elseif ($alojamiento->user_id === auth()->id())
                     <div class="hb-card__body" style="border-bottom:1px solid var(--hb-border)">
-                        <p class="hb-muted hb-small hb-mb-0">Esta es tu publicación, así que no puedes calificarla.</p>
+                        <p class="hb-muted hb-small hb-mb-0">Esta es su publicación, así que no puede calificarla.</p>
                     </div>
                 @endif
             @else
                 <div class="hb-card__body" style="border-bottom:1px solid var(--hb-border)">
                     <p class="hb-mb-0 hb-small">
-                        <a href="{{ route('login') }}">Inicia sesión</a> para dejar tu reseña.
+                        <a href="{{ route('login') }}">Inicie sesión</a> para dejar su reseña.
                     </p>
                 </div>
             @endauth
@@ -271,7 +271,7 @@
                         @endcan
                     </article>
                 @empty
-                    <p class="hb-muted hb-mb-0">Todavía no hay reseñas. Sé el primero en opinar.</p>
+                    <p class="hb-muted hb-mb-0">Todavía no hay reseñas. Sea el primero en opinar.</p>
                 @endforelse
 
                 @if ($resenas->hasPages())
@@ -293,7 +293,7 @@
 
                 <hr style="border:0;border-top:1px solid var(--hb-border);margin:1.25rem 0">
 
-                {{-- Quién publica: con foto y sello, para que el estudiante
+                {{-- Quién publique: con foto y sello, para que el estudiante
                      vea que al otro lado hay una persona verificada. --}}
                 <a class="hb-row hb-arrendador-mini" style="margin-bottom:1.25rem"
                    href="{{ route('arrendadores.perfil', $alojamiento->user) }}">
@@ -340,13 +340,13 @@
                     @endif
 
                     <p class="hb-muted hb-small hb-center" style="margin:.75rem 0 0">
-                        Habla por el chat: queda constancia de lo que se acuerda.
+                        Habla por el chat: queda constancia de lo que se acuerde.
                         Nunca envíes dinero por adelantado.
                     </p>
 
                 @else
                     <a class="hb-btn hb-btn--primary hb-btn--block" href="{{ route('login') }}">
-                        Inicia sesión para contactar
+                        Inicie sesión para contactar
                     </a>
                     <p class="hb-muted hb-small hb-center" style="margin:.75rem 0 0">
                         Protegemos los datos de contacto de los arrendadores.

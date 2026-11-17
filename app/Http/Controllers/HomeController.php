@@ -21,7 +21,9 @@ class HomeController extends Controller
             ->conResenas()
             ->orderByDesc('ratings_avg_rating')
             ->orderByDesc('created_at')
-            ->take(6)
+            // Cuatro, que es lo que cabe en una fila. Con seis la segunda
+            // fila quedaba con dos tarjetas sueltas.
+            ->take(4)
             ->get();
 
         return view('index', compact('mejorCalificados'));

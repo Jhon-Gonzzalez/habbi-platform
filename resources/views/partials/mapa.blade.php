@@ -5,7 +5,7 @@
     url. Si viene vacía, no se pinta nada: un mapa sin pines solo confunde.
 
     Arranca en tamaño compacto. A pantalla completa ocupaba casi todo lo
-    que se ve y empujaba los resultados fuera de la pantalla, que es justo
+    que se vaya y empujaba los resultados fuera de la pantalla, que es justo
     al revés de lo que hace falta: el mapa acompaña al listado. Los dos
     botones dejan ampliarlo o quitarlo de en medio, y la elección se
     recuerda en el navegador para no tener que repetirla en cada búsqueda.

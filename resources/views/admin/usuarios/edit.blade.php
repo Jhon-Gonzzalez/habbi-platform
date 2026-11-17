@@ -12,7 +12,7 @@
             <strong>Enlace de restablecimiento generado</strong>
             <p class="hb-small" style="margin:.35rem 0">
                 Pásaselo solo a esta persona. Caduca en 60 minutos y únicamente
-                sirve para su cuenta; tú no puedes ver ni fijar su contraseña.
+                sirve para su cuenta; usted no puede ver ni fijar su contraseña.
             </p>
             <input class="hb-input hb-small" type="text" readonly onclick="this.select()"
                    aria-label="Enlace de restablecimiento de contraseña"
@@ -43,14 +43,14 @@
         Generar enlace de restablecimiento
     </button>
     <span class="hb-hint" style="display:block;margin-top:.5rem">
-        Úsalo si esta persona perdió el acceso. No te muestra su contraseña.
+        Úselo si esta persona perdió el acceso. No le muestra su contraseña.
     </span>
 </form>
 
 @unless ($usuario->hasVerifiedEmail())
     <form method="POST" action="{{ route('admin.usuarios.verificar-correo', $usuario) }}"
           style="max-width:760px;margin-top:1.5rem"
-          data-confirmar="Solo haz esto si comprobaste por otro medio que {{ $usuario->email }} es de esta persona. ¿Continuar?">
+          data-confirmar="Solo haga esto si comprobaste por otro medio que {{ $usuario->email }} es de esta persona. ¿Continuar?">
         @csrf
         <button class="hb-btn hb-btn--ghost" type="submit">
             Marcar el correo como verificado

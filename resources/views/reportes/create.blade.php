@@ -13,7 +13,7 @@
 <div style="max-width:760px;margin-inline:auto">
 
     <p class="hb-muted">
-        Estás reportando <strong>«{{ $alojamiento->title }}»</strong>,
+        Está reportando <strong>«{{ $alojamiento->title }}»</strong>,
         publicada por {{ $alojamiento->user->name }}.
         <a href="{{ route('alojamientos.show', $alojamiento) }}">Volver a la publicación</a>
     </p>
@@ -22,8 +22,8 @@
         <div class="hb-alert hb-alert--info">
             <span class="hb-alert__icon" aria-hidden="true">i</span>
             <span>
-                Ya reportaste esta publicación antes. Si el problema cambió o tienes
-                algo nuevo que contarnos, puedes enviarlo otra vez.
+                Ya reportó esta publicación antes. Si el problema cambió o tiene
+                algo nuevo que contarnos, puede enviarlo otra vez.
             </span>
         </div>
     @endif
@@ -53,13 +53,13 @@
         <div class="hb-card" style="margin-top:1.5rem">
             <div class="hb-card__body">
                 <div class="hb-field hb-mb-0">
-                    <label class="hb-label" for="detalle">Cuéntanos qué pasó</label>
+                    <label class="hb-label" for="detalle">Cuéntenos qué pasó</label>
                     <textarea class="hb-textarea @error('detalle') is-invalid @enderror"
                               id="detalle" name="detalle" rows="5"
                               maxlength="1000">{{ old('detalle') }}</textarea>
                     <span class="hb-hint">
-                        Obligatorio si eliges «Otro motivo». Entre más concreto seas
-                        —fechas, qué te dijeron, cuánto te pidieron—, más rápido podemos revisarlo.
+                        Obligatorio si elija «Otro motivo». Entre más concreto sea
+                        —fechas, qué le dijeron, cuánto le pidieron—, más rápido podemos revisarlo.
                     </span>
                     @error('detalle') <span class="hb-error">{{ $message }}</span> @enderror
                 </div>
@@ -70,9 +70,9 @@
             <span class="hb-alert__icon" aria-hidden="true">i</span>
             <span>
                 <strong>Un reporte no borra la publicación.</strong>
-                La revisa una persona del equipo antes de tomar cualquier decisión.
-                Si te estafaron dinero o estás en peligro, denuncia también ante la
-                autoridad: eso no lo podemos hacer nosotros por ti.
+                La revise una persona del equipo antes de tomar cualquier decisión.
+                Si lo estafaron dinero o está en peligro, denuncie también ante la
+                autoridad: eso no lo podemos hacer nosotros por usted.
             </span>
         </div>
 

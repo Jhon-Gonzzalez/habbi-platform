@@ -5,7 +5,7 @@
 @section('cabecera')
     <div>
         <h1>Mi perfil</h1>
-        <p>Así te ven los demás en HABBI.</p>
+        <p>Así lo ven los demás en HABBI.</p>
     </div>
     @if ($usuario->esArrendador() || $usuario->isAdmin())
         <a class="hb-btn hb-btn--white" href="{{ route('arrendadores.perfil', $usuario) }}">Ver mi perfil público</a>
@@ -85,17 +85,17 @@
                             <option value="{{ $u['nombre'] }}">
                         @endforeach
                     </datalist>
-                    <span class="hb-hint">Si eres estudiante, ayuda a que te recomienden lo que te queda cerca.</span>
+                    <span class="hb-hint">Si es estudiante, ayuda a que le recomienden lo que le queda cerca.</span>
                     @error('universidad') <span class="hb-error">{{ $message }}</span> @enderror
                 </div>
             </div>
 
             <div class="hb-field hb-mb-0">
-                <label class="hb-label" for="bio">Sobre ti</label>
+                <label class="hb-label" for="bio">Sobre usted</label>
                 <textarea class="hb-textarea @error('bio') is-invalid @enderror" id="bio" name="bio"
                           rows="4" maxlength="600"
                           placeholder="Ej: Llevo cuatro años arrendando habitaciones a estudiantes de Unicórdoba. Vivo en la misma casa, así que siempre hay alguien.">{{ old('bio', $usuario->bio) }}</textarea>
-                <span class="hb-hint">Máximo 600 caracteres. Aparece en tu perfil público.</span>
+                <span class="hb-hint">Máximo 600 caracteres. Aparece en su perfil público.</span>
                 @error('bio') <span class="hb-error">{{ $message }}</span> @enderror
             </div>
 
@@ -104,7 +104,7 @@
 
     {{-- Cuenta --}}
     <div class="hb-card" style="margin-top:1.5rem">
-        <div class="hb-card__header"><h2 style="font-size:1.1rem">Tu cuenta</h2></div>
+        <div class="hb-card__header"><h2 style="font-size:1.1rem">Su cuenta</h2></div>
         <div class="hb-card__body">
             <div class="hb-specs">
                 <div class="hb-spec">
@@ -127,7 +127,7 @@
                 <div class="hb-alert hb-alert--info" style="margin:1.25rem 0 0">
                     <span class="hb-alert__icon">i</span>
                     <div>
-                        ¿Quieres arrendar? Necesitas verificar tu cuenta primero.
+                        ¿Quiere arrendar? Necesita verificar su cuenta primero.
                         <a href="{{ route('arrendador.solicitud') }}">Empezar la verificación</a>.
                     </div>
                 </div>

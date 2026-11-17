@@ -4,7 +4,7 @@
 
 @section('formulario')
     <h1>Recuperar contraseña</h1>
-    <p class="hb-muted">Te enviaremos un enlace para crear una nueva.</p>
+    <p class="hb-muted">Le enviaremos un enlace para crear una nueva.</p>
 
     @if (session('status'))
         <div class="hb-alert hb-alert--success" role="status">
