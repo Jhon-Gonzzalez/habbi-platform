@@ -434,3 +434,111 @@ php artisan up
 
 Nunca compartas tu `.env` ni tus contraseñas: el script te las pide en el
 servidor y las escribe directamente allí.
+
+---
+
+# Cloudflare delante del hosting
+
+Cloudflare **no puede alojar HABBI**: sus Workers ejecutan JavaScript y
+WebAssembly, no PHP, y aquí hacen falta base de datos, disco y cron. Si
+intentas desplegar el repositorio desde su panel, te dará un error de
+compilación o un sitio vacío.
+
+Lo que sí hace, y gratis, es ponerse **delante** del hosting que sí corre
+PHP: dominio, HTTPS, red de distribución y filtro de bots.
+
+## Qué ganas
+
+| | |
+|---|---|
+| **HTTPS gratis** | Certificado automático y renovado solo |
+| **Más rápido** | El CSS, el JS y las fotos se sirven desde un servidor cercano. Desde Montería con datos móviles, se nota |
+| **Menos carga** | Los archivos estáticos no llegan a tu servidor |
+| **Protección** | Filtra bots y ataques antes de que entren |
+| **DNS** | Manejas el dominio desde un solo sitio |
+
+## Pasos
+
+**1. Añade el dominio.** En el panel de Cloudflare: *Add a site*. Te dará
+dos servidores de nombres.
+
+**2. Cámbialos donde compraste el dominio.** En el panel de tu
+registrador, reemplaza los suyos por los de Cloudflare. Tarda entre
+minutos y un par de horas en propagarse.
+
+**3. Apunta el registro al servidor.** En *DNS*, un registro `A` con la
+IP de tu hosting y la nube **naranja activada** (si está gris, Cloudflare
+solo resuelve el nombre y no hace nada más).
+
+**4. Pon el SSL en «Full (strict)».** En *SSL/TLS* → *Overview*.
+
+> ⚠️ **No uses «Flexible».** Con esa opción Cloudflare habla https con el
+> visitante pero **http con tu servidor**: el tráfico viaja sin cifrar en
+> el último tramo, donde están las contraseñas y los documentos de
+> identidad. Además provoca bucles de redirección con Laravel. Tu hosting
+> necesita su propio certificado; casi todos los cPanel traen Let's
+> Encrypt gratis.
+
+**5. En el `.env` del servidor:**
+
+```ini
+APP_URL=https://tudominio.com
+TRUSTED_PROXIES=*
+```
+
+Y después `php artisan config:clear`.
+
+Lo segundo no es opcional. Detrás de Cloudflare, tu servidor recibe las
+peticiones por http, así que **Laravel cree que la conexión es insegura y
+escribe los enlaces del CSS y del JS como `http://`**. El navegador los
+bloquea por «contenido mixto» y la página aparece sin estilos. Con
+`TRUSTED_PROXIES=*` Laravel hace caso de la cabecera que manda Cloudflare
+y vuelve a generarlos en `https://`.
+
+Es un fallo que **no se ve nunca en local**: aparece el día que publicas.
+Hay una prueba que lo vigila:
+`ProxiesDeConfianzaTest::test_detras_de_un_tunel_los_enlaces_salen_en_https`.
+
+Y hay un segundo motivo: sin eso, tu servidor ve la IP de Cloudflare en
+cada visita en vez de la del visitante. El registro de quién pidió cada
+teléfono guardaría siempre la misma, y el aviso de «alguien está
+recogiendo contactos» dejaría de funcionar.
+
+## Qué cachear y qué no
+
+Por defecto Cloudflare cachea solo archivos estáticos, que es lo que
+quieres. **No actives «Cache Everything»**: guardaría páginas con sesión
+iniciada y acabaría enseñándole a un visitante el panel de otro, o el
+buscador con resultados viejos.
+
+Si quieres afinar, una regla para que nunca cachee lo que cambia:
+
+```
+URI Path contains /admin  → Bypass cache
+URI Path contains /mensajes → Bypass cache
+```
+
+Cuando cambies el CSS o el JS, vacía la caché en *Caching* →
+*Configuration* → *Purge Everything*, o los visitantes seguirán viendo
+los archivos viejos.
+
+---
+
+# Publicar desde tu propio computador (túnel)
+
+Para enseñar el proyecto **sin contratar nada**: una sustentación,
+mandarle el enlace al director de tesis, o ver cómo se comporta de verdad
+en un celular.
+
+```bash
+brew install cloudflared      # solo la primera vez, en Mac
+bash deploy/tunel.sh
+```
+
+Te da una dirección pública con HTTPS y deja HABBI funcionando **entero**
+—fotos, base, PDF, mapa— porque quien ejecuta la aplicación sigue siendo
+tu computador. El script ajusta `TRUSTED_PROXIES` y `APP_URL` solo, y los
+devuelve a como estaban al cerrar con `Ctrl + C`.
+
+Lo que no es: un hosting. **La página vive mientras el comando esté
+abierto y tu computador encendido**, y la dirección cambia cada vez.

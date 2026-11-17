@@ -3,10 +3,15 @@
 namespace Tests\Feature;
 
 use App\Http\Middleware\TrustProxies;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
 class ProxiesDeConfianzaTest extends TestCase
 {
+    // La prueba del túnel pide una página de verdad, así que hace falta
+    // la base. Las demás solo leen configuración.
+    use RefreshDatabase;
+
     private function proxiesDe(?string $valor): array|string|null
     {
         // Se ajusta la configuración, no la variable de entorno: así el test
@@ -41,6 +46,32 @@ class ProxiesDeConfianzaTest extends TestCase
         $this->assertSame(
             ['10.0.0.1', '10.0.0.2'],
             $this->proxiesDe('10.0.0.1, 10.0.0.2')
+        );
+    }
+
+    public function test_detras_de_un_tunel_los_enlaces_salen_en_https(): void
+    {
+        /*
+         * El caso real de deploy/tunel.sh, y el que rompe la página.
+         *
+         * El túnel habla https con el visitante y http con la máquina, así
+         * que sin confiar en el proxy Laravel escribe los enlaces del CSS
+         * y del JS como http://. El navegador los bloquea por «contenido
+         * mixto» y el sitio sale sin estilos: un fallo que solo aparece
+         * al publicar, nunca en local.
+         */
+        config(['app.trusted_proxies' => '*']);
+
+        $respuesta = $this->withHeaders([
+            'X-Forwarded-Proto' => 'https',
+            'X-Forwarded-Host'  => 'abc.trycloudflare.com',
+        ])->get('/alojamientos')->assertOk();
+
+        $this->assertStringContainsString('https://', $respuesta->getContent());
+        $this->assertStringNotContainsString(
+            'href="http://',
+            $respuesta->getContent(),
+            'Hay enlaces en http: el navegador los bloquearía detrás del túnel.',
         );
     }
 

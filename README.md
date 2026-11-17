@@ -135,6 +135,7 @@ docs/
 
 deploy/
 ├── probar-local.sh      Levanta el proyecto con un comando
+├── tunel.sh             Lo publica en internet desde tu propio computador
 ├── recorrido.sh         Visita las 41 pantallas con cada rol
 ├── instalar.sh          Primera instalación en el servidor
 └── actualizar.sh        Traer los cambios en el servidor
@@ -399,4 +400,4 @@ Guía completa, incluido el caso sin SSH: **[DEPLOY.md](DEPLOY.md)**.
 | [`docs/donde-verlo.md`](docs/donde-verlo.md) | Dónde abrir cada requisito y qué tiene que pasar |
 | [`docs/verificacion-requisitos.md`](docs/verificacion-requisitos.md) | Contraste con el documento del proyecto |
 | [`docs/respaldos.md`](docs/respaldos.md) | Copias de seguridad: qué cubren, qué no, y cómo se restaura |
-| [`DEPLOY.md`](DEPLOY.md) | Despliegue paso a paso, con y sin SSH |
+| [`DEPLOY.md`](DEPLOY.md) | Despliegue paso a paso, Cloudflare delante del hosting, y el túnel |
