@@ -26,7 +26,7 @@ use Illuminate\Support\Facades\Storage;
 class FotosDemo extends Command
 {
     protected $signature = 'habbi:fotos-demo
-                            {--carpeta=fotos-demo : Carpeta dentro de storage/app con las fotos de origen}
+                            {--carpeta=database/seeders/fotos : Carpeta con las fotos de origen, relativa a la raíz del proyecto o a storage/app}
                             {--por=3 : Cuántas fotos recibe cada alojamiento}
                             {--forzar : Reemplazar también las fotos de los que ya tienen}';
 
@@ -42,11 +42,11 @@ class FotosDemo extends Command
 
     public function handle(): int
     {
-        $origen = storage_path('app/' . trim($this->option('carpeta'), '/'));
+        $origen = $this->resolverOrigen((string) $this->option('carpeta'));
 
-        if (! is_dir($origen)) {
-            $this->error("No existe la carpeta: {$origen}");
-            $this->line('  Créala y sube ahí las fotos, o pasa otra con --carpeta=');
+        if ($origen === null) {
+            $this->error('No encontré la carpeta: ' . $this->option('carpeta'));
+            $this->line('  Se busca primero en la raíz del proyecto y luego en storage/app.');
 
             return self::FAILURE;
         }
@@ -71,6 +71,26 @@ class FotosDemo extends Command
         }
 
         return $this->repartir($procesadas);
+    }
+
+    /**
+     * Encuentra la carpeta de origen.
+     *
+     * Se admiten las dos: una del repositorio (las fotos de ejemplo viajan
+     * con el código y llegan solas al desplegar) y una de storage/app, que
+     * git ignora y sirve para las que uno suba a mano al servidor.
+     */
+    private function resolverOrigen(string $carpeta): ?string
+    {
+        $carpeta = trim($carpeta, '/');
+
+        foreach ([base_path($carpeta), storage_path('app/' . $carpeta)] as $ruta) {
+            if (is_dir($ruta)) {
+                return $ruta;
+            }
+        }
+
+        return null;
     }
 
     /**
