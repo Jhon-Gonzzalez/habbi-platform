@@ -46,8 +46,18 @@ class MonteriaSeeder extends Seeder
 
     public function run(): void
     {
-        if (app()->isProduction()) {
+        if (app()->isProduction() && ! config('habbi.datos_demo')) {
             $this->command?->warn('MonteriaSeeder omitido en producción.');
+            $this->command?->line('  Es a propósito: un sitio con usuarios de verdad no debe');
+            $this->command?->line('  llenarse de arrendadores y reseñas inventadas sin querer.');
+            $this->command?->line('');
+            $this->command?->line('  Si el sitio aún no tiene publicaciones reales y quieres');
+            $this->command?->line('  cargarlos igual, pon esto en el .env y vuelve a lanzarlo:');
+            $this->command?->line('');
+            $this->command?->line('      HABBI_DATOS_DEMO=true');
+            $this->command?->line('');
+            $this->command?->line('  Acuérdate de volver a false y borrar los datos antes de');
+            $this->command?->line('  abrir a los estudiantes.');
 
             return;
         }

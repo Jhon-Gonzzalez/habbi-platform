@@ -128,6 +128,50 @@ class FotosDemoTest extends TestCase
         $this->artisan('habbi:fotos-demo', ['--carpeta' => 'no-existe-esta'])->assertFailed();
     }
 
+    public function test_avisa_claro_cuando_no_hay_ningun_alojamiento(): void
+    {
+        /*
+         * Antes decía «todos los alojamientos ya tienen fotos» con la tabla
+         * vacía, y uno se quedaba buscando qué pasó con las fotos que
+         * acababa de subir al servidor.
+         */
+        Storage::fake('public');
+        $this->prepararOrigen('fotos-test');
+
+        $this->artisan('habbi:fotos-demo', ['--carpeta' => 'fotos-test'])
+            ->expectsOutputToContain('No hay ningún alojamiento')
+            ->assertFailed();
+
+        $this->borrarOrigen('fotos-test');
+    }
+
+    public function test_el_seeder_de_demo_no_corre_en_produccion_por_defecto(): void
+    {
+        // Una plataforma con estudiantes de verdad no puede llenarse de
+        // arrendadores y reseñas inventadas por un comando sin pensar.
+        app()->detectEnvironment(fn () => 'production');
+        config(['habbi.datos_demo' => false]);
+
+        $this->artisan('db:seed', ['--class' => 'MonteriaSeeder', '--force' => true])
+            ->expectsOutputToContain('omitido en producción')
+            ->assertSuccessful();
+
+        $this->assertSame(0, Alojamiento::count());
+    }
+
+    public function test_el_seeder_de_demo_corre_en_produccion_si_se_pide_a_proposito(): void
+    {
+        // El caso legítimo: un sitio recién publicado, sin publicaciones
+        // reales todavía, que necesita algo que enseñar.
+        app()->detectEnvironment(fn () => 'production');
+        config(['habbi.datos_demo' => true]);
+
+        $this->artisan('db:seed', ['--class' => 'MonteriaSeeder', '--force' => true])
+            ->assertSuccessful();
+
+        $this->assertSame(20, Alojamiento::count());
+    }
+
     public function test_el_tono_del_avatar_es_estable_y_valido(): void
     {
         // Si el tono cambiara entre peticiones, el mismo usuario saldría de

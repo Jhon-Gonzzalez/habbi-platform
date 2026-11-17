@@ -67,4 +67,23 @@ return [
         'hora' => env('HABBI_RESPALDOS_HORA', '03:20'),
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Datos de ejemplo en producción
+    |--------------------------------------------------------------------------
+    |
+    | MonteriaSeeder no se ejecuta en producción: una plataforma con usuarios
+    | de verdad no puede llenarse de arrendadores y reseñas inventadas por un
+    | comando lanzado sin pensar.
+    |
+    | Pero hay un caso legítimo: un sitio recién publicado que todavía no
+    | tiene publicaciones reales y necesita algo que enseñar. Para eso está
+    | esta llave. Se pone a mano en el .env, no se hereda de nada, y hay que
+    | acordarse de volver a false y borrar los datos antes de abrir a los
+    | estudiantes de verdad.
+    |
+    */
+
+    'datos_demo' => (bool) env('HABBI_DATOS_DEMO', false),
+
 ];

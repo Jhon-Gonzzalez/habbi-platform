@@ -213,6 +213,17 @@ class FotosDemo extends Command
         $alojamientos = $consulta->orderBy('id')->get();
 
         if ($alojamientos->isEmpty()) {
+            // Sin esta distinción el comando dice «ya tienen fotos» cuando
+            // en realidad la tabla está vacía, y uno se queda buscando qué
+            // pasó con las fotos que acaba de subir.
+            if (Alojamiento::count() === 0) {
+                $this->warn('No hay ningún alojamiento al que ponerle fotos.');
+                $this->line('  Carga primero los de ejemplo:');
+                $this->line('    php artisan db:seed --class=MonteriaSeeder');
+
+                return self::FAILURE;
+            }
+
             $this->info('Todos los alojamientos ya tienen fotos. Usa --forzar para reemplazarlas.');
 
             return self::SUCCESS;
