@@ -2,6 +2,7 @@
 
 namespace Tests\Unit;
 
+use App\Providers\AppServiceProvider;
 use Tests\TestCase;
 
 class HttpsTest extends TestCase
@@ -10,7 +11,7 @@ class HttpsTest extends TestCase
     {
         // No basta con mirar el entorno: lo que decide es la URL del sitio.
         config(['app.url' => 'https://habbi.co']);
-        $this->refreshApplicationWithUrl();
+        $this->rearrancarProveedor();
 
         $this->assertStringStartsWith('https://', route('index'));
     }
@@ -19,16 +20,31 @@ class HttpsTest extends TestCase
     {
         // Un despliegue de pruebas sin certificado debe seguir funcionando.
         config(['app.url' => 'http://localhost:8000']);
-        $this->refreshApplicationWithUrl();
+        $this->rearrancarProveedor();
 
         $this->assertStringStartsWith('http://', route('index'));
     }
 
-    /** Vuelve a arrancar el proveedor con la configuración recién puesta. */
-    private function refreshApplicationWithUrl(): void
+    /**
+     * Vuelve a arrancar el proveedor con la configuración recién puesta.
+     *
+     * OJO: aquí NO se puede hacer $this->app->forgetInstance('url').
+     *
+     * Al resolver «url» de nuevo, Laravel ejecuta por dentro
+     * $app->instance('routes', $routes), y eso dispara los callbacks de
+     * rebinding. Uno de esos callbacks hace $app['url']->setRoutes(...),
+     * que vuelve a resolver «url» cuando todavía se está construyendo:
+     * resolver → fijar routes → disparar → resolver… hasta que PHP corta
+     * con «Maximum call stack size reached. Infinite recursion?».
+     *
+     * No hace falta olvidarlo: forceScheme() y forceRootUrl() modifican el
+     * generador que ya existe, y cada método de prueba arranca con una
+     * aplicación nueva, así que no se filtra nada de una prueba a otra.
+     */
+    private function rearrancarProveedor(): void
     {
-        $this->app->forgetInstance('url');
-        (new \App\Providers\AppServiceProvider($this->app))->boot();
+        (new AppServiceProvider($this->app))->boot();
+
         url()->forceRootUrl(config('app.url'));
     }
 }

@@ -20,6 +20,12 @@
     <php>
         <env name="APP_ENV" value="testing"/>
         <env name="BCRYPT_ROUNDS" value="4"/>
+        <!-- Se fija aquí y no se hereda del .env de cada quien: con un
+             APP_URL en https (el que deja el script del túnel, por ejemplo)
+             AppServiceProvider fuerza el esquema al arrancar y las pruebas
+             que comprueban enlaces en http fallan sin que nadie tocara el
+             código. La suite no puede depender de un archivo local. -->
+        <env name="APP_URL" value="http://localhost"/>
         <env name="CACHE_DRIVER" value="array"/>
         <env name="DB_CONNECTION" value="sqlite"/>
         <env name="DB_DATABASE" value=":memory:"/>
