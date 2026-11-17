@@ -58,8 +58,20 @@ return [
             'prefix_indexes' => true,
             'strict' => true,
             'engine' => null,
+            /*
+             * PHP 8.5 mueve las constantes de PDO a clases por motor y marca
+             * las viejas como obsoletas. Referirse a PDO::MYSQL_ATTR_SSL_CA
+             * directamente llena de avisos cualquier cosa que arranque la
+             * aplicación —incluidas las 454 pruebas, que salían todas en
+             * amarillo aunque pasaran.
+             *
+             * Se mira cuál existe en lugar de elegir una: así funciona en
+             * el servidor (8.4) y en una máquina con 8.5, sin tocar nada.
+             */
             'options' => extension_loaded('pdo_mysql') ? array_filter([
-                PDO::MYSQL_ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
+                (defined('Pdo\Mysql::ATTR_SSL_CA')
+                    ? constant('Pdo\Mysql::ATTR_SSL_CA')
+                    : PDO::MYSQL_ATTR_SSL_CA) => env('MYSQL_ATTR_SSL_CA'),
             ]) : [],
         ],
 
