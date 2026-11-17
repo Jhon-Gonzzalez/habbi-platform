@@ -13,7 +13,7 @@
 
 <{{ $etiqueta }}
     {{ $attributes->merge($atributos)->class(['hb-avatar']) }}
-    style="width:{{ $tamano }}px;height:{{ $tamano }}px;font-size:{{ max(10, (int) ($tamano * 0.36)) }}px"
+    style="--hb-avatar-tono:{{ $usuario->tonoAvatar() }};width:{{ $tamano }}px;height:{{ $tamano }}px;font-size:{{ max(10, (int) ($tamano * 0.36)) }}px"
     title="{{ $usuario->name }}">
 
     @if ($foto)

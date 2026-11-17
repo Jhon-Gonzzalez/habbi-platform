@@ -180,6 +180,19 @@ class User extends Authenticatable implements MustVerifyEmail
         return strtoupper(mb_substr($parts[0] ?? '?', 0, 1) . mb_substr($parts[1] ?? '', 0, 1));
     }
 
+    /**
+     * Tono (0-359) del avatar cuando la persona no ha subido foto.
+     *
+     * Sale del nombre, así que es el mismo en todas las pantallas y entre
+     * visitas: si cambiara al recargar, dos usuarios se confundirían. Solo
+     * se fija el tono; la saturación y el brillo los pone el CSS, para que
+     * el contraste del texto no dependa de quién se llame cómo.
+     */
+    public function tonoAvatar(): int
+    {
+        return (int) (hexdec(substr(md5($this->name), 0, 4)) % 360);
+    }
+
     /** URL de la foto de perfil, o null si no tiene (se usa el avatar). */
     public function fotoUrl(): ?string
     {

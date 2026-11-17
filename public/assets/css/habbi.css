@@ -138,8 +138,10 @@ p  { margin: 0 0 1em; }
   place-items: center;
   flex-shrink: 0;
   border-radius: 50%;
-  background: var(--hb-primary-soft);
-  color: var(--hb-primary-dark);
+  /* El tono lo pone cada avatar en línea (--hb-avatar-tono). Sin él se
+     usa el color de marca de siempre, así que nada se rompe si falta. */
+  background: hsl(var(--hb-avatar-tono, 212) 52% 90%);
+  color: hsl(var(--hb-avatar-tono, 212) 46% 30%);
   font-weight: 600;
   letter-spacing: .02em;
   overflow: visible;

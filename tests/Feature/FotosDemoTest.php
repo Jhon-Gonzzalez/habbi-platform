@@ -1,0 +1,151 @@
+<?php
+
+namespace Tests\Feature;
+
+use App\Models\Alojamiento;
+use App\Models\User;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Storage;
+use Tests\TestCase;
+
+class FotosDemoTest extends TestCase
+{
+    use RefreshDatabase;
+
+    /** Deja en storage/app/<carpeta> unas imágenes de verdad. */
+    private function prepararOrigen(string $carpeta, int $cuantas = 3, int $ancho = 2400): void
+    {
+        $ruta = storage_path('app/' . $carpeta);
+        @mkdir($ruta, 0755, true);
+
+        for ($i = 1; $i <= $cuantas; $i++) {
+            $img = imagecreatetruecolor($ancho, (int) ($ancho * 0.66));
+            imagefilledrectangle($img, 0, 0, $ancho, (int) ($ancho * 0.66), imagecolorallocate($img, 30 * $i, 90, 160));
+            imagejpeg($img, "{$ruta}/foto{$i}.jpg", 95);
+            imagedestroy($img);
+        }
+    }
+
+    private function borrarOrigen(string $carpeta): void
+    {
+        $ruta = storage_path('app/' . $carpeta);
+
+        foreach (glob($ruta . '/*') ?: [] as $f) {
+            @unlink($f);
+        }
+
+        @rmdir($ruta);
+    }
+
+    private function alojamiento(): Alojamiento
+    {
+        return Alojamiento::factory()->create([
+            'user_id'    => User::factory()->create(['role' => User::ROLE_ARRENDADOR])->id,
+            'photos'     => [],
+            'cover_path' => null,
+        ]);
+    }
+
+    public function test_reparte_las_fotos_entre_los_alojamientos_sin_foto(): void
+    {
+        Storage::fake('public');
+        $this->prepararOrigen('fotos-test');
+
+        $alojamiento = $this->alojamiento();
+
+        $this->artisan('habbi:fotos-demo', ['--carpeta' => 'fotos-test', '--por' => 2])
+            ->assertSuccessful();
+
+        $alojamiento->refresh();
+
+        $this->assertCount(2, $alojamiento->photos);
+        $this->assertSame($alojamiento->photos[0], $alojamiento->cover_path);
+        Storage::disk('public')->assertExists($alojamiento->photos[0]);
+
+        $this->borrarOrigen('fotos-test');
+    }
+
+    public function test_redimensiona_las_fotos_grandes(): void
+    {
+        /*
+         * Una foto de banco pesa 4-6 MB y viene a 4000px. Servirla tal cual
+         * se come el disco del hosting compartido y los datos móviles de
+         * quien abra la página desde Montería.
+         */
+        Storage::fake('public');
+        $this->prepararOrigen('fotos-test', cuantas: 1, ancho: 2400);
+
+        $alojamiento = $this->alojamiento();
+
+        $this->artisan('habbi:fotos-demo', ['--carpeta' => 'fotos-test'])->assertSuccessful();
+
+        $tamanos = getimagesizefromstring(
+            Storage::disk('public')->get($alojamiento->refresh()->photos[0])
+        );
+
+        $this->assertSame(1600, $tamanos[0], 'La foto tendría que haberse reducido a 1600px.');
+
+        $this->borrarOrigen('fotos-test');
+    }
+
+    public function test_ignora_lo_que_no_sea_una_imagen(): void
+    {
+        // Un .txt renombrado a .jpg hace petar a GD si se mira la extensión
+        // en vez del contenido.
+        Storage::fake('public');
+        $this->prepararOrigen('fotos-test', cuantas: 1);
+        file_put_contents(storage_path('app/fotos-test/falsa.jpg'), 'esto no es una imagen');
+
+        $alojamiento = $this->alojamiento();
+
+        $this->artisan('habbi:fotos-demo', ['--carpeta' => 'fotos-test', '--por' => 5])
+            ->assertSuccessful();
+
+        $this->assertCount(1, $alojamiento->refresh()->photos, 'Solo había una imagen válida.');
+
+        $this->borrarOrigen('fotos-test');
+    }
+
+    public function test_no_pisa_las_fotos_de_quien_ya_tiene_salvo_con_forzar(): void
+    {
+        Storage::fake('public');
+        $this->prepararOrigen('fotos-test');
+
+        $alojamiento = $this->alojamiento();
+        $alojamiento->forceFill(['photos' => ['alojamientos/mia.jpg'], 'cover_path' => 'alojamientos/mia.jpg'])->save();
+
+        $this->artisan('habbi:fotos-demo', ['--carpeta' => 'fotos-test'])->assertSuccessful();
+        $this->assertSame(['alojamientos/mia.jpg'], $alojamiento->refresh()->photos);
+
+        $this->artisan('habbi:fotos-demo', ['--carpeta' => 'fotos-test', '--forzar' => true])->assertSuccessful();
+        $this->assertNotSame(['alojamientos/mia.jpg'], $alojamiento->refresh()->photos);
+
+        $this->borrarOrigen('fotos-test');
+    }
+
+    public function test_falla_con_aviso_si_la_carpeta_no_existe(): void
+    {
+        $this->artisan('habbi:fotos-demo', ['--carpeta' => 'no-existe-esta'])->assertFailed();
+    }
+
+    public function test_el_tono_del_avatar_es_estable_y_valido(): void
+    {
+        // Si el tono cambiara entre peticiones, el mismo usuario saldría de
+        // un color en la lista y de otro en su perfil.
+        $usuario = User::factory()->create(['name' => 'Dolores Arrieta']);
+
+        $tono = $usuario->tonoAvatar();
+
+        $this->assertSame($tono, $usuario->fresh()->tonoAvatar());
+        $this->assertGreaterThanOrEqual(0, $tono);
+        $this->assertLessThan(360, $tono);
+    }
+
+    public function test_dos_personas_distintas_no_comparten_tono(): void
+    {
+        $a = User::factory()->create(['name' => 'Dolores Arrieta']);
+        $b = User::factory()->create(['name' => 'Rafael Berrocal']);
+
+        $this->assertNotSame($a->tonoAvatar(), $b->tonoAvatar());
+    }
+}
