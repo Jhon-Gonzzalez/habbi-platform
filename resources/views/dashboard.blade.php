@@ -51,7 +51,7 @@
             <div class="hb-empty">
                 <div class="hb-empty__icon" aria-hidden="true">⌂</div>
                 <h3>Aún no tiene publicaciones</h3>
-                <p>Cuando publiques un alojamiento aparecerá aquí con sus reseñas y su estado.</p>
+                <p>Cuando publique un alojamiento aparecerá aquí con sus reseñas y su estado.</p>
                 <p style="margin-top:1.5rem">
                     <a class="hb-btn hb-btn--primary" href="{{ route('alojamientos.create') }}">Publicar ahora</a>
                 </p>

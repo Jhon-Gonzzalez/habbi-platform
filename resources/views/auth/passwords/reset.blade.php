@@ -25,7 +25,7 @@
         </div>
 
         <div class="hb-field">
-            <label class="hb-label" for="password-confirm">Repite la contraseña</label>
+            <label class="hb-label" for="password-confirm">Repita la contraseña</label>
             <input class="hb-input" type="password" id="password-confirm" name="password_confirmation" required>
         </div>
 

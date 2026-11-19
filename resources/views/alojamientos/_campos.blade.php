@@ -87,7 +87,7 @@
             <input class="hb-input @error('address') is-invalid @enderror" type="text" id="address" name="address"
                    value="{{ old('address', $a->address ?? '') }}" maxlength="255"
                    placeholder="Ej: Calle 53 con Carrera 13">
-            <span class="hb-hint">No publiques el número exacto del apartamento; compártelo solo al contactar.</span>
+            <span class="hb-hint">No publique el número exacto del apartamento; compártalo solo al contactar.</span>
             @error('address') <span class="hb-error">{{ $message }}</span> @enderror
         </div>
 
