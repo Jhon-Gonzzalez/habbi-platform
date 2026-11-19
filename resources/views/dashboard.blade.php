@@ -68,7 +68,7 @@
     {{-- Reseñas escritas --}}
     @if ($misResenas->isNotEmpty())
         <section style="margin-top:2.5rem">
-            <h2 style="font-size:1.25rem;margin-bottom:1.25rem">Reseñas que has escrito</h2>
+            <h2 style="font-size:1.25rem;margin-bottom:1.25rem">Reseñas que ha escrito</h2>
 
             <div class="hb-card">
                 <div class="hb-card__body">

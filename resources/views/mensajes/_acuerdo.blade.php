@@ -59,7 +59,7 @@
 @elseif (! $alojamiento->estaArrendado())
 
     <details class="hb-acuerdo is-abierto">
-        <summary><strong>¿Ya se pusieron de acuerdo?</strong> Ciérralo aquí</summary>
+        <summary><strong>¿Ya se pusieron de acuerdo?</strong> Ciérrelo aquí</summary>
 
         <p class="hb-muted hb-small" style="margin-top:.75rem">
             Lo propone uno y lo confirma el otro. Al confirmarse, la publicación

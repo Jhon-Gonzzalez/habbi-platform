@@ -141,8 +141,8 @@
                         <textarea class="hb-textarea" id="cobro_instrucciones" name="cobro_instrucciones"
                                   rows="4" maxlength="600">{{ old('cobro_instrucciones', $ajustes[\App\Models\Ajuste::COBRO_INSTRUCCIONES] ?? '') }}</textarea>
                         <span class="hb-hint">
-                            Si pones algo aquí, reemplaza los tres pasos que vaya el arrendador.
-                            Déjalo vacío para usar los de siempre.
+                            Si escribe algo aquí, reemplaza los tres pasos que ve el arrendador.
+                            Déjelo vacío para usar los de siempre.
                         </span>
                     </div>
 

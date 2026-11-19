@@ -6,7 +6,7 @@
     <h1>Verifique su correo</h1>
     <p class="hb-muted">
         Le enviamos un enlace a <strong>{{ auth()->user()->email }}</strong>.
-        Ábrelo para confirmar que el correo es tuyo.
+        Ábralo para confirmar que el correo es suyo.
     </p>
 
     @if (session('resent'))

@@ -153,8 +153,8 @@
                    id="disponible_desde" name="disponible_desde"
                    value="{{ old('disponible_desde', isset($a->disponible_desde) ? $a->disponible_desde?->format('Y-m-d') : '') }}">
             <span class="hb-hint">
-                Déjalo vacío si se puede entrar ya. Ponlo si el inquilino actual
-                se va en una fecha concreta: así nadie le escriba para enero
+                Déjelo vacío si se puede entrar ya. Póngalo si el inquilino actual
+                se va en una fecha concreta: así nadie le escribe para enero
                 cuando el cuarto se desocupa en junio.
             </span>
             @error('disponible_desde') <span class="hb-error">{{ $message }}</span> @enderror

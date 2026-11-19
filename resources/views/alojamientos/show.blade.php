@@ -340,8 +340,8 @@
                     @endif
 
                     <p class="hb-muted hb-small hb-center" style="margin:.75rem 0 0">
-                        Habla por el chat: queda constancia de lo que se acuerde.
-                        Nunca envíes dinero por adelantado.
+                        Hable por el chat: queda constancia de lo que se acuerde.
+                        Nunca envíe dinero por adelantado.
                     </p>
 
                 @else

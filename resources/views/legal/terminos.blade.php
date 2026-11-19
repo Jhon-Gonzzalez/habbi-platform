@@ -58,14 +58,14 @@
         <p>
             Verificamos la identidad de los arrendadores y que el inmueble existe,
             pero <strong>eso no garantiza nada sobre el estado de la vivienda ni
-            sobre el trato que recibas</strong>. Antes de pagar nada, visita el
-            lugar en persona. Si algo va mal, repórtalo y lo revisamos.
+            sobre el trato que reciba</strong>. Antes de pagar nada, visite el
+            lugar en persona. Si algo va mal, repórtelo y lo revisamos.
         </p>
 
         <h2 style="font-size:1.15rem;margin-top:2rem">7. Cierre de cuentas</h2>
         <p>
             Podemos suspender una cuenta que incumpla estos términos. Usted puede
-            cerrar la tuya cuando quiera.
+            cerrar la suya cuando quiera.
         </p>
 
     </div>

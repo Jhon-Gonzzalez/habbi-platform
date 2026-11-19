@@ -16,7 +16,7 @@
         <div class="hb-empty__icon" aria-hidden="true">✉</div>
         <h3>Todavía no tiene conversaciones</h3>
         <p>
-            Cuando escribas a un arrendador desde la ficha de un alojamiento,
+            Cuando escriba a un arrendador desde la ficha de un alojamiento,
             la conversación aparecerá aquí.
         </p>
         <p style="margin-top:1.25rem">

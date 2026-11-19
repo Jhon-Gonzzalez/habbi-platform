@@ -30,7 +30,7 @@
                         <label class="hb-label" for="foto">Cambiar foto</label>
                         <input class="hb-input @error('foto') is-invalid @enderror" type="file" id="foto"
                                name="foto" accept="image/jpeg,image/png,image/webp">
-                        <span class="hb-hint">JPG, PNG o WEBP · máximo 3 MB. Una foto tuya da mucha más confianza.</span>
+                        <span class="hb-hint">JPG, PNG o WEBP · máximo 3 MB. Una foto suya da mucha más confianza.</span>
                         @error('foto') <span class="hb-error">{{ $message }}</span> @enderror
                     </div>
 
@@ -47,7 +47,7 @@
 
     {{-- Datos --}}
     <div class="hb-card" style="margin-top:1.5rem">
-        <div class="hb-card__header"><h2 style="font-size:1.1rem">Tus datos</h2></div>
+        <div class="hb-card__header"><h2 style="font-size:1.1rem">Sus datos</h2></div>
         <div class="hb-card__body">
 
             <div class="hb-fields-2">

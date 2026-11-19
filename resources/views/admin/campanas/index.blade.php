@@ -141,7 +141,7 @@
 
             @if ($cobros->isEmpty())
                 <div class="hb-card__body">
-                    <p class="hb-muted hb-mb-0">Todavía no has registrado ningún cobro.</p>
+                    <p class="hb-muted hb-mb-0">Todavía no ha registrado ningún cobro.</p>
                 </div>
             @else
                 <div class="hb-table-wrap">
@@ -182,7 +182,7 @@
             <div class="hb-card__body">
 
                 <p class="hb-small hb-muted">
-                    El arrendador paga por Nequi, Daviplata o en efectivo y usted lo anotas
+                    El arrendador paga por Nequi, Daviplata o en efectivo y usted lo anota
                     aquí. <strong>Compruebe que el dinero llegó</strong> antes de activar:
                     esto no verifica nada, solo deja constancia.
                 </p>
@@ -245,9 +245,9 @@
                     </div>
 
                     <span class="hb-hint" style="margin-bottom:1rem;display:block">
-                        Déjalos vacíos y se toman de la tarifa. Rellénalos para cobrar
+                        Déjelos vacíos y se toman de la tarifa. Rellénelos para cobrar
                         algo distinto: un descuento, un pago a medias o una campaña de
-                        regalo en temporada baja. Lo que escribas aquí queda copiado en
+                        regalo en temporada baja. Lo que escriba aquí queda copiado en
                         el cobro, así que subir el precio después no reescribe lo que ya
                         se pagó.
                     </span>

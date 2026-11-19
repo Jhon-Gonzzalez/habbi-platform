@@ -36,8 +36,8 @@
 
             <p class="hb-muted hb-small" style="margin-top:1.25rem">
                 Escriba desde su propio número y acuerde ver el lugar en persona
-                antes de pagar nada. <strong>Nunca envíes dinero por adelantado</strong>
-                a alguien que no conoces, ni siquiera como «reserva».
+                antes de pagar nada. <strong>Nunca envíe dinero por adelantado</strong>
+                a alguien que no conozca, ni siquiera como «reserva».
             </p>
         </div>
         <div class="hb-card__footer">

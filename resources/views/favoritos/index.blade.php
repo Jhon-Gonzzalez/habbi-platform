@@ -14,7 +14,7 @@
     @if ($favoritos->isEmpty())
         <div class="hb-empty">
             <div class="hb-empty__icon" aria-hidden="true">♡</div>
-            <h3>Todavía no has guardado nada</h3>
+            <h3>Todavía no ha guardado nada</h3>
             <p>Cuando vea un alojamiento que le interese, toque el corazón de la tarjeta y lo encontrarás aquí.</p>
             <p style="margin-top:1.25rem">
                 <a class="hb-btn hb-btn--primary" href="{{ route('alojamientos.index') }}">Buscar alojamiento</a>

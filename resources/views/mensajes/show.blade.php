@@ -112,8 +112,8 @@
 
     <p class="hb-muted hb-small hb-center" style="margin-top:1rem">
         Hablar aquí deja constancia de lo que se promete.
-        <strong>Nunca envíes dinero por adelantado</strong> a alguien que no conoces.
-        Si algo huele mal, <a href="{{ route('reportes.create', $alojamiento) }}">repórtalo</a>.
+        <strong>Nunca envíe dinero por adelantado</strong> a alguien que no conozca.
+        Si algo huele mal, <a href="{{ route('reportes.create', $alojamiento) }}">repórtelo</a>.
     </p>
 
 </div>

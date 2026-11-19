@@ -75,7 +75,7 @@
             @csrf
 
             <div class="hb-card">
-                <div class="hb-card__header"><h2 style="font-size:1.1rem">Tus datos</h2></div>
+                <div class="hb-card__header"><h2 style="font-size:1.1rem">Sus datos</h2></div>
                 <div class="hb-card__body">
 
                     <div class="hb-field">

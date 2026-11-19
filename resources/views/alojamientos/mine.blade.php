@@ -14,7 +14,7 @@
     @if ($alojamientos->isEmpty())
         <div class="hb-empty">
             <div class="hb-empty__icon" aria-hidden="true">⌂</div>
-            <h3>Todavía no has publicado nada</h3>
+            <h3>Todavía no ha publicado nada</h3>
             <p>Publicar es gratis y toma un par de minutos. Suba sus fotos, ponga el precio y empiece a recibir contactos.</p>
             <p style="margin-top:1.5rem">
                 <a class="hb-btn hb-btn--primary" href="{{ route('alojamientos.create') }}">Publicar mi primer alojamiento</a>
